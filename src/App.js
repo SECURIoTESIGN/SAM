@@ -23,17 +23,55 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 import React,{useEffect} from 'react';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import Dialog from '@material-ui/core/Dialog';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import {Button} from '@material-ui/core'
-// SAM's components
-import AuthContainer from './containers/AuthContainer'
 import { isAuthenticated } from './components/LoginComponent';
 import { logout } from './components/LoginComponent';
+import { makeStyles } from '@material-ui/core/styles';
+import Backdrop from '@material-ui/core/Backdrop';
+
+// SAM's components
+import AuthContainer from './containers/AuthContainer'
+//
 import './App.css';
+
+// Check if SAM server is reachable
+const isReachable = () =>{
+// TODO!
+}
+
+const useStyles = makeStyles((theme) => ({
+  footer: {
+    padding: theme.spacing(3, 2),
+    marginTop: 'auto',
+    backgroundColor:
+      theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[800],
+  },
+  // Define the CSS for the loading backdrop
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+}));
 
 // 'There's no place like home'
 function App(){
+  const classes = useStyles();
+  isReachable();
   if (!isAuthenticated()){
-    return(<AuthContainer/>);
+    return(
+      <div>
+        {/*
+        <Backdrop className={classes.backdrop} open={true}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        */}
+        <AuthContainer/>
+      </div>
+    );
   }else{
     return(
       <div>

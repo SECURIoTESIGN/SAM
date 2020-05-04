@@ -30,8 +30,32 @@ import { withStyles } from '@material-ui/core/styles';
 export const TOKEN_KEY = "@SAM-Token";
 export const isAuthenticated = () => localStorage.getItem(TOKEN_KEY) !== null;
 export const getToken        = () => localStorage.getItem(TOKEN_KEY);
+// Storing token in localStorage = Security risk ?
 export const login           = token => { localStorage.setItem(TOKEN_KEY, token);};
-export const logout          = () => { localStorage.removeItem(TOKEN_KEY); window.location.reload(false);};
+export const logout          = () => { 
+  var token = localStorage.getItem(TOKEN_KEY); 
+  // Perform a logout
+  fetch('/user/logout', { method:'post', 
+                          headers: new Headers({'Authorization': token})}).
+    then(res => res.json()).then(response => {
+      // TODO: Add loading animation when the user is being logged out.
+      switch (response['/user/logout']['status']){
+        case 200:{ 
+          console.log(JSON.stringify(response));
+          localStorage.removeItem(TOKEN_KEY); 
+          window.location.reload(false);
+          break;
+        }
+        default:{
+          // TODO: Add custom message errors when an unsuccessfull logout exists.
+          break;
+        }
+      }
+    }).catch(function() {
+      // TODO: Add custom message errors when an unsuccessfull logout exists.
+      return;
+    });
+};
 
 const useStyles = theme => ({
   paper: {
@@ -108,20 +132,23 @@ class LoginComponent extends Component{
         case 200:{ 
           // Reset authentication error flag.
           this.setState({authError: 0}) 
-          // Store the authentication token - Available on the response JSON object returned by the backend service.
+          // Store the authentication token - Available on the response JSON object that is returned by the backend service.
           login(data['/user/login']['token']);
-          window.location.reload(false);
+          console.log(data['/user/login']['token']);
+          // window.location.reload(false);
           break;
         }
         // 'Houston, we have a problem'.
         default:{ // not 200
-          // Set authentication flag.
+          // Set authentication error flag.
           this.setState({authError: 1})
           // 'Hasta la vista, baby'.
           break;
         }
       }
-    })
+    }).catch(function() {
+      return;
+    });
     //
   };
   
