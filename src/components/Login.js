@@ -26,35 +26,18 @@ import React, {Component} from 'react';
 import {Button, Text, TextField, FormControlLabel, Checkbox, Link, Grid, makeStyles} from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert';
 import { withStyles } from '@material-ui/core/styles';
+// SAM's components and containers
+import Loading from './Loading'
 //
 export const TOKEN_KEY = "@SAM-Token";
+export const USER_EMAIL = "@SAM-Email";
+
 export const isAuthenticated = () => localStorage.getItem(TOKEN_KEY) !== null;
 export const getToken        = () => localStorage.getItem(TOKEN_KEY);
 // Storing token in localStorage = Security risk ?
-export const login           = token => { localStorage.setItem(TOKEN_KEY, token);};
-export const logout          = () => { 
-  var token = localStorage.getItem(TOKEN_KEY); 
-  // Perform a logout
-  fetch('/user/logout', { method:'post', 
-                          headers: new Headers({'Authorization': token})}).
-    then(res => res.json()).then(response => {
-      // TODO: Add loading animation when the user is being logged out.
-      switch (response['/user/logout']['status']){
-        case 200:{ 
-          console.log(JSON.stringify(response));
-          localStorage.removeItem(TOKEN_KEY); 
-          window.location.reload(false);
-          break;
-        }
-        default:{
-          // TODO: Add custom message errors when an unsuccessfull logout exists.
-          break;
-        }
-      }
-    }).catch(function() {
-      // TODO: Add custom message errors when an unsuccessfull logout exists.
-      return;
-    });
+export const login           = (token, email) => { 
+  localStorage.setItem(USER_EMAIL, email);
+  localStorage.setItem(TOKEN_KEY, token);
 };
 
 const useStyles = theme => ({
@@ -84,7 +67,7 @@ const useStyles = theme => ({
   }
 });
 
-class LoginComponent extends Component{
+class Login extends Component{
   // REACT Session state object
   state = {
     // Email info
@@ -97,8 +80,10 @@ class LoginComponent extends Component{
       content: "",
       error: ""
     },
-    authError: 0
+    authError: 0,
+    loading: false
   };
+  
 
   // [Summary]: Handle login form data.
   handleSubmit = (event,form) => {
@@ -124,6 +109,9 @@ class LoginComponent extends Component{
     data.append('email', this.state.email.content);
     data.append('psw', this.state.psw.content);
     
+    // 2.1. Show loading component 
+    this.setState({loading: true})
+    
     // 3. Request or send, in an asynchronous manner, data into a backend service.
     fetch('/user/login', {method:'post', body: data}).then(res => res.json()).then(data => {
       // Debug only: console.log(JSON.stringify(data));
@@ -133,9 +121,9 @@ class LoginComponent extends Component{
           // Reset authentication error flag.
           this.setState({authError: 0}) 
           // Store the authentication token - Available on the response JSON object that is returned by the backend service.
-          login(data['/user/login']['token']);
+          login(data['/user/login']['token'], data['/user/login']['email']);
           console.log(data['/user/login']['token']);
-          // window.location.reload(false);
+          window.location.reload(false);
           break;
         }
         // 'Houston, we have a problem'.
@@ -157,6 +145,9 @@ class LoginComponent extends Component{
     //
     return(
       <div className={classes.paper}>
+        
+        <Loading open={this.state.loading}></Loading>
+
         <Alert severity="error" style={this.state.authError ? {} : { display: 'none' }}>
           There was an error with your credentials. Please try again.
         </Alert>
@@ -183,4 +174,4 @@ class LoginComponent extends Component{
 }
 
 
-export default withStyles(useStyles)(LoginComponent)
+export default withStyles(useStyles)(Login)

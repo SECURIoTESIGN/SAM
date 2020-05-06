@@ -28,10 +28,10 @@ import {AccountCircle, LockOutlined} from '@material-ui/icons';
 import {Tabs, Tab, Grid, Box, Typography, makeStyles} from '@material-ui/core'
 import PropTypes from 'prop-types';
 // SAM's component
-import LoginComponent from '../components/LoginComponent'
-import RegisterComponent from '../components/RegisterComponent'
+import Login from '../components/Login'
+import Register from '../components/Register'
 
-export default class AuthContainer extends Component{
+export default class Auth extends Component{
   // REACT Session state object
   state = {
     tabValue: 0
@@ -74,10 +74,10 @@ export default class AuthContainer extends Component{
           </Tabs>
           {/*Contents of each tab.*/}
           <this.TabPanel  justify="center" value={this.state.tabValue} index={0}>
-              <LoginComponent/>
+              <Login/>
           </this.TabPanel>
           <this.TabPanel value={this.state.tabValue} index={1}>
-              <RegisterComponent/>
+              <Register/>
           </this.TabPanel>
         </Paper>
         </Box>

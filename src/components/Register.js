@@ -27,7 +27,7 @@ import {Button, Text, TextField, FormControlLabel, Checkbox, Link, Grid, makeSty
 import { withStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
-import RecaptchaComponent from './RecaptchaComponent';
+import Recaptcha from './Recaptcha';
 
 const useStyles = theme => ({
   paper: {
@@ -57,7 +57,7 @@ const useStyles = theme => ({
   }
 });
 
-class RegisterComponent extends Component{
+class Register extends Component{
   recaptchaRef = React.createRef();
   // REACT Session state object
   state = {
@@ -81,7 +81,7 @@ class RegisterComponent extends Component{
       return;
     }
     if (!require("email-validator").validate(this.state.email)){
-      this.setState({formError: "You must supply a valid password to register a new account."});
+      this.setState({formError: "You must supply a valid email to register a new account."});
       return;
     }
     // 2. Let's create the JSON object to be sent to a backend service.
@@ -152,7 +152,7 @@ class RegisterComponent extends Component{
                    label="Password" type="password" autoComplete="current-password" fullWidth required
                    onChange={(event) => {this.setState({psw: event.target.value})}} />
         
-        <RecaptchaComponent ref={this.recaptchaRef}/>  
+        <Recaptcha ref={this.recaptchaRef}/>  
 
         <Button type="submit" variant="contained" color="primary" className={classes.submit} fullWidth>Sign up</Button>
         </form>
@@ -163,4 +163,4 @@ class RegisterComponent extends Component{
 }
 
 
-export default withStyles(useStyles)(RegisterComponent)
+export default withStyles(useStyles)(Register)

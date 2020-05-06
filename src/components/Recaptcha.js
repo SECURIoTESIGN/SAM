@@ -28,7 +28,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 const LOCALHOST_SITE_KEY = "6LcLdO8UAAAAAGV--DAJa6NUFfoa8Y7b53u95amY";
 const DELAY = 1500;
 
-class RecaptchaComponent extends Component {
+class Recaptcha extends Component {
   constructor(props, ...args) {
     super(props, ...args);
     this.state = {
@@ -63,4 +63,4 @@ class RecaptchaComponent extends Component {
   }
 };
 
-export default RecaptchaComponent;
+export default Recaptcha;

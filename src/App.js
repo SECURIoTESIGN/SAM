@@ -26,16 +26,18 @@ import React,{useEffect} from 'react';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Dialog from '@material-ui/core/Dialog';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import {Button} from '@material-ui/core'
-import { isAuthenticated } from './components/LoginComponent';
-import { logout } from './components/LoginComponent';
+import { isAuthenticated } from './components/Login';
 import { makeStyles } from '@material-ui/core/styles';
-import Backdrop from '@material-ui/core/Backdrop';
 
-// SAM's components
-import AuthContainer from './containers/AuthContainer'
+import Account from './components/Account'
+
+// SAM's components and containers
+import Auth from './containers/Auth'
+import SAM from './containers/SAM'
 //
+import Loading from './components/Loading'
+import Logout from './components/Logout';
 import './App.css';
 
 // Check if SAM server is reachable
@@ -64,20 +66,20 @@ function App(){
   if (!isAuthenticated()){
     return(
       <div>
+        <Loading open={false}></Loading>
         {/*
         <Backdrop className={classes.backdrop} open={true}>
           <CircularProgress color="inherit" />
         </Backdrop>
         */}
-        <AuthContainer/>
+        <Auth/>
       </div>
     );
   }else{
     return(
-      <div>
-        User Authenticated (Temporary place holder)
-        <Button variant="contained" color="primary" onClick={logout} fullWidth>Sign Out</Button>
-      </div> 
+      <React.Fragment>
+        <SAM/>
+      </React.Fragment>
     );
   }
 }
