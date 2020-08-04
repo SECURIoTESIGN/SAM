@@ -23,19 +23,17 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
-import {Paper} from '@material-ui/core';
-import {AccountCircle, LockOutlined} from '@material-ui/icons';
-import {Tabs, Tab, Grid, Box, Typography, makeStyles} from '@material-ui/core'
+import {Tabs, Tab, Grid, Box, Typography, Paper, withStyles} from '@material-ui/core'
+import {AccountCircle as AccountIcon, LockOutlined as LockIcon} from '@material-ui/icons';
 import PropTypes from 'prop-types';
-// SAM's component
-import Login from '../components/Login'
-import Register from '../components/Register'
+/* Import SAM's styles, components, containers, and constants */
+import {useStyles} from './AuthenticationStyles'
+import LoginComponent from '../components/Login'
+import RegisterComponent from '../components/Register'
 
-export default class Auth extends Component{
-  // REACT Session state object
-  state = {
-    tabValue: 0
-  };
+class Authentication extends Component{
+  /* REACT Session state object */
+  state = {tabValue: 0};
 
   TabPanel = (props) => {
     this.TabPanel.propTypes = {
@@ -43,7 +41,7 @@ export default class Auth extends Component{
       index: PropTypes.any.isRequired,
       value: PropTypes.any.isRequired,
     };
-    const { children, value, index, ...other } = props;
+    const { children, index } = props;
     return(
       <Typography component="div" role="tabpanel">
         <Box hidden={this.state.tabValue !== index}>{children}</Box>
@@ -51,33 +49,30 @@ export default class Auth extends Component{
     );
   } 
 
-  // [Summary]: Handle tab change.
+  /* [Summary]: Handle tab change. */
   handleChange = (event, newValue) => {
-    // Debug only: console.log('New Tab Value:', newValue);
     this.setState({tabValue: newValue})
   }
 
   render(){
-    //
+    const {classes} = this.props;
     return (
-      <Grid container spacing={0} direction="column" alignItems="center"
-            justify="center" style={{ minHeight: '100vh',}}>
+      <Grid container spacing={0} direction="column" alignItems="center" justify="center" className={classes.root}>
         <Box width="30%" mx="auto" height="50%"> 
-        <Paper square style={{display: "flex", flexDirection: "column",  maxWidth: 500, alignItems: "center"}}>
+        <Paper square className={classes.paper}>
           <Typography variant="h5" color="textPrimary"><b>SAM</b></Typography>  
           <Typography variant="h9" align="center" color="textSecondary">Security Advising Modules for Cloud, IoT, and Mobile Ecosystems</Typography>  
-          <img style={{flexGrow:"1", contentJustify:"center"}} src={process.env.PUBLIC_URL + '/logo.png'} />
-          
+          <img style={{flexGrow:"1", contentJustify:"center"}} alt="" src={process.env.PUBLIC_URL + '/logo.png'} />
           <Tabs value={this.state.tabValue} onChange={this.handleChange} variant="fullWidth" indicatorColor="secondary" textColor="secondary">
-            <Tab icon={<LockOutlined />} label="Login" />
-            <Tab icon={<AccountCircle />} label="Register" />
+            <Tab icon={<LockIcon />} label="Login" />
+            <Tab icon={<AccountIcon />} label="Register" />
           </Tabs>
           {/*Contents of each tab.*/}
           <this.TabPanel  justify="center" value={this.state.tabValue} index={0}>
-              <Login/>
+              <LoginComponent/>
           </this.TabPanel>
           <this.TabPanel value={this.state.tabValue} index={1}>
-              <Register/>
+              <RegisterComponent/>
           </this.TabPanel>
         </Paper>
         </Box>
@@ -86,3 +81,4 @@ export default class Auth extends Component{
   }
 }
 
+export default withStyles(useStyles)(Authentication)

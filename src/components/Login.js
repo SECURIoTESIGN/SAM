@@ -23,70 +23,36 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
-import {Button, Text, TextField, FormControlLabel, Checkbox, Link, Grid, makeStyles} from '@material-ui/core'
-import Alert from '@material-ui/lab/Alert';
+import {Button, TextField} from '@material-ui/core'
+import {Alert} from '@material-ui/lab';
 import { withStyles } from '@material-ui/core/styles';
-// SAM's components and containers
-import Loading from './Loading'
-//
-export const TOKEN_KEY = "@SAM-Token";
-export const USER_EMAIL = "@SAM-Email";
+/* Import SAM's styles, components, containers, and constants */
+import {useStyles} from './LoginStyles'
+import {TOKEN_KEY, USER_EMAIL} from '../helpers/AuthenticationHelper';
+import LoadingComponent from './Loading'
 
-export const isAuthenticated = () => localStorage.getItem(TOKEN_KEY) !== null;
-export const getToken        = () => localStorage.getItem(TOKEN_KEY);
-// Storing token in localStorage = Security risk ?
-export const login           = (token, email) => { 
-  localStorage.setItem(USER_EMAIL, email);
-  localStorage.setItem(TOKEN_KEY, token);
-};
-
-const useStyles = theme => ({
-  paper: {
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2),
-    alignItems: 'center'
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  text:{
-    '& p':{ 
-      color:'#f50357'
-    },
-  },
-  alertHidden:{
-    display:'none'
-  }
-});
 
 class Login extends Component{
-  // REACT Session state object
+   /* REACT Session state object */
   state = {
-    // Email info
-    email: {
-      content: "",
-      error: ""
-    },
-    // Password info
-    psw: {
-      content: "",
-      error: ""
-    },
-    authError: 0,
+    // Email informatiojn
+    email: {content: "",error: ""},   // Email information
+    psw: {content: "", error: ""},    // Password information
+    auth_error: 0,           
     loading: false
   };
   
-
-  // [Summary]: Handle login form data.
-  handleSubmit = (event,form) => {
+  /* 
+    [Summmary]: Store authentication token and email in local storage.
+    [Notes]: Security Risk ? 
+  */
+  login = (token, email) => { 
+    localStorage.setItem(USER_EMAIL, email);
+    localStorage.setItem(TOKEN_KEY, token);
+  };
+  
+  /* [Summary]: Handle login form data. */
+  handle_submit = (event,form) => {
     // Prevent premature reload of the current page.
     event.preventDefault();
     event.stopPropagation(); 
@@ -119,9 +85,9 @@ class Login extends Component{
         // 'It's alive! It's alive!'.
         case 200:{ 
           // Reset authentication error flag.
-          this.setState({authError: 0}) 
+          this.setState({auth_error: 0}) 
           // Store the authentication token - Available on the response JSON object that is returned by the backend service.
-          login(data['/user/login']['token'], data['/user/login']['email']);
+          this.login(data['/user/login']['token'], data['/user/login']['email']);
           console.log(data['/user/login']['token']);
           window.location.reload(false);
           break;
@@ -129,7 +95,7 @@ class Login extends Component{
         // 'Houston, we have a problem'.
         default:{ // not 200
           // Set authentication error flag.
-          this.setState({authError: 1})
+          this.setState({auth_error: 1})
           // 'Hasta la vista, baby'.
           break;
         }
@@ -144,15 +110,13 @@ class Login extends Component{
     const {classes} = this.props;
     //
     return(
-      <div className={classes.paper}>
-        
-        <Loading open={this.state.loading}></Loading>
-
-        <Alert severity="error" style={this.state.authError ? {} : { display: 'none' }}>
+      <div className={classes.root}>
+        <LoadingComponent open={this.state.loading}/>
+        <Alert severity="error" style={this.state.auth_error ? {} : { display: 'none' }}>
           There was an error with your credentials. Please try again.
         </Alert>
 
-        <form className={classes.form} onSubmit={this.handleSubmit} noValidate>
+        <form className={classes.form} onSubmit={this.handle_submit} noValidate>
         <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address"
                    autoComplete="email" autoFocus required fullWidth
                    onChange={(event) => {this.setState({email: {content: event.target.value}})}}

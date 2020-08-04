@@ -23,39 +23,11 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
-import {Button, Text, TextField, FormControlLabel, Checkbox, Link, Grid, makeStyles} from '@material-ui/core'
-import { withStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
-import Snackbar from '@material-ui/core/Snackbar';
+import {Button, TextField, Snackbar, withStyles} from '@material-ui/core'
+import {Alert} from '@material-ui/lab';
+/* Import SAM's styles, components, containers, and constants */
+import {useStyles} from './RegisterStyles'
 import Recaptcha from './Recaptcha';
-
-const useStyles = theme => ({
-  paper: {
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2),
-    alignItems: 'center'
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  // styling the HelperText
-  text:{
-    '& p':{
-      color:'#f50357'
-    },
-  },
-  alertHidden:{
-    display:'none'
-  }
-});
 
 class Register extends Component{
   recaptchaRef = React.createRef();
@@ -69,8 +41,8 @@ class Register extends Component{
     open: false
   };
 
-  // [Summary]: Handle signup registration form data.
-  handleSubmit = (event,form) => {
+  /* [Summary]: Handle signup registration form data. */
+  handle_submit = (event,form) => {
     // Prevent premature reload of the current page.
     event.preventDefault();
     event.stopPropagation(); 
@@ -92,7 +64,6 @@ class Register extends Component{
     j_obj['firstName']  = this.state.firstName;
     j_obj['lastName']   = this.state.lastName;
     j_obj['psw']        = this.state.psw;
-    // Debug only: console.log("INPUT:" + JSON.stringify(j_obj));
 
     // 3. Request or send, in an asynchronous manner, data into a backend service.
     fetch('/user', {method:'post', headers: {
@@ -114,8 +85,8 @@ class Register extends Component{
     //
   };
 
-  // [Summary]: Handle Snackbar close event.
-  handleClose = (event, reason) => {
+  /* [Summary]: Handle Snackbar close event */
+  handle_close = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -128,17 +99,17 @@ class Register extends Component{
     //
     return(
       <div>
-      <Snackbar open={this.state.open} autoHideDuration={3000} onClose={this.handleClose}>
-          <Alert onClose={this.handleClose} severity="success">
+      <Snackbar open={this.state.open} autoHideDuration={3000} onClose={this.handle_close}>
+          <Alert onClose={this.handle_close} severity="success">
           A new user was created successfully, redirecting to the authentication page.
           </Alert>
       </Snackbar>
-      <div className={classes.paper}>
+      <div className={classes.root}>
         <Alert severity="error" style={this.state.formError ? {} : { display: 'none' }}>
         {this.state.formError}
         </Alert>
 
-        <form className={classes.form} onSubmit={this.handleSubmit} noValidate>
+        <form className={classes.form} onSubmit={this.handle_submit} noValidate>
         <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email"
                    autoComplete="email" autoFocus required fullWidth
                    onChange={(event) => {this.setState({email: event.target.value})}} />

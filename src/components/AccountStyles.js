@@ -22,48 +22,33 @@
 //  from FCT/COMPETE/FEDER (Projects with reference numbers UID/EEA/50008/2013 and 
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
-import React, { Component } from 'react'
-import ReCAPTCHA from "react-google-recaptcha";
-import {console_log} from '../helpers/ToolsHelper';
-
-/* Google reCAPTCHA public site key */
-const LOCALHOST_SITE_KEY = "6LcLdO8UAAAAAGV--DAJa6NUFfoa8Y7b53u95amY";
-const DELAY = 1500;
-
-class Recaptcha extends Component {
-  constructor(props, ...args) {
-    super(props, ...args);
-    this.state = {
-      callback: "not fired",
-      value: "[empty]",
-      load: false,
-      expired: "false"
-    };
-    this._reCaptchaRef = React.createRef();
-  }
-  
-  /* [Summary]: Handle the reCAPTCHA submit event. */
-  handle_change = value => {
-    const DEBUG = false;
-    if (DEBUG) console_log("handle_change", "Captcha value="+value);
-    this.setState({ value });
-    // If value is then recaptcha is expired.
-    if (value === null) this.setState({ expired: "true" });
-  };
-
-  render() {
-    const { value, callback, load, expired } = this.state || {};
-    return (
-      <div>
-        <ReCAPTCHA
-            style={{display:"inline-block"}}
-            ref={this._reCaptchaRef}
-            sitekey={LOCALHOST_SITE_KEY}
-            onChange={this.handle_change}
-          />
-      </div>
-    );
-  }
-};
-
-export default Recaptcha;
+export const useStyles = theme => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(1, 2, 1),
+    alignItems: "center",
+    justify: "center",
+  },
+  form:{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: "center",
+    justify: "center"
+  },
+  text:{
+    width:"300px",
+    '& p':{ 
+      color:'#f50357'
+    },
+  },
+  avatar: {
+    align:'center',
+    width: theme.spacing(12),
+    height: theme.spacing(12),
+    backgroundColor: theme.palette.success.light,
+  },
+  submit: {
+    margin: theme.spacing(1, 0, 2),
+  },
+});

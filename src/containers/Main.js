@@ -22,48 +22,24 @@
 //  from FCT/COMPETE/FEDER (Projects with reference numbers UID/EEA/50008/2013 and 
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
-import React, { Component } from 'react'
-import ReCAPTCHA from "react-google-recaptcha";
-import {console_log} from '../helpers/ToolsHelper';
+import React, {Component} from 'react';
+import {withStyles} from '@material-ui/core'
+/* Import SAM's styles, components, containers, and constants */
+import SessionComponent from '../components/Session'
+import {useStyles} from './MainStyles'
 
-/* Google reCAPTCHA public site key */
-const LOCALHOST_SITE_KEY = "6LcLdO8UAAAAAGV--DAJa6NUFfoa8Y7b53u95amY";
-const DELAY = 1500;
-
-class Recaptcha extends Component {
-  constructor(props, ...args) {
-    super(props, ...args);
-    this.state = {
-      callback: "not fired",
-      value: "[empty]",
-      load: false,
-      expired: "false"
-    };
-    this._reCaptchaRef = React.createRef();
-  }
-  
-  /* [Summary]: Handle the reCAPTCHA submit event. */
-  handle_change = value => {
-    const DEBUG = false;
-    if (DEBUG) console_log("handle_change", "Captcha value="+value);
-    this.setState({ value });
-    // If value is then recaptcha is expired.
-    if (value === null) this.setState({ expired: "true" });
-  };
-
-  render() {
-    const { value, callback, load, expired } = this.state || {};
-    return (
-      <div>
-        <ReCAPTCHA
-            style={{display:"inline-block"}}
-            ref={this._reCaptchaRef}
-            sitekey={LOCALHOST_SITE_KEY}
-            onChange={this.handle_change}
-          />
+class Main extends Component{
+  render(){
+    const {classes} = this.props;
+    return(
+      <React.Fragment>
+      <div className={classes.root}>
+        {/* Session Component */}
+        <SessionComponent/>
       </div>
+      </React.Fragment>
     );
   }
-};
+}
 
-export default Recaptcha;
+export default withStyles(useStyles)(Main)

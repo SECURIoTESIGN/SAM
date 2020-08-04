@@ -23,14 +23,27 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
-import {Backdrop, CircularProgress} from '@material-ui/core';
+import {Twitter as TwitterIcon, Language as WebSiteIcon, GitHub as GitHubIcon} from '@material-ui/icons';
+import {withStyles, Typography, Divider} from '@material-ui/core';
+import {version} from "../../package.json";
+import {useStyles} from './FooterStyles';
 
-export default class Loading extends Component{
+class Footer extends Component{
   render(){
+    const {classes} = this.props;
     return(
-      <Backdrop style={{zIndex: 200, color: "#fff"}} open={this.props.open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <React.Fragment>
+      <div className={classes.root}>
+        <TwitterIcon variant="link" fontSize="small" style={{padding: "0 2 0", cursor: "pointer"}} color="disabled" onClick={() =>  window.open('https://twitter.com/SECURIoTESIGN','_blank')}/>
+        <WebSiteIcon variant="link" fontSize="small" style={{padding: "0 2 0", cursor: "pointer"}} color="disabled" onClick={() =>  window.open('http://lx.it.pt/securIoTesign/','_blank')}/>  
+        <GitHubIcon  variant="link" fontSize="small" style={{padding: "0 2 0", cursor: "pointer"}} color="disabled" onClick={() =>  window.open('https://github.com/SECURIoTESIGN/','_blank')}/>
+        &nbsp;<Divider orientation="vertical" flexItem/>&nbsp;
+        <Typography color="textSecondary" variant='subtitle2'>&nbsp;SAM&nbsp;</Typography>
+        <Typography color="textSecondary" variant='subtitle2'><b>{version}</b></Typography>
+      </div>
+      </React.Fragment>
     );
   }
 }
+
+export default withStyles(useStyles)(Footer)

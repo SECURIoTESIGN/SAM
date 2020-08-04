@@ -22,65 +22,46 @@
 //  from FCT/COMPETE/FEDER (Projects with reference numbers UID/EEA/50008/2013 and 
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
-import React,{useEffect} from 'react';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import Dialog from '@material-ui/core/Dialog';
-import {Button} from '@material-ui/core'
-import { isAuthenticated } from './components/Login';
-import { makeStyles } from '@material-ui/core/styles';
-
-import Account from './components/Account'
-
-// SAM's components and containers
-import Auth from './containers/Auth'
-import SAM from './containers/SAM'
-//
-import Loading from './components/Loading'
-import Logout from './components/Logout';
+// <!> Please, use PascalCase naming for file names and class names
+//     and snake case naming for variables and functions, except the name of props that should be camelCase. 
+// ---------------------------------------------------------------------------
+import React, { useState } from 'react';
 import './App.css';
+// Import SAM's little helpers
+import {isAuthenticated, is_user_admin, getAuthenticationToken, logoutNow} from './helpers/AuthenticationHelper';
+import {console_log} from './helpers/ToolsHelper'
+// Import SAM's containers
+import AuthenticationContainer from './containers/Authentication';
+import AdministrationContainer from './containers/Administration';
+import AppBarContainer from './containers/AppBar';
+import FooterContainer from './containers/Footer';
+import MainComponent from './containers/Main';
 
-// Check if SAM server is reachable
-const isReachable = () =>{
-// TODO!
-}
-
-const useStyles = makeStyles((theme) => ({
-  footer: {
-    padding: theme.spacing(3, 2),
-    marginTop: 'auto',
-    backgroundColor:
-      theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[800],
-  },
-  // Define the CSS for the loading backdrop
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
-  },
-}));
-
-// 'There's no place like home'
+// 'There's no place like home' This is considered to be the main container
+// We only use hooks here. 
 function App(){
-  const classes = useStyles();
-  isReachable();
-  if (!isAuthenticated()){
-    return(
-      <div>
-        <Loading open={false}></Loading>
-        {/*
-        <Backdrop className={classes.backdrop} open={true}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-        */}
-        <Auth/>
-      </div>
-    );
+  if (isAuthenticated()){
+    // User was successfully authenticated.
+    console_log("App", "Authentication Token: " + getAuthenticationToken());
+    if (is_user_admin(false)){
+      return(
+        <div style={{margin:0, padding:0, height: "100%",  display: "flex", flexDirection: "column"}}>
+          <div style={{flexBasis: "5%"}}><AppBarContainer/></div>
+          <div style={{flexBasis: "90%"}}><AdministrationContainer/></div>
+          <div style={{flexBasis: "5%"}}><FooterContainer/></div>
+        </div>
+      );
+    }else{
+      return(
+        <div style={{margin:0, padding:0, height: "100%",  display: "flex", flexDirection: "column"}}>
+          <div style={{flexBasis: "5%"}}><AppBarContainer/></div>
+          <div style={{flexBasis: "90%"}}><MainComponent/></div>
+          <div style={{flexBasis: "5%"}}><FooterContainer/></div>
+        </div>
+      );
+    }
   }else{
-    return(
-      <React.Fragment>
-        <SAM/>
-      </React.Fragment>
-    );
+    return(<AuthenticationContainer/>);
   }
 }
 

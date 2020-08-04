@@ -22,48 +22,23 @@
 //  from FCT/COMPETE/FEDER (Projects with reference numbers UID/EEA/50008/2013 and 
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
-import React, { Component } from 'react'
-import ReCAPTCHA from "react-google-recaptcha";
-import {console_log} from '../helpers/ToolsHelper';
 
-/* Google reCAPTCHA public site key */
-const LOCALHOST_SITE_KEY = "6LcLdO8UAAAAAGV--DAJa6NUFfoa8Y7b53u95amY";
-const DELAY = 1500;
-
-class Recaptcha extends Component {
-  constructor(props, ...args) {
-    super(props, ...args);
-    this.state = {
-      callback: "not fired",
-      value: "[empty]",
-      load: false,
-      expired: "false"
-    };
-    this._reCaptchaRef = React.createRef();
+/* [Summary]: Auxiliary method of get_tree_depth - Get the depth of a tree. */
+export const get_tree_depth_nodes = (node, depth) => {
+  if (node['children']){
+    for(let i=0; i < node['children'].length; i++){
+      depth = depth + 1;
+      let child = node['children'][i]
+      this.get_tree_depth_nodes(child, depth);
+    }
   }
-  
-  /* [Summary]: Handle the reCAPTCHA submit event. */
-  handle_change = value => {
-    const DEBUG = false;
-    if (DEBUG) console_log("handle_change", "Captcha value="+value);
-    this.setState({ value });
-    // If value is then recaptcha is expired.
-    if (value === null) this.setState({ expired: "true" });
-  };
+}
 
-  render() {
-    const { value, callback, load, expired } = this.state || {};
-    return (
-      <div>
-        <ReCAPTCHA
-            style={{display:"inline-block"}}
-            ref={this._reCaptchaRef}
-            sitekey={LOCALHOST_SITE_KEY}
-            onChange={this.handle_change}
-          />
-      </div>
-    );
+/* [Summary]: Get the depth of a tree. */
+export const get_tree_depth = (tree) => {
+  let depth= 0
+  for(let i=0; i < tree.length; i++){
+    this.get_tree_depth_nodes(tree[i], depth)
   }
-};
-
-export default Recaptcha;
+  return (depth)
+}

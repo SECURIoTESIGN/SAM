@@ -23,19 +23,18 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
-import {Slide, Container, Typography, TextField, Avatar, Button} from '@material-ui/core'
-import {Alert} from '@material-ui/lab';
-import {withStyles} from '@material-ui/core/styles';
-/* Import SAM's styles, components, containers, and constants */
+import {Dialog, DialogTitle, Slide, Container, Typography, TextField, Avatar, Button} from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles';
+// Import the styles of this component
 import {useStyles} from './AccountStyles'
+// Import SAM's components and containers
 import Loading from './Loading'
-import PopupComponent from './Popup';
+import Alert from '@material-ui/lab/Alert';
 import {TOKEN_KEY, USER_EMAIL} from '../helpers/AuthenticationHelper'
-//
 const Transition = React.forwardRef(function Transition(props, ref) {return <Slide direction="up" ref={ref} {...props} />;});
 
 class Account extends Component{
-   /* REACT Session state object */
+   // REACT Session state object
    state = {
     // Email info
     email: {content: "", new: "", error: ""},
@@ -45,14 +44,16 @@ class Account extends Component{
     lastName: {content: "", new: "", error: ""},
     // Password info
     psw: {new: "", error: ""},
+    // Generic
+    authError: 0,
     loading: false,
     // Dialog visibility control flag
     open: true, //
     avatar: "?",
-    form_error: "",
+    formError: "",
   };
 
-  /* [Summary]: Load user data from a backend service */
+  // [Summary]: Load user data from a backend service.
   componentDidMount(){
     // 1. Get stored data of the session 
     var email = localStorage.getItem(USER_EMAIL);
@@ -80,22 +81,22 @@ class Account extends Component{
             break;
           }
           default:{
-            this.setState({form_error: "Houston, we have a problem."});
+            this.setState({formError: "Houston, we have a problem."});
             break;
           }
         }
       }).catch(function() {
-        this.setState({form_error: "Houston, we have a problem."});
+        this.setState({formError: "Houston, we have a problem."});
         return;
       });
   }
 
   // [Summary]: Handle close/exit event of the dialog.
-  handle_close = (value) => { this.setState({open: false});};
-  handle_exited = (value) => { this.props.history.push('/') };
+  handleClose = (value) => { this.setState({open: false});};
+  handleExited = (value) => { this.props.history.push('/') };
   
   // [Summary]: Update user info, if fields are !=
-  handle_submit = (event, form) => {
+  handleSubmit = (event, form) => {
     // Prevent premature reload of the current page.
     event.preventDefault();
     event.stopPropagation();
@@ -134,7 +135,7 @@ class Account extends Component{
             return;
           }
           default:{ // 'Houston, we have a problem'.
-            this.setState({form_error: "Houston, we have a problem."});
+            this.setState({formError: "Houston, we have a problem."});
             break;
           }
         }
@@ -144,47 +145,50 @@ class Account extends Component{
   render(){
     const {classes} = this.props;
     return(
-      <React.Fragment>
+      <Dialog className={classes.root} onClose={this.handleClose} onExited={this.handleExited} aria-labelledby="simple-dialog-title" TransitionComponent={Transition} open={this.state.open}>
+      <DialogTitle>
+        <div className={classes.root}>
+          <Typography align="center" variant="title">
+            ACCOUNT INFORMATION
+          </Typography>
+        </div>
+      </DialogTitle>
       <Loading open={this.state.loading}></Loading>
-      <PopupComponent title="Account Management" onClose={this.handle_close} onExited={this.handle_exited} aria-labelledby="simple-dialog-title" TransitionComponent={Transition} open={this.state.open}>
-      <div className={classes.root}>
-        <Container component="main">
-          <Alert severity="error" style={this.state.form_error ? {} : { display: 'none' }}>
-          {this.state.form_error}
-          </Alert>
-          <form className={classes.form} onSubmit={this.handle_submit} noValidate>
-            <Avatar className={classes.avatar}>
-              <div style={{fontSize:60}}>{this.state.avatar}</div>
-            </Avatar>
-            <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address"
-                      autoComplete="email" fullWidth
-                      value={this.state.email.content}
-                      onChange={(event) => {this.setState({email: {new: event.target.value}})}}
-                      helperText= {this.state.email.error}
-                      />
-            <TextField className={classes.text} id="firstName" name="firstName" variant="outlined" margin="normal" label="First Name"
-                      autoComplete="email" fullWidth
-                      value={this.state.firstName.content}
-                      onChange={(event) => {this.setState({firstName: {new: event.target.value}})}}
-                      helperText= {this.state.firstName.error}
-                      />
-            <TextField className={classes.text} id="lastName" name="lastName" variant="outlined" margin="normal" label="Last Name"
-                      autoComplete="email" fullWidth
-                      value={this.state.lastName.content}
-                      onChange={(event) => {this.setState({lastName: {new: event.target.value}})}}
-                      helperText= {this.state.lastName.error}
-                      />
-            <TextField className={classes.text} width={10} id="psw" name="psw" variant="outlined" margin="normal" 
-                        label="New Password" type="password" autoComplete="new-password" fullWidth
-                        onChange={(event) => {this.setState({psw: {new: event.target.value}})}} 
-                        helperText= {this.state.psw.error}
-                      />
-            <Button type="submit" variant="contained" color="primary" className={classes.submit} fullWidth>Update</Button>
-          </form>
-        </Container>
-      </div>
-      </PopupComponent>
-      </React.Fragment>
+      <Container component="main">
+        <Alert severity="error" style={this.state.formError ? {} : { display: 'none' }}>
+        {this.state.formError}
+        </Alert>
+        <form className={classes.form} onSubmit={this.handleSubmit} noValidate>
+          <Avatar className={classes.avatar}>
+            <div style={{fontSize:60}}>{this.state.avatar}</div>
+          </Avatar>
+          <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address"
+                    autoComplete="email" fullWidth
+                    value={this.state.email.content}
+                    onChange={(event) => {this.setState({email: {new: event.target.value}})}}
+                    helperText= {this.state.email.error}
+                    />
+          <TextField className={classes.text} id="firstName" name="firstName" variant="outlined" margin="normal" label="First Name"
+                    autoComplete="email" fullWidth
+                    value={this.state.firstName.content}
+                    onChange={(event) => {this.setState({firstName: {new: event.target.value}})}}
+                    helperText= {this.state.firstName.error}
+                    />
+          <TextField className={classes.text} id="lastName" name="lastName" variant="outlined" margin="normal" label="Last Name"
+                    autoComplete="email" fullWidth
+                    value={this.state.lastName.content}
+                    onChange={(event) => {this.setState({lastName: {new: event.target.value}})}}
+                    helperText= {this.state.lastName.error}
+                    />
+          <TextField className={classes.text} width={10} id="psw" name="psw" variant="outlined" margin="normal" 
+                      label="New Password" type="password" autoComplete="new-password" fullWidth
+                      onChange={(event) => {this.setState({psw: {new: event.target.value}})}} 
+                      helperText= {this.state.psw.error}
+                    />
+          <Button type="submit" variant="contained" color="primary" className={classes.submit} fullWidth>Update</Button>
+        </form>
+      </Container>
+      </Dialog>
     );
   }
 }
