@@ -254,11 +254,11 @@ class Selection extends Component{
     let actions = [];
     // Set table action buttons.
     if (this.props.select){
-      actions={
+      actions.push({
         icon: 'library_add',
         tooltip: 'Select',
         onClick: (event, rowData) => this.props.onSelect(rowData)
-      }
+      });
     }
     if (this.props.edit){
       actions.push({

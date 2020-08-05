@@ -23,22 +23,20 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 // <!> Please, use PascalCase naming for file names and class names
-//     and snake case naming for variables and functions, except the name of props that should be camelCase. 
+//     and snake case naming for variables and functions, except the name of props that could be camelCase. 
 // ---------------------------------------------------------------------------
 import React, { useState } from 'react';
 import './App.css';
-// Import SAM's little helpers
+/* Import SAM's styles, components, containers, and constants */
 import {isAuthenticated, is_user_admin, getAuthenticationToken, logoutNow} from './helpers/AuthenticationHelper';
 import {console_log} from './helpers/ToolsHelper'
-// Import SAM's containers
 import AuthenticationContainer from './containers/Authentication';
 import AdministrationContainer from './containers/Administration';
 import AppBarContainer from './containers/AppBar';
 import FooterContainer from './containers/Footer';
 import MainComponent from './containers/Main';
 
-// 'There's no place like home' This is considered to be the main container
-// We only use hooks here. 
+// 'There's no place like home' - This is considered to be the main container. Be aware, that hooks are only used here.
 function App(){
   if (isAuthenticated()){
     // User was successfully authenticated.

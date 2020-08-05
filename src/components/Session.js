@@ -24,6 +24,7 @@
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
 import {withStyles, List, ListItem, ListItemText, TextField, Button, Slide, Card, CardContent, CardActions, Typography, Grid, Avatar, Fade} from '@material-ui/core';
+import {Alert} from '@material-ui/lab';
 import {Save as SaveIcon} from '@material-ui/icons';
 import {useStyles} from './SessionStyles';
 import {getUserData} from '../helpers/AuthenticationHelper';
@@ -185,12 +186,13 @@ class Session extends Component{
           case 404:{
             this.setState({loading: false}, () => {
               if (response[service_URL]['dependencies']){
+                console.log("entrou")
                 let dep_display_names = "";
                 for(let i=0; i < response[service_URL]['dependencies'].length; i++){
                   let dep_module = (response[service_URL]['dependencies'][i])['module'];
                   dep_display_names.length == 0 ? dep_display_names = "'" + dep_module['displayname'] + "'": dep_display_names = dep_display_names + ", " + "'" + dep_module['displayname'] + "'";                  
                 }
-                this.setState({error_warning: "To get recommendations from the selected module you first need to answer questions to the following modules: " + dep_display_names})
+                this.setState({error_warning: "To get recommendations from the selected module you first need to answer questions to the following modules: " + dep_display_names +"."})
               }
             });
             break;
@@ -350,7 +352,9 @@ class Session extends Component{
       return(
         <React.Fragment>
           {/* List Modules */}
-          {this.state.error}
+          <PopupComponent open={this.state.error_warning} onClose={() => this.setState({error_warning: null})}>
+            <Alert severity="warning">{this.state.error_warning}</Alert>
+          </PopupComponent>
           <LoadingComponent open={this.state.loading}/>
           <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
             Hi, I'm SAM

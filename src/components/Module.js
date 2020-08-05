@@ -225,10 +225,17 @@ class Module extends Component{
     if (this.state.module.logic)               obj_module['logic_filename'] = this.state.module.logic[0].name;
     
     // Form Validations
-    if (this.state.module.recommendations.length == 0 || this.state.module.fullname == null || this.state.module.displayname == null || this.state.module.shortname == null || this.state.module.tree == null){
+    if (this.state.module.fullname == null || this.state.module.displayname == null || this.state.module.shortname == null || this.state.module.tree == null){
       this.setState({form_error: "Fields 'Name', 'Display Name', 'Abbreviation', 'Questions and Answers', and 'Recommendations' are required to add a new module."});
       return
     }
+    if (this.state.module.recommendations.length == 0){
+      if (!this.state.module.logic){
+        this.setState({form_error: "'Recommendations' or a 'logic file' is required to add a new module."});
+        return
+      }
+    }
+
     // File type validation
     if (this.state.module.logic){
       if (obj_module['logic_filename'].substring(obj_module['logic_filename'].lastIndexOf('.')+1) != "py"){
@@ -318,6 +325,7 @@ class Module extends Component{
     [Notes]: Select component calback.
   */
   get_dependency_selection = (row_data) => {
+    
     let t_dependencies = this.state.module.dependencies
     let dependency = {}
     let module = {}  
@@ -325,23 +333,24 @@ class Module extends Component{
     module['fullname']     = row_data['fullname']
     dependency['module']   = module
     t_dependencies.push(dependency)
+    
     this.setState({module:{...this.state.module,dependencies: t_dependencies}})
   }
 
   /* [Summary]: Uploads a logic file, if requested. */
   upload_logic_file = (files, filename) => {
-    const DEBUG       = false;
-    let service_URL   = '/file/' + filename
-    let method_type   = 'POST';
+    const DEBUG        = true;
+    let service_URL    = '/file/' + filename
+    let method_type    = 'POST';
 
     // Let's upload some logic for this module
-    const formData    = new FormData()
-    formData.append('logic_file', files[0])
+    const data = new FormData()
+    data.append('file', files[0])
     console_log("upload_logic_file", "Logic file to be uploaded = '" + filename + "'");
     fetch(service_URL, {
       method: method_type, 
       headers: {'Authorization': getUserData()['token']},
-      body: formData
+      body: data
     })
     .then(response => response.json())
     .then(data => {
@@ -370,9 +379,9 @@ class Module extends Component{
         <LinkRecommendationsComponent tree={this.state.module.tree} onSave={this.store_recommendation}/>
       </PopupComponent>
 
-       {/* Dependency Modules Selection */}
-       <PopupComponent title="Link Dependencies (Modules)" open={this.state.open_dependencies} onClose={() => {this.setState({open_dependencies: false})}} TransitionComponent={Transition}>
-        <SelectionComponent type={"modules"} select={true} onSelect={this.get_dependency_selection}/>
+      {/* Dependency Modules Selection */}
+      <PopupComponent title="Link Dependencies (Modules)" open={this.state.open_dependencies} onClose={() => {this.setState({open_dependencies: false})}} TransitionComponent={Transition}>
+       <SelectionComponent type={"modules"} select={true} onSelect={this.get_dependency_selection}/>
       </PopupComponent>
 
       <Alert severity="error" style={this.state.form_error != null ? {} : { display: 'none' }}>
@@ -434,11 +443,13 @@ class Module extends Component{
             </td>
           </tr></tbody>
           
-          {/* Module's Tree */}
+          
           <tbody><tr>
+            {/* Module's Tree */}
             <td style={{paddingTop:10}}>
               <Button variant="contained" className={classes.button} color="default" onClick={() => {this.setState({open_tree: true})}} startIcon={<TreeIcon />} fullWidth> Add Questions and Answers</Button>    
             </td>
+            {/* Module's Logic */}
             <td style={{paddingTop:10}}>
               <label htmlFor="upload-logic">
                 <input style={{ display: 'none' }} id="upload-logic" name="upload-logic" type="file" onChange={(event) => this.setState({module: {...this.state.module, logic: event.target.files}})} />
