@@ -302,8 +302,7 @@ class Tree extends Component{
     const {classes} = this.props;
 
     // Let's get data to later compute suitable values of height and width for the container of the tree.
-    // Count the number of nodes of the tree in order to find a suitable size.
-    const count = getVisibleNodeCount({treeData:this.state.treeData})
+    const count = getVisibleNodeCount({treeData:this.state.treeData}) // Count the number of nodes of the tree in order to find a suitable size.
     const max_depth = this.get_max_depth();
     const padding = 15;
     const max_height     = 600; // Set the maximum height that the tree can grow inside the table cell.
@@ -318,7 +317,7 @@ class Tree extends Component{
        <LoadingComponent open={this.state.loading}/>    
        <PopupComponent title={this.state.type == 'answer' ? 'Stored Answers' : 'Stored Questions'} open={this.state.open} onClose={this.handleClose} aria-labelledby="simple-dialog-title" TransitionComponent={Transition}>
           {this.state.type == 'answer' ?
-            (<SelectionComponent title="" onSelect={this.get_selected_data} type={"answers"}/>) : (<SelectionComponent title="" select={true} onSelect={this.get_Module_Data} type={"questions"}/>)
+            (<SelectionComponent title="" select={true} onSelect={this.get_selected_data} type={"answers"}/>) : (<SelectionComponent title="" select={true} onSelect={this.get_Module_Data} type={"questions"}/>)
           }
       </PopupComponent>
       <table border="0">

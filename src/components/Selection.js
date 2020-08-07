@@ -70,6 +70,9 @@ class Selection extends Component{
       case 'recommendations':
         this.fetch_recommendations(); /* TODO */
         break;
+      case 'sessions':
+        this.fetch_sessions();
+        break;
       default:
         break;
     }
@@ -78,6 +81,59 @@ class Selection extends Component{
   /* TODO */
   fetch_recommendations = () => {
 
+  }
+
+  fetch_sessions = () => {
+    const DEBUG=false;
+    let service_URL = '/sessions/user/' + getUserData()['email'];
+    let method_type = 'GET';
+    let token      = getUserData()['token'];
+    fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
+        // debug only: 
+        if (DEBUG) console_log("fetch_sessions", "Response: " + JSON.stringify(response[service_URL]));
+        switch (response[service_URL]['status']){
+          case 200:{
+            let results = []
+            let columns = [];
+            columns.push({title: 'ID', field: "rid", hidden: true, width: 'auto'});
+            columns.push({title: "Module", field: "module", width: 'auto'});
+            columns.push({title: "Recommendations", field: "recommendations", width: 'auto'});
+            columns.push({title: "Date", field: "createdon", width: 'auto'});
+
+            let datas = [];
+            console.log(response[service_URL]['content'].length);
+            for(var i=0; i < response[service_URL]['content'].length; i++){
+              let session = response[service_URL]['content'][i];
+              // Only show closed sessions
+              if (session['ended'] !== 1 || !session['recommendations']) continue;
+              let session_module  = session['module'];
+             
+              let session_recommendations_str = "";
+              for (var j=0; j < session['recommendations'].length; j++)
+                session_recommendations_str == "" ? session_recommendations_str = session['recommendations'][j]['content'] : session_recommendations_str += ", " + session['recommendations'][j]['content'];
+              
+              console.log(session['id']);
+              console.log(session_module['displayname']);
+              console.log(session_recommendations_str);
+              console.log(session['createdOn']);
+              
+              // rid is the real ID of the session (from the database)
+              datas.push({id: i+i, rid: session['id'], module: session_module['displayname'], recommendations: session_recommendations_str, createdon: session['createdOn']}); 
+            }
+            
+            results.push(columns)
+            results.push(datas)
+            this.setState({data: results}, () => {
+              this.setState({loading: false});
+            })
+            break;
+          }
+          // 'Houston, we have a problem'.
+          default:{ // not 200
+            break;
+          }
+        }
+    }).catch(function() { return; });
   }
 
   /* [Summary]: Check if a row was previously selected. */
@@ -255,7 +311,7 @@ class Selection extends Component{
     // Set table action buttons.
     if (this.props.select){
       actions.push({
-        icon: 'library_add',
+        icon: 'launch',
         tooltip: 'Select',
         onClick: (event, rowData) => this.props.onSelect(rowData)
       });

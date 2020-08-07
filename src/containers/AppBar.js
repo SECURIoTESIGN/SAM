@@ -23,16 +23,18 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
-import {withStyles, AppBar as RAppBar, Button, Typography, Toolbar} from '@material-ui/core'
+import {withStyles, AppBar as RAppBar, Button, Typography, Toolbar, Divider} from '@material-ui/core'
+import {Reorder as SessionsIcon, Person as AccountIcon, ExitToApp as LogoutIcon} from '@material-ui/icons';
 import {Link as RouterLink, Route } from 'react-router-dom';
 import {MemoryRouter as Router } from 'react-router';
 import {getUserName} from '../helpers/UserHelper';
 /* Import SAM's styles, components, containers, and constants */
 import {useStyles} from './AppBarStyles';
-import {logoutNow} from '../helpers/AuthenticationHelper';
+import {logoutNow, is_user_admin} from '../helpers/AuthenticationHelper';
 import {SAMIcon} from '../helpers/IconMakerHelper';
 import AccountComponent from '../components/Account';
 import LoadingComponent from '../components/Loading';
+import MySessionsComponent from '../components/MySessions';
 
 class AppBar extends Component{
   /* REACT Session state object */
@@ -61,13 +63,21 @@ class AppBar extends Component{
         <Toolbar className={classes.toolbar}>
           <SAMIcon color="disabled" style={{padding:"0 3 0"}}/>
           <Typography variant="h6" className={classes.title}>SAM</Typography>
+          {!is_user_admin() ? (
           <Router>
             <div>
-              <Button variant="contained" component={RouterLink} color="textPrimary" to="/Account" className={classes.link}>Account</Button>
+              <Button variant="contained" component={RouterLink} color="textPrimary" to="/Sessions" startIcon={<SessionsIcon/>} className={classes.link}>My Sessions</Button>
+              <Route path="/Sessions" render={(props) => <MySessionsComponent {...props}  />} exact />
+            </div>
+          </Router>
+          ): undefined }
+          <Router>
+            <div>
+              <Button variant="contained" component={RouterLink} color="textPrimary" to="/Account" startIcon={<AccountIcon/>} className={classes.link}>Account</Button>
               <Route path="/Account" render={(props) => <AccountComponent {...props} setLogout={this.setLogout} />} exact />
             </div>
           </Router>
-          <Button variant="contained" color="primary" onClick={() => {this.setState({loading: true}, () => logoutNow())}} >Sign Out</Button>
+          <Button variant="contained" color="primary" startIcon={<LogoutIcon/>} onClick={() => {this.setState({loading: true}, () => logoutNow())}} >Sign Out</Button>
         </Toolbar>
       </RAppBar>
       </div>

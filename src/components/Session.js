@@ -29,8 +29,10 @@ import {Save as SaveIcon} from '@material-ui/icons';
 import {useStyles} from './SessionStyles';
 import {getUserData} from '../helpers/AuthenticationHelper';
 import {console_log} from '../helpers/ToolsHelper';
-import PopupComponent from './Popup'
-import LoadingComponent from './Loading'
+import PopupComponent from './Popup';
+import LoadingComponent from './Loading';
+import MyRecommendationsComponent from './MyRecommendations';
+
 //
 const Transition = React.forwardRef(function Transition(props, ref) {return <Slide direction="up" ref={ref} {...props} />;});
 //
@@ -62,7 +64,7 @@ class Session extends Component{
     [Notes]: If this module has some kind of logic, to reach a recommendation, the logic file will be executed on the backend.
   */
   end_session = () => {
-    const DEBUG = false;
+    const DEBUG = true;
     let service_URL = '/session/' + this.state.session.id + "/end";
     let method_type = 'PUT';
     this.setState({loading: true}); // Set the loading state
@@ -71,12 +73,12 @@ class Session extends Component{
       'Authorization': getUserData()['token'],
       'Content-Type': 'application/json'
       }}).then(res => res.json()).then(response => {
-        if (DEBUG) console_log("end_session", JSON.stringify(response[service_URL]));
+        if (DEBUG) console_log("end_session", JSON.stringify(response));
         switch (response[service_URL]['status']){
           // Code 200 - 'It's alive! It's alive!'.
           case 200:{
             // Store the recommendations
-            this.setState({loading: false, session:{...this.state.session, recommendations: response[service_URL]['content'], open_recommendations: true}}, () => {
+            this.setState({loading: false, session:{...this.state.session, recommendations: response[service_URL]['recommendations'], open_recommendations: true}}, () => {
               if (DEBUG) console_log("end_session", "List of recommendations given after all question were made : " + JSON.stringify(this.state.session.recommendations));
             });
 
@@ -378,6 +380,7 @@ class Session extends Component{
         </React.Fragment>
       );
     }
+
     // If the user is in a session then is ready to answer questions.
     if (this.state.session.module){
       // Check if a question was assigned to be answered by the user.
@@ -388,24 +391,7 @@ class Session extends Component{
             {/* Recommendations Popup */}
             {this.state.session.recommendations ? (
             <PopupComponent title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload(true)}} TransitionComponent={Transition}>
-              <Grid container spacing={2}>
-              {this.state.session.recommendations.map((recommendation, index) => 
-                <Grid item><Grid container>
-                  <Card variant="outlined" className={classes.card}>
-                    <CardContent>
-                      <Typography variant="h5" component="h2">{recommendation['recommendation']}</Typography>
-                      <Typography variant="body2" component="p">{recommendation['recommendation_description']}</Typography>
-                    </CardContent>
-                    <CardActions>
-                      {recommendation['guide_filename'] ? (
-                      <Button size="small" color="primary" onClick={(event) => this.fetch_guide(event, recommendation['recommendation'], recommendation['guide_filename'])}>Learn More</Button>)
-                      : undefined
-                      }
-                  </CardActions>
-                  </Card>
-                </Grid></Grid>
-              )}
-              </Grid>
+              <MyRecommendationsComponent recommendations={this.state.session.recommendations}/>
             </PopupComponent>) : undefined}
             
             <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
