@@ -24,7 +24,7 @@
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
 import {withStyles, Typography, Slide, Button}  from '@material-ui/core';
-import {Save as SaveIcon, Widgets as ModulesIcon, DeleteSweep as DeleteSweepIcon, FormatListNumbered} from '@material-ui/icons';
+import {Save as SaveIcon, Widgets as ModulesIcon, DeleteSweep as DeleteSweepIcon} from '@material-ui/icons';
 import {Alert} from '@material-ui/lab';
 import {useStyles} from './ManageModulesStyles';
 /* Import SAM's styles, components, containers, and constants */

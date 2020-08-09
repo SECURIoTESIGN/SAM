@@ -43,7 +43,10 @@ class Popup extends Component{
           <DialogTitle className={classes.header} color="disabled" id="form-dialog-title">
             <table cellPadding="0" cellSpacing="0">
             <tbody><tr>
-              <td><SAMIcon color="disabled" style={{padding:"3 5 0"}}/></td>
+              <td style={{padding: "3 5 0"}}>
+                {/* Set the icon of the Popup */}
+                {this.props.popupIcon ? this.props.popupIcon : (<SAMIcon color="disabled"/>)}
+              </td>
               <td><Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>{this.props.title}</Typography></td>
             </tr></tbody>
             </table>

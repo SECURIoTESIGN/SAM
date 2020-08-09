@@ -24,16 +24,19 @@
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
 import {withStyles, List, ListItem, ListItemIcon, ListItemText, Collapse} from '@material-ui/core'
-import {Group as GroupIcon, QuestionAnswer as QuestionsAnswersIcon, SpeakerNotes as RecommendationsIcon, Layers as TypesIcon, Reorder as ManageIcon, Group as UsersIcon, Dashboard as DashboardIcon, Settings as SettingsIcon, Widgets as ModulesIcon, ViewModule as OthersIcon, ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon} from '@material-ui/icons';
+import {Group as GroupIcon, QuestionAnswer as QuestionsAnswersIcon, Assignment as RecommendationsIcon, Layers as TypesIcon, Reorder as ManageIcon, Group as UsersIcon, Dashboard as DashboardIcon, Settings as SettingsIcon, Widgets as ModulesIcon, ViewModule as OthersIcon, ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon} from '@material-ui/icons';
 import {useStyles} from './AdministrationStyles'
 /* Import SAM's styles, components, containers, and constants */
-import ManageModulesComponent from '../components/ManageModules'
+import ManageModulesComponent from '../components/ManageModules';
+import ManageRecommendationsComponent from '../components/ManageRecommendations';
 
 class Administration extends Component{
   state = {
     showUsersOptions: false,    // Show list items of user options.
     showModulesOptions: false,  // Show list items of modules.
-    manage_modules: true,       // For now, this is default component to be shown. 
+    manage_modules: false,       // For now, this is default component to be shown. 
+    manage_recommendations: true,
+
   }
   select_options(option){ this.setState({ [option]: true})}
   //
@@ -105,8 +108,9 @@ class Administration extends Component{
                   <ListItemText primary="Types"/>
                 </ListItem>
               </List>
+              {/* RECOMMENDATIONS */}
               <List component="div" disablePadding>
-                <ListItem button className={classes.nested}>
+                <ListItem button className={classes.nested} onClick={(event) => {this.select_options("manage_recommendations")}}>
                   <ListItemIcon>
                     <RecommendationsIcon/>
                   </ListItemIcon>
@@ -137,6 +141,7 @@ class Administration extends Component{
           <div style={{padding: 20}}>
             <div className={classes.main}>
               {this.state.manage_modules ? <ManageModulesComponent/> : undefined}
+              {this.state.manage_recommendations ? <ManageRecommendationsComponent/> : undefined }
             </div>
           </div>
         </div>

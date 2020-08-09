@@ -30,6 +30,19 @@ export const short_string = (value, limit) => {
   return(s_short);
 }
 
+/* fetch with timeout (experimental)
+to use 
+import fetch from "./ToolsHelper"
+export default function (url, options, timeout = 7000) {
+  return Promise.race([
+      fetch(url, options),
+      new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), timeout)
+      )
+  ]);
+}
+*/
+
 /* [Summary]: Write a custom message to the console. */
 export const console_log = (function_name, message) => {
   console.log("[SAM] " + function_name + "() => " + message);

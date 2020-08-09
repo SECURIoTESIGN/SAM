@@ -25,6 +25,8 @@
 import React, {Component} from 'react';
 import {Slide, Container, Typography, TextField, Avatar, Button} from '@material-ui/core'
 import {Alert} from '@material-ui/lab';
+import {Reorder as SessionsIcon, Assignment as RecommendationsIcon} from '@material-ui/icons';
+
 import {withStyles} from '@material-ui/core/styles';
 /* Import SAM's styles, components, containers, and constants */
 import {useStyles} from './MySessionsStyles';
@@ -82,11 +84,11 @@ class MySessions extends Component{
     return(
       <React.Fragment>
         <LoadingComponent open={this.state.loading}/>
-        <PopupComponent title="My Sessions" onClose={() => this.setState({open: false})} onExited={() => this.props.history.push('/')} aria-labelledby="simple-dialog-title" TransitionComponent={Transition} open={this.state.open}>
+        <PopupComponent popupIcon={<SessionsIcon color="disabled" />} title="My Sessions" onClose={() => this.setState({open: false})} onExited={() => this.props.history.push('/')} aria-labelledby="simple-dialog-title" TransitionComponent={Transition} open={this.state.open}>
           <SelectionComponent select={true} onSelect={this.show_recommendations}  title="" type={"sessions"}/>
         </PopupComponent>
         {this.state.recommendations ? (
-        <PopupComponent title="My Recommendations" open={this.state.open_recommendations} onClose={() => this.setState({open_recommendations: false})} TransitionComponent={Transition}>
+        <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.open_recommendations} onClose={() => this.setState({open_recommendations: false})} TransitionComponent={Transition}>
           <MyRecommendationsComponent recommendations={this.state.recommendations}/>
         </PopupComponent>
         ) : undefined}

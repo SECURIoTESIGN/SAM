@@ -25,7 +25,7 @@
 import React, {Component} from 'react';
 import {withStyles, List, ListItem, ListItemText, TextField, Button, Slide, Card, CardContent, CardActions, Typography, Grid, Avatar, Fade} from '@material-ui/core';
 import {Alert} from '@material-ui/lab';
-import {Save as SaveIcon} from '@material-ui/icons';
+import {Save as SaveIcon, Assignment as RecommendationsIcon} from '@material-ui/icons';
 import {useStyles} from './SessionStyles';
 import {getUserData} from '../helpers/AuthenticationHelper';
 import {console_log} from '../helpers/ToolsHelper';
@@ -213,6 +213,13 @@ class Session extends Component{
     const DEBUG = false;
     if (DEBUG && answer)  console_log("handle_answer_selection", "answer selected :" + JSON.stringify(answer['name']));
     if (DEBUG && !answer) console_log("handle_answer_selection", "answer inputted :" + JSON.stringify(this.state.session.tmp));
+
+    // Validation of an answer directly inputted by the user. 
+    if (!answer && !this.state.session.tmp){
+      this.setState({error_warning: 'To continue, you need to provide a valid answer.'})
+      return;
+    }
+
     // if (DEBUG && answer['children'])  console_log("handle_answer_selection", "Number of children : " + answer['children'].length);
     this.setState({loading: true}); // Set the loading state
     /*
@@ -388,9 +395,13 @@ class Session extends Component{
         return(
           <React.Fragment>
             <LoadingComponent open={this.state.loading}/>
+            {/* Warning error popup */}
+            <PopupComponent open={this.state.error_warning} onClose={() => this.setState({error_warning: null})}>
+              <Alert severity="warning">{this.state.error_warning}</Alert>
+            </PopupComponent>
             {/* Recommendations Popup */}
             {this.state.session.recommendations ? (
-            <PopupComponent title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload(true)}} TransitionComponent={Transition}>
+            <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload(true)}} TransitionComponent={Transition}>
               <MyRecommendationsComponent recommendations={this.state.session.recommendations}/>
             </PopupComponent>) : undefined}
             

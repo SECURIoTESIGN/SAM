@@ -24,8 +24,18 @@
 // ---------------------------------------------------------------------------
 export const useStyles = theme => ({
   root: {
-    border: `1px solid ${theme.palette.divider}`,
-    maxWidth: "100%",
-    minWidth: 750,
+    display: 'flex', 
+    flexDirection: 'column'
   },
+  title:{
+    fontWeight: 'bold', 
+    fontSize: 17,
+    textTransform: 'uppercase',
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
+  delete: {
+    padding: 5,
+    maxWidth: 500,
+  }
+
 });

@@ -68,7 +68,7 @@ class Selection extends Component{
         this.fetch_questions_answers();
         break;
       case 'recommendations':
-        this.fetch_recommendations(); /* TODO */
+        this.fetch_recommendations(); 
         break;
       case 'sessions':
         this.fetch_sessions();
@@ -78,11 +78,54 @@ class Selection extends Component{
     }
   }
 
-  /* TODO */
+  /* [Summary]: Fetch the list of recommendations, using a backend service, to populate the table. */
   fetch_recommendations = () => {
-
+    const DEBUG = false;
+    let service_URL = '/recommendations';
+    let method_type = 'GET';
+    let token      = getUserData()['token'];
+    fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
+        if (DEBUG) console_log("fetch_modules()", "Response: " + JSON.stringify(response[service_URL]));
+        switch (response[service_URL]['status']){
+          case 200:{
+            let results = [];
+            let columns = [];
+            columns.push({title: "ID", field: "rid", width: 'auto'});
+            columns.push({title: "Recommendation", field: "content", width: 'auto'});
+            columns.push({title: "Modules", field: "modules", width: 'auto'});
+            columns.push({title: "Guide", field: "guide", type: 'boolean', width: 'auto'});
+            
+            //
+            let data = [];  
+            for(var i=0; i < response[service_URL]['content'].length; i++){
+              let recommendation = response[service_URL]['content'][i];
+              
+              let modules_str = "-";
+              for(var j=0; j < recommendation['modules'].length; j++)
+                modules_str === "-" ? modules_str = recommendation['modules'][j]['displayname'] : modules_str += ", " + recommendation['modules'][j]['displayname'];
+              
+              recommendation['guide'] ?
+                data.push({id: i+1, rid: recommendation['id'], content: recommendation['content'], guide: true, modules: modules_str}) :
+                data.push({id: i+1, rid: recommendation['id'], content: recommendation['content'], guide: false, modules: modules_str});
+            }
+            
+            results.push(columns)
+            results.push(data)
+            this.setState({data: results}, () => {
+              this.setState({loading: false});
+            })
+            break;
+          }
+          // 'Houston, we have a problem'.
+          default:{ // not 200
+            this.setState({loading: false});
+            break;
+          }
+        }
+    }).catch(function() { return; });
   }
 
+  /* [Summary]: Fetch the list of sessions of a user, using a backend service, to populate the table. */
   fetch_sessions = () => {
     const DEBUG=false;
     let service_URL = '/sessions/user/' + getUserData()['email'];
@@ -130,6 +173,7 @@ class Selection extends Component{
           }
           // 'Houston, we have a problem'.
           default:{ // not 200
+            this.setState({loading: false});
             break;
           }
         }
@@ -182,6 +226,7 @@ class Selection extends Component{
           }
           // 'Houston, we have a problem'.
           default:{ // not 200
+            this.setState({loading: false});
             break;
           }
         }
@@ -222,6 +267,7 @@ class Selection extends Component{
           }
           // 'Houston, we have a problem'.
           default:{ // not 200
+            this.setState({loading: false});
             break;
           }
         }
@@ -261,6 +307,7 @@ class Selection extends Component{
           }
           // 'Houston, we have a problem'.
           default:{ // not 200
+            this.setState({loading: false});
             break;
           }
         }
@@ -299,6 +346,7 @@ class Selection extends Component{
           }
           // 'Houston, we have a problem'.
           default:{ // not 200
+            this.setState({loading: false});
             break;
           }
         }

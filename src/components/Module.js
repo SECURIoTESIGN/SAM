@@ -200,7 +200,7 @@ class Module extends Component{
     });
   }
 
-  /* [Summary]: Handle editing or adding a new module. */
+  /* [Summary]: Handles the process of editing or adding a new module. */
   add_edit_module = () =>{   
     const DEBUG=false;
     var service_URL = "/module";
@@ -270,9 +270,10 @@ class Module extends Component{
         switch (response[service_URL]['status']){
           // Code 200 - 'It's alive! It's alive!'.
           case 200:{
-            let final_logic_filename = "logic_" + response[service_URL]['id'] + ".py";
-            // this.setState({module:{...this.state.module, tree: response[service_URL]['tree']}});
-            this.upload_logic_file(this.state.module.logic, final_logic_filename);
+            if (this.state.module.logic){
+              let final_logic_filename = "logic_" + response[service_URL]['id'] + ".py";
+              this.upload_logic_file(this.state.module.logic, final_logic_filename);
+            }
             break; 
           }
           // Any other code - 'Houston, we have a problem'.
