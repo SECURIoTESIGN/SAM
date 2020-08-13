@@ -244,7 +244,7 @@ class Module extends Component{
       }
     }
 
-    if (DEBUG) console_log("add_edit_module()", "Object to be sent to the backend service: " + JSON.stringify(obj_module))
+    console_log("add_edit_module()", "Object to be sent to the backend service: " + JSON.stringify(obj_module))
     
     // Check if the user wants to edit a module or add a new one
     if (this.state.module.id){
@@ -371,7 +371,7 @@ class Module extends Component{
       <React.Fragment>
       <LoadingComponent open={this.state.loading}/>
       {/* Questions and Answers Tree*/}
-      <PopupComponent title="Link Questions" open={this.state.open_tree} onClose={() => {this.setState({open_tree: false})}} TransitionComponent={Transition}>
+      <PopupComponent title="Link Questions and Answers" open={this.state.open_tree} onClose={() => {this.setState({open_tree: false})}} TransitionComponent={Transition}>
         <TreeComponent {...(this.state.module.tree  && { data: this.state.module.tree })} {...(this.state.module.tree  && { module: this.state.module.id })} onSave={this.get_tree_data}/>
       </PopupComponent>
 

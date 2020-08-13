@@ -24,37 +24,43 @@
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
 import {Slide, Typography, Button} from '@material-ui/core'
-import {Assignment as RecommendationsIcon, DeleteSweep as DeleteIcon} from '@material-ui/icons';
+import {DeleteSweep as DeleteIcon} from '@material-ui/icons';
 import {Alert} from '@material-ui/lab';
 import {withStyles} from '@material-ui/core/styles';
 /* Import SAM's styles, components, containers, and constants */
+import {AnswerIcon} from '../helpers/IconMakerHelper';
+import {useStyles} from './ManageAnswersStyles';
 import {getUserData} from '../helpers/AuthenticationHelper';
 import {console_log} from '../helpers/ToolsHelper';
-import {useStyles} from './ManageRecommendationsStyles';
 import SelectionComponent from './Selection';
 import PopupComponent from './Popup';
-import RecommendationComponent from './Recommendation';
 import LoadingComponent from './Loading';
+import AnswerComponent from './Answer';
 //
 const Transition = React.forwardRef(function Transition(props, ref) {return <Slide direction="up" ref={ref} {...props} />;});
-
-class ManageRecommendations extends Component{
+//
+export const resource_name_singular = "answer";
+export const resource_name_plural   = "answers";
+//
+class ManageAnswers extends Component{
    /* REACT Session state object */
   state = {
     loading: false,
-    open_recommendation: false,
-    delete_recommendation: false,
-    selected_recommendation_id: null,
-  };
+    // Popups control flags.
+    open_add_edit: false,
+    open_delete: false,
+    // Resource ID selected to edit or remove.
+    selected_id: null,
+   };
 
 
-  /* [Summary]: Delete a recommendation using a backend service. */
-  handle_delete_recommendation = (event) => {
+  /* [Summary]: Delete the resource using a backend service. */
+  handle_delete = (event) => {
     const DEBUG = false;
-    if (DEBUG) console_log("handle_delete_recommendation()", "Recommendation id = " + this.state.selected_recommendation_id + " will be removed from the platform.");
-    this.setState({delete_recommendation: false, loading: true}, () => {
-      let service_URL = '/recommendation/' + this.state.selected_recommendation_id;
-      let method_type = 'DELETE';
+    let service_URL = '/answer/' + this.state.selected_id;
+    let method_type = 'DELETE';
+    if (DEBUG) console_log("handle_delete()", " ID Selected = " + this.state.selected_id + " will be removed from the platform.");
+    this.setState({open_delete: false, loading: true}, () => {
       // 'Let's make the magic happen'
       fetch(service_URL, {method:method_type, headers: {
         'Authorization': getUserData()['token'],
@@ -78,57 +84,56 @@ class ManageRecommendations extends Component{
   }
 
   render(){
+
     const {classes} = this.props;
     return(
       <React.Fragment>
         <LoadingComponent open={this.state.loading}/>
 
-        {/* Remove Recommendation */}
-        <PopupComponent style={{backgroundColor:"none !important"}} onClose={() => this.setState({delete_recommendation: false})} open={this.state.delete_recommendation}> 
+        {/* Remove the Selected Resource */}
+        <PopupComponent style={{backgroundColor:"none !important"}} onClose={() => this.setState({open_delete: false})} open={this.state.open_delete}> 
         <table className={classes.delete}>
           <tbody><tr>
             <td align="center">
-              <Alert severity="warning">Are you sure you want to remove this recommendation?</Alert>
+              <Alert severity="warning">Are you sure you want to remove this {resource_name_singular} ?</Alert>
             </td>
           </tr></tbody>
           <tbody><tr>
             <td >
               <Typography color="textSecondary" variant='subtitle2' align="justify">
-              <u>Be aware</u>, by removing a recommendation, further links to modules, questions, and answers will also be removed. Furthermore, sessions that are <u>only</u> linked to this recommendation will also be <u>permanently deleted</u>. 
+              <u>Be aware</u>, by removing an {resource_name_singular}, further existing links will also be removed. In particular, if there are sessions linked to the current {resource_name_singular}, those will be <u>permanently deleted.</u>
               </Typography>
             </td>
           </tr></tbody>
           <tbody><tr>
             <td>
-              <Button variant="contained"  onClick={(event) => this.handle_delete_recommendation(event)} color="secondary" startIcon={<DeleteIcon />} fullWidth>Remove Recommendation</Button>
+              <Button variant="contained"  onClick={(event) => this.handle_delete(event)} color="secondary" startIcon={<DeleteIcon />} fullWidth>Remove {resource_name_singular}</Button>
             </td>
           </tr></tbody>
         </table>
         </PopupComponent>
 
-        {/* Add or Edit a Recommendation */}
-        <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title={this.state.selected_recommendation_id ? "Edit Recommendation" : "Add Recommendation"}  
-                        open={this.state.open_recommendation} onClose={() => this.setState({open_recommendation: false})} TransitionComponent={Transition}>
-          <RecommendationComponent recommendation={this.state.selected_recommendation_id} onClose={() => window.location.reload(false)} />
+        {/* Add or Edit a Resource */}
+        <PopupComponent popupIcon={<AnswerIcon color="disabled"/>} title={this.state.selected_id ? "Edit " + resource_name_singular: "Add " + resource_name_singular} open={this.state.open_add_edit} onClose={() => this.setState({open_add_edit: false})} TransitionComponent={Transition}>
+          <AnswerComponent resource={this.state.selected_id} onClose={() => window.location.reload(false)} />
         </PopupComponent>
         
-        {/* Recommendations List */}
+        {/* Resource List */}
         <div className={classes.root}>
           <div className={classes.title}>
           {/* Header */}
           <table border="0">
           <tbody><tr>
-            <td><RecommendationsIcon color="disabled"/></td>
-            <td><Typography color="textPrimary" gutterBottom>Manage Recommendations</Typography></td>
+            <td><AnswerIcon color="disabled"/></td>
+            <td><Typography color="textPrimary" gutterBottom>Manage {resource_name_plural}</Typography></td>
           </tr></tbody>
           </table>
           </div>
           <SelectionComponent edit={true} delete={true} 
-            onDelete={(row_data) => this.setState({selected_recommendation_id: row_data['rid'], delete_recommendation:true})} 
-            onEdit={(row_data) =>  this.setState({selected_recommendation_id: row_data['rid'], open_recommendation: true})}  
-          
-            type={"recommendations"}/><br/>
-          <Button id="b_add_module" name="b_add_module" startIcon={<RecommendationsIcon/>} onClick={() => this.setState({open_recommendation: true, selected_recommendation_id: null})}  color="primary" variant="contained">Add New Recommendation</Button>
+            onDelete={(row_data) => this.setState({selected_id: row_data['rid'], open_delete:true})} 
+            onEdit={(row_data) =>  this.setState({selected_id: row_data['rid'], open_add_edit: true})}  
+            type={"answers"}/><br/>
+          <Button id="b_add_module" name="b_add_module" startIcon={<AnswerIcon/>} onClick={() => this.setState({open_add_edit: true, selected_id: null})}  color="primary" variant="contained">Add New {resource_name_singular}</Button>
         </div>
       </React.Fragment>
     );
@@ -136,4 +141,4 @@ class ManageRecommendations extends Component{
 }
 
 
-export default withStyles(useStyles)(ManageRecommendations)
+export default withStyles(useStyles)(ManageAnswers)

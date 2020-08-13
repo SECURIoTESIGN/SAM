@@ -22,129 +22,158 @@
 //  from FCT/COMPETE/FEDER (Projects with reference numbers UID/EEA/50008/2013 and 
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
+
 import React, {Component} from 'react';
-import {withStyles, List, ListItem, ListItemIcon, ListItemText, Collapse} from '@material-ui/core'
-import {Group as GroupIcon, QuestionAnswer as QuestionsAnswersIcon, Assignment as RecommendationsIcon, Layers as TypesIcon, Reorder as ManageIcon, Group as UsersIcon, Dashboard as DashboardIcon, Settings as SettingsIcon, Widgets as ModulesIcon, ViewModule as OthersIcon, ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon} from '@material-ui/icons';
-import {useStyles} from './AdministrationStyles'
+import {withStyles, List, ListItem, ListItemIcon, ListItemText, Collapse, Button, Typography} from '@material-ui/core'
+import {GroupWork as GroupsIcon, Assignment as RecommendationsIcon, Layers as TypesIcon, 
+  Group as UsersIcon, Dashboard as DashboardIcon, Settings as SettingsIcon, Dvr as ResourcesIcon,
+  Widgets as ModulesIcon, ViewModule as OthersIcon, ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon} from '@material-ui/icons';
+import {BrowserRouter,Switch,Route,Link, useLocation} from "react-router-dom";
 /* Import SAM's styles, components, containers, and constants */
+import {useStyles} from './AdministrationStyles'
+import {AnswerIcon, QuestionIcon} from '../helpers/IconMakerHelper';
 import ManageModulesComponent from '../components/ManageModules';
 import ManageRecommendationsComponent from '../components/ManageRecommendations';
+import ManageQuestionsComponent from '../components/ManageQuestions';
+import ManageAnswersComponent from '../components/ManageAnswers';
+import ManageTypesComponent from '../components/ManageTypes';
+import ManageGroupsComponent from '../components/ManageGroups';
+import DashboardComponent from '../components/Dashboard';
 
 class Administration extends Component{
   state = {
-    showUsersOptions: false,    // Show list items of user options.
-    showModulesOptions: false,  // Show list items of modules.
-    manage_modules: false,       // For now, this is default component to be shown. 
-    manage_recommendations: true,
-
+    toggle_resources: false,
   }
-  select_options(option){ this.setState({ [option]: true})}
+
   //
   render(){
-    console.log("[SAM]: Administration Container Loaded.");
     const {classes} = this.props;
     return(
       <React.Fragment>
-        <div className={classes.root}>
-          <div style={{width: '12%'}}>
-            <List component="nav" className={classes.list}>
-            {/* DASHBOARD */}
-            <ListItem button>
-              <ListItemIcon>
-                <DashboardIcon/>
-              </ListItemIcon>
-              <ListItemText primary="Dashboard"/>
-              {/* this.state.showUsersOptions ? <ExpandLessIcon /> : <ExpandMoreIcon />*/}
-            </ListItem>
+        <BrowserRouter>
+          <div className={classes.root}>
+            <div style={{width: '12%'}}>
+              <List component="nav" lassName={classes.list} >
+              {/* Dashboard */}
+              <ListItem button component={Link} to="/">
+                <ListItemIcon>
+                  <DashboardIcon/>
+                </ListItemIcon>
+                <ListItemText primary="Dashboard"/>
+              </ListItem>
 
-            {/* SETTINGS */}
-            <ListItem button>
-              <ListItemIcon>
-                <SettingsIcon/>
-              </ListItemIcon>
-              <ListItemText primary="Settings"/>
-              {/* this.state.showUsersOptions ? <ExpandLessIcon /> : <ExpandMoreIcon />*/}
-            </ListItem>
+              {/* Resources */}
+              <ListItem button onClick={() =>{this.setState({toggle_resources: !this.state.toggle_resources});}}>
+                <ListItemIcon>
+                  <ResourcesIcon/>
+                </ListItemIcon>
+                <ListItemText primary="Resources"/>
+                {this.state.toggle_resources ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </ListItem>
+              {/* Resources Items */}
+              <Collapse in={this.state.toggle_resources} timeout="auto" unmountOnExit>
 
-            {/* USERS */}
-            <ListItem button onClick={() =>{this.setState({showUsersOptions: !this.state.showUsersOptions});}}>
-              <ListItemIcon>
-                <UsersIcon/>
-              </ListItemIcon>
-              <ListItemText primary="Users"/>
-              {/* this.state.showUsersOptions ? <ExpandLessIcon /> : <ExpandMoreIcon />*/}
-            </ListItem>
+                {/* Modules */}
+                <List component="div" disablePadding>
+                  <ListItem button className={classes.nested} component={Link} to="/modules">
+                    <ListItemIcon>
+                      <ModulesIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Modules"/>
+                  </ListItem>
+                </List>
+                {/* Recommendations */}
+                <List component="div" disablePadding>
+                  <ListItem button className={classes.nested} component={Link} to="/recommendations">
+                    <ListItemIcon>
+                      <RecommendationsIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Recommendations"/>
+                  </ListItem>
+                </List>
+                {/* Questions */}
+                <List component="div" disablePadding>
+                  <ListItem button className={classes.nested} component={Link} to="/questions">
+                    <ListItemIcon>
+                      <QuestionIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Questions"/>
+                  </ListItem>
+                </List>
+                {/* Answers */}
+                <List component="div" disablePadding>
+                  <ListItem button className={classes.nested} component={Link} to="/answers">
+                    <ListItemIcon>
+                      <AnswerIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Answers"/>
+                  </ListItem>
+                </List>
+                {/* Groups */}
+                <List component="div" disablePadding>
+                  <ListItem button className={classes.nested} component={Link} to="/groups">
+                    <ListItemIcon>
+                      <GroupsIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Groups"/>
+                  </ListItem>
+                </List>
+                {/* Types */}
+                <List component="div" disablePadding>
+                  <ListItem button className={classes.nested} component={Link} to="/types">
+                    <ListItemIcon>
+                      <TypesIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Types"/>
+                  </ListItem>
+                </List>
+              </Collapse>
+                {/* Settings - Not implemented */}
+                <ListItem button>
+                  <ListItemIcon>
+                    <SettingsIcon color="disabled"/>
+                  </ListItemIcon>
+                  <ListItemText primary="Settings"/>
+                </ListItem>
 
-            {/* MODULES */}
-            <ListItem button onClick={() =>{this.setState({showModulesOptions: !this.state.showModulesOptions});}}>
-              <ListItemIcon>
-                <ModulesIcon/>
-              </ListItemIcon>
-              <ListItemText primary="Resources"/>
-              {this.state.showModulesOptions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </ListItem>
-            <Collapse in={this.state.showModulesOptions} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItem button className={classes.nested} onClick={(event) => {this.select_options("manage_modules")}}>
+                {/* Users - Not implemented  */}
+                <ListItem button>
                   <ListItemIcon>
-                    <ManageIcon/>
+                    <UsersIcon color="disabled"/>
                   </ListItemIcon>
-                  <ListItemText primary="Modules"/>
+                  <ListItemText primary="Users"/>
+                </ListItem>
+                
+                {/* Others - Not implemented  */}
+                <ListItem button>
+                  <ListItemIcon>
+                    <OthersIcon color="disabled"/>
+                  </ListItemIcon>
+                  <ListItemText primary="Others"/>
                 </ListItem>
               </List>
-              <List component="div" disablePadding>
-                <ListItem button className={classes.nested}>
-                  <ListItemIcon>
-                    <GroupIcon/>
-                  </ListItemIcon>
-                  <ListItemText primary="Groups"/>
-                </ListItem>
-              </List>
-              <List component="div" disablePadding>
-                <ListItem button className={classes.nested}>
-                  <ListItemIcon>
-                    <TypesIcon/>
-                  </ListItemIcon>
-                  <ListItemText primary="Types"/>
-                </ListItem>
-              </List>
-              {/* RECOMMENDATIONS */}
-              <List component="div" disablePadding>
-                <ListItem button className={classes.nested} onClick={(event) => {this.select_options("manage_recommendations")}}>
-                  <ListItemIcon>
-                    <RecommendationsIcon/>
-                  </ListItemIcon>
-                  <ListItemText primary="Recommendations"/>
-                </ListItem>
-              </List>
-              <List component="div" disablePadding>
-                <ListItem button className={classes.nested}>
-                  <ListItemIcon>
-                    <QuestionsAnswersIcon/>
-                  </ListItemIcon>
-                  <ListItemText primary="Questions/Answers"/>
-                </ListItem>
-              </List>
-            </Collapse>
-            
-            {/* OTHERS */}
-            <ListItem button>
-              <ListItemIcon>
-                <OthersIcon/>
-              </ListItemIcon>
-              <ListItemText primary="Others"/>
-              {/* this.state.showUsersOptions ? <ExpandLessIcon /> : <ExpandMoreIcon />*/}
-            </ListItem>
-            </List>
-          </div>
-          {/* Main container */}
-          <div style={{padding: 20}}>
-            <div className={classes.main}>
-              {this.state.manage_modules ? <ManageModulesComponent/> : undefined}
-              {this.state.manage_recommendations ? <ManageRecommendationsComponent/> : undefined }
+            </div>
+            {/* Main container */}
+            <div style={{padding: 20, maxWidth: '100%' }}>
+              {/* Dashboard */}
+              <div style={{width: "100%"}}>
+                <Route path="/" exact component={DashboardComponent}/> {/* default route */}
+              </div>
+              <div className={classes.main}>
+                  <Switch>
+                    <Route path="/recommendations"><ManageRecommendationsComponent/></Route>
+                    <Route path="/modules"><ManageModulesComponent/></Route>
+                    <Route path="/questions"><ManageQuestionsComponent/></Route>
+                    <Route path="/answers"><ManageAnswersComponent/></Route>
+                    <Route path="/groups"><ManageGroupsComponent/></Route>
+                    <Route path="/types"><ManageTypesComponent/></Route>
+                  </Switch>
+              </div>
             </div>
           </div>
-        </div>
+          {/* -------------------------------------- */}
+ 
+        </BrowserRouter>
       </React.Fragment>
     );
   }

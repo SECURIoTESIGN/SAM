@@ -28,13 +28,13 @@
 import React, {Component} from 'react';
 import {Slide, TextField, withStyles, Tooltip, Button}  from '@material-ui/core';
 import SortableTree, { addNodeUnderParent, removeNodeAtPath, changeNodeAtPath, getVisibleNodeCount, getNodeAtPath, getDepth, walk} from 'react-sortable-tree';
-import {Save as SaveIcon, FileCopy as CopyIcon, Delete as DeleteIcon, ArrowBack as ArrowLeftIcon, ArrowDownward as ArrowDownIcon, Input as SelectIcon, CheckBoxOutlined as CheckboxIcon} from '@material-ui/icons/';
+import {ArrowDownward as ImportIcon, ArrowUpward as ExportIcon, Save as SaveIcon, FileCopy as CopyIcon, Delete as DeleteIcon, ArrowBack as ArrowLeftIcon, ArrowDownward as ArrowDownIcon, Input as SelectIcon, CheckBoxOutlined as CheckboxIcon} from '@material-ui/icons/';
 import {orange, green} from '@material-ui/core/colors';
 import {useStyles} from './TreeStyles';
 import 'react-sortable-tree/style.css'; // SortableTree CSS
 /* Import SAM's styles, components, containers, and constants */
 import {getUserData} from '../helpers/AuthenticationHelper';
-import {console_log} from '../helpers/ToolsHelper';
+import {console_log, create_download} from '../helpers/ToolsHelper';
 import {AnswerIcon, QuestionIcon} from '../helpers/IconMakerHelper';
 import LoadingComponent from '../components/Loading';
 import SelectionComponent from './Selection';
@@ -296,6 +296,20 @@ class Tree extends Component{
   }
 
   handleClose = (value) => { this.setState({open: false});};
+ 
+  /* [Summary]: Populate the tree with contents of an inputted json file. */
+  // TODO: Add json file validation
+  load_tree_from_json = (file) => {
+    const DEBUG = false;  
+    let fileReader = new FileReader();
+    fileReader.onloadend = () => {
+      const content = fileReader.result;
+      this.setState({treeData: JSON.parse(content)})
+      if (DEBUG) console.log(JSON.parse(content))
+    }
+    fileReader.readAsText(file)
+  }
+
   // Render method
   render(){
     const DEBUG = false;
@@ -322,7 +336,7 @@ class Tree extends Component{
       </PopupComponent>
       <table border="0">
       <tbody><tr>
-        <td>
+        <td colSpan="3">
           <div style={ (count * height_of_node < max_height) ? {height: (count * height_of_node), width: (width_of_node+(max_depth*inc_size))} :  {height: max_height, width: (width_of_node+(max_depth*inc_size))} }>
           <SortableTree canDrag={!this.props.selectOnly}  treeData={this.state.treeData} onChange={treeData => this.setState({treeData})} generateNodeProps={({ node, path }) => ({buttons: [
           <CopyIcon style={ (this.props.selectOnly && node.type == "answer") ? {} : { display: 'none' }} onClick={() => this.props.onSelect(this.get_parent_of_node(this.state.treeData, node), node)}/>,
@@ -352,7 +366,16 @@ class Tree extends Component{
       </tr></tbody>
       <tbody><tr>
         <td>
-        { !this.props.selectOnly ? (<Button variant="contained" className={classes.saveButton} onClick={() => {this.props.onSave(this.state.treeData)}} color="primary" startIcon={<SaveIcon />}>Save Mapping</Button>) : undefined}
+        { !this.props.selectOnly ? (<Button fullWidth variant="contained" className={classes.saveButton} onClick={() => {this.props.onSave(this.state.treeData)}} color="primary" startIcon={<SaveIcon />}>Save Tree</Button>) : undefined}
+        </td>
+        <td>
+          <label htmlFor="load-json-tree">
+            <input style={{ display: 'none' }} id="load-json-tree" name="load-json-tree" type="file" onChange={(event) => this.load_tree_from_json(event.target.files[0])} />
+            <Button fullWidth startIcon={<ImportIcon/>} variant="contained" component="span" className={classes.button}  color="default">Import Tree</Button>
+          </label>
+        </td>
+        <td>
+          <Button fullWidth startIcon={<ExportIcon/>} variant="contained" component="span" className={classes.button} onClick={() => create_download("tree.json", "text/json", JSON.stringify(this.state.treeData))}  color="default">Export Tree</Button>
         </td>
       </tr></tbody></table>     
       </React.Fragment>

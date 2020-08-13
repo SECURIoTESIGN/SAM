@@ -23,11 +23,40 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 
-/* [Summary]: Set a string shorter until given [limit]. */
-export const short_string = (value, limit) => {
+/* [Summary]: Set a string shorter until given [limit] with a '...' between. */
+export const short_string = (value, limit, spacing=true) => {
+  if (value.length < limit) return value;
   let s_short = value.substring(0, limit)
-  s_short = s_short + "..." + value.substring(value.length-limit, value.length);
+  spacing ? s_short = s_short + "..." + value.substring(value.length-limit, value.length) : s_short += " ...";
   return(s_short);
+}
+
+/* [Summary]: Get a date formatted from a json date. */
+export const format_date = (json_date, format) => {
+  var dateFormat = require('dateformat');
+  return(dateFormat(new Date(json_date), format));
+}
+
+/* [Summary]: Check if the [array] contains the [new_obj] where both [key] are equal. */
+export const contains_object = (new_obj, array, key) => {
+  for (var i = 0; i < array.length; i++) {
+      if (array[i][key] === new_obj[key]) return true;
+  }
+  return false;
+}
+
+/* [Summary]: Export/Download file with some [text] of type [type] with filename equal to [filename]. */
+export const create_download = (filename, type, text) => {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:' + type + ';charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
 }
 
 /* fetch with timeout (experimental)

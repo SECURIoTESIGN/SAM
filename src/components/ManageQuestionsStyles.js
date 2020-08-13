@@ -23,12 +23,19 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 export const useStyles = theme => ({
-  save_button: {
-    color: "white",
-    backgroundColor: theme.palette.success.light,
-    '&:hover': {
-        backgroundColor: theme.palette.success.light,
-        color: "white",
-    },
-},
+  root: {
+    display: 'flex', 
+    flexDirection: 'column'
+  },
+  title:{
+    fontWeight: 'bold', 
+    fontSize: 17,
+    textTransform: 'uppercase',
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
+  delete: {
+    padding: 5,
+    maxWidth: 500,
+  }
+
 });

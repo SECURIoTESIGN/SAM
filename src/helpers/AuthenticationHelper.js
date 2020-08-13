@@ -68,6 +68,9 @@ export const logoutNow = (debug=false) => {
         }
         default:{
           // TODO: Add custom message errors when an unsuccessfull logout exists.
+          localStorage.removeItem(TOKEN_KEY); 
+          localStorage.removeItem(USER_EMAIL); 
+          window.location.reload(false);
           break;
         }
       }

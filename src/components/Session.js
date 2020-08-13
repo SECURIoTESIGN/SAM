@@ -23,7 +23,7 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
-import {withStyles, List, ListItem, ListItemText, TextField, Button, Slide, Card, CardContent, CardActions, Typography, Grid, Avatar, Fade} from '@material-ui/core';
+import {withStyles, List, ListItem, ListItemText, TextField, Button, Slide, Card, CardContent, CardActions, Typography, Grid, Avatar, Fade, IconButton} from '@material-ui/core';
 import {Alert} from '@material-ui/lab';
 import {Save as SaveIcon, Assignment as RecommendationsIcon} from '@material-ui/icons';
 import {useStyles} from './SessionStyles';
@@ -427,8 +427,16 @@ class Session extends Component{
               </List>)
               : (
               <Fade in={true} timeout={1500}><div>
-                <TextField id="tf_inputted_answer" label="Input your answer" onChange={event => this.setState({session:{...this.state.session,tmp: event.target.value}})} />
-                <Button variant="contained" className={classes.saveButton} onClick={(event) => this.handle_answer_selection(event, null)} color="primary" startIcon={<SaveIcon />} fullWidth></Button>
+                <table border="0" cellPadding="0" cellSpacing="0">
+                  <tbody><tr>
+                    <td valign="middle">
+                      <TextField id="tf_inputted_answer" width="250" label="Input your answer" onChange={event => this.setState({session:{...this.state.session,tmp: event.target.value}})} />
+                     </td>
+                    <td valign="bottom">
+                      <SaveIcon style={{cursor: 'pointer'}} onClick={(event) => this.handle_answer_selection(event, null)} color="primary"/>
+                    </td>
+                  </tr></tbody>
+                </table>
               </div></Fade>
               )
             }

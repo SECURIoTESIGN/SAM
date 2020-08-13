@@ -23,31 +23,19 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 export const useStyles = theme => ({
-    root: {
-        display: 'flex', 
-        flexDirection: 'row',  
-        // height: '70vh',
-        width: "100%",
-        height: "100%",
-    },
-    main: {
-      maxWidth: "60vw",
-      // maxHeight: '60vh',
-      padding: theme.spacing(1.5),
-      backgroundColor: theme.palette.background.default,
-      border: `1px solid ${theme.palette.divider}`,
-      // Hide if this div is empty.
-      "&:empty": {
-        display: 'none',
-      },
-    },
-    list: {
-        width: '100%',
-        backgroundColor: theme.palette.background.paper,
-        // borderRight: `1px solid ${theme.palette.divider}`,
-    },
-    nested: {
-        paddingLeft: theme.spacing(4),
-    },
+  root: {
+    display: 'flex', 
+    flexDirection: 'column'
+  },
+  title:{
+    fontWeight: 'bold', 
+    fontSize: 17,
+    textTransform: 'uppercase',
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
+  delete: {
+    padding: 5,
+    maxWidth: 400,
+  }
 
 });

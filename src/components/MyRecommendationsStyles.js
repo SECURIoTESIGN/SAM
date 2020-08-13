@@ -23,6 +23,10 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 export const useStyles = theme => ({
+  root: {
+    maxWidth: 840,
+    maxHeight: 810,
+  },
   card: {
     minWidth: 275,
     maxWidth: 400,

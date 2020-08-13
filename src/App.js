@@ -40,18 +40,19 @@ import MainComponent from './containers/Main';
 function App(){
   if (isAuthenticated()){
     // User was successfully authenticated.
+    
     console_log("App", "Authentication Token: " + getAuthenticationToken());
     if (is_user_admin(false)){
       return(
-        <div style={{margin:0, padding:0, height: "100%",  display: "flex", flexDirection: "column"}}>
+        <div style={{margin:0, padding:0, height: "100%", width:"100%", display: "flex", flexDirection: "column"}}>
           <div style={{flexBasis: "5%"}}><AppBarContainer/></div>
-          <div style={{flexBasis: "90%"}}><AdministrationContainer/></div>
+          <div style={{flexBasis: "90%", maxWidth: "100%"}}><AdministrationContainer/></div>
           <div style={{flexBasis: "5%"}}><FooterContainer/></div>
         </div>
       );
     }else{
       return(
-        <div style={{margin:0, padding:0, height: "100%",  display: "flex", flexDirection: "column"}}>
+        <div style={{margin:0, padding:0, height: "100%", width:"100%", display: "flex", flexDirection: "column"}}>
           <div style={{flexBasis: "5%"}}><AppBarContainer/></div>
           <div style={{flexBasis: "90%"}}><MainComponent/></div>
           <div style={{flexBasis: "5%"}}><FooterContainer/></div>

@@ -40,9 +40,9 @@ class Account extends Component{
     // Email info
     email: {content: "", new: "", error: ""},
     // FirstName info
-    firstName: {content: "", new: "", error: ""},
+    firstname: {content: "", new: "", error: ""},
     // LastName info
-    lastName: {content: "", new: "", error: ""},
+    lastname: {content: "", new: "", error: ""},
     // Password info
     psw: {new: "", error: ""},
     loading: false,
@@ -57,21 +57,24 @@ class Account extends Component{
     // 1. Get stored data of the session 
     var email = localStorage.getItem(USER_EMAIL);
     var token = localStorage.getItem(TOKEN_KEY)
-    var url   = "/user/" + email;
-
+    var service_URL   = "/user/" + email;
+    var method_type   = "GET";
+    
     // 2. Show loading component.
     this.setState({loading: true})
     
     // 3. Request data from the user.
     //    We also need to send the authorization token in order to access the service to get information about a user.
-    fetch(url, { method:'get', headers: new Headers({'Authorization': token })}).then(res => res.json()).then(response => {
-        switch (response[url]['status']){
+    fetch(service_URL, { method:method_type, headers: new Headers({'Authorization': token })}).then(res => res.json()).then(response => {
+      console.log(response[service_URL])  
+      switch (response[service_URL]['status']){
           case 200:{ 
-            this.setState({loading: false}); // Hide loading component
-            this.setState({email: {content: response[url]['email'], new: response[url]['email']}});
-            this.setState({firstName: {content: response[url]['firstName'], new: response[url]['firstName']}});
-            this.setState({lastName: {content: response[url]['lastName'], new: response[url]['lastName']}});
-            this.setState({avatar: response[url]['firstName'][0] })
+            this.setState({loading: false, 
+                           email: {content: response[service_URL]['email'], new: response[service_URL]['email']}, 
+                           firstname: {content: response[service_URL]['firstName'], new: response[service_URL]['firstName']}, 
+                           lastname: {content: response[service_URL]['lastName'], new: response[service_URL]['lastName']},
+                           avatar: response[service_URL]['firstName'][0]
+                          });
             break;
           }
           // Signature expired, logging out immediately.
@@ -85,7 +88,6 @@ class Account extends Component{
           }
         }
       }).catch(function() {
-        this.setState({form_error: "Houston, we have a problem."});
         return;
       });
   }
@@ -115,8 +117,8 @@ class Account extends Component{
     var j_obj = {};
     j_obj['avatar']     = "default";
     j_obj['email']      = this.state.email.content !== this.state.email.new ? this.state.email.new : this.state.email.content;
-    j_obj['firstName']  = this.state.firstName.content !== this.state.firstName.new ? this.state.firstName.new : this.state.firstName.content;
-    j_obj['lastName']   = this.state.lastName.content !== this.state.lastName.new ? this.state.lastName.new : this.state.lastName.content;
+    j_obj['firstname']  = this.state.firstname.content !== this.state.firstname.new ? this.state.firstname.new : this.state.firstname.content;
+    j_obj['lastname']   = this.state.lastname.content !== this.state.lastname.new ? this.state.lastname.new : this.state.lastname.content;
     // 2.1. Store new password - IF inputted.
     if (this.state.psw.new !== "") j_obj['psw'] = this.state.psw.new;
     // Debug only: console.log("INPUT:" + JSON.stringify(j_obj));
@@ -162,17 +164,17 @@ class Account extends Component{
                       onChange={(event) => {this.setState({email: {new: event.target.value}})}}
                       helperText= {this.state.email.error}
                       />
-            <TextField className={classes.text} id="firstName" name="firstName" variant="outlined" margin="normal" label="First Name"
+            <TextField className={classes.text} id="firstname" name="firstname" variant="outlined" margin="normal" label="First Name"
                       autoComplete="email" fullWidth
-                      value={this.state.firstName.content}
-                      onChange={(event) => {this.setState({firstName: {new: event.target.value}})}}
-                      helperText= {this.state.firstName.error}
+                      value={this.state.firstname.content}
+                      onChange={(event) => {this.setState({firstname: {new: event.target.value}})}}
+                      helperText= {this.state.firstname.error}
                       />
-            <TextField className={classes.text} id="lastName" name="lastName" variant="outlined" margin="normal" label="Last Name"
+            <TextField className={classes.text} id="lastname" name="lastname" variant="outlined" margin="normal" label="Last Name"
                       autoComplete="email" fullWidth
-                      value={this.state.lastName.content}
-                      onChange={(event) => {this.setState({lastName: {new: event.target.value}})}}
-                      helperText= {this.state.lastName.error}
+                      value={this.state.lastname.content}
+                      onChange={(event) => {this.setState({lastname: {new: event.target.value}})}}
+                      helperText= {this.state.lastname.error}
                       />
             <TextField className={classes.text} width={10} id="psw" name="psw" variant="outlined" margin="normal" 
                         label="New Password" type="password" autoComplete="new-password" fullWidth

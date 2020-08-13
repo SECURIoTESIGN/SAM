@@ -56,7 +56,7 @@ class MySessions extends Component{
 
   /* [Summary]: Show recommendations for the selected session. */
   show_recommendations = (row_data) => {
-    const DEBUG=false;
+    const DEBUG=true;
     let service_URL = '/session/' + row_data['rid'];
     let method_type = 'GET';
     let token      = getUserData()['token'];
@@ -65,11 +65,12 @@ class MySessions extends Component{
         if (DEBUG) console_log("show_recommendations()", "Response: " + JSON.stringify(response[service_URL]));
         switch (response[service_URL]['status']){
           case 200:{
-            this.setState({open_recommendations: true, recommendations: response[service_URL]['recommendations']})
+            this.setState({open_recommendations: true, loading:false, recommendations: response[service_URL]['recommendations']})
             break;
           }
           // 'Houston, we have a problem'.
           default:{ // not 200
+            this.setState({loading: false})
             break;
           }
         }

@@ -31,8 +31,8 @@ import React, {Component} from 'react';
 import {withStyles, TextField, Typography, Slide, Button}  from '@material-ui/core';
 import {Save as SaveIcon, CloudUpload as UploadIcon, AddCircleRounded as AddChipIcon, AccountTree as TreeIcon} from '@material-ui/icons';
 import {Alert} from '@material-ui/lab';
-import {useStyles} from './ModuleStyles';
 /* Import SAM's styles, components, containers, and constants */
+import {useStyles} from './RecommendationStyles';
 import {getUserData} from '../helpers/AuthenticationHelper';
 import {console_log} from '../helpers/ToolsHelper';
 import LoadingComponent from './Loading';
@@ -96,7 +96,7 @@ class Recommendation extends Component{
 
   /* [Summary]: Handles the process of editing or adding a new recommendation. */
   handle_add_edit_recommendation = () => {
-    const DEBUG=true;
+    const DEBUG=false;
     var service_URL = "/recommendation";
     var method_type = "POST";
     var to_edit     = false;
@@ -107,7 +107,7 @@ class Recommendation extends Component{
     this.setState({form_error: null, loading: false}) // Reset form error and start the loading animation
     
     // Form validation
-    if (!this.state.recommendation.content || !this.state.recommendation.description){
+    if (!this.state.recommendation.content){
       this.setState({form_error: "Fields 'Name' and 'Description' are required to add a new recommendation.", loading: false});
       return
     }
@@ -116,11 +116,11 @@ class Recommendation extends Component{
     let obj_recommendation = {}
     if (this.state.recommendation.id)           obj_recommendation['id'] = this.state.recommendation.id; else obj_recommendation['id'] = null;
     if (this.state.recommendation.n_guide)      obj_recommendation['guide'] = this.state.recommendation.n_guide[0].name;
-
+    if (this.state.recommendation.description)  obj_recommendation['description'] = this.state.recommendation.description;
     obj_recommendation['content']     = this.state.recommendation.content;
-    obj_recommendation['description'] = this.state.recommendation.description;
-
-
+    
+    console_log("handle_add_edit_recommendation()", "Object to be sent to the backend service: " + JSON.stringify(obj_recommendation))
+    
     // File type validation
     let file_extension = null;
 
@@ -196,40 +196,42 @@ class Recommendation extends Component{
     //
     return(
       <React.Fragment>
-        <LoadingComponent open={this.state.loading}/>
-        <Alert severity="error"  style={this.state.form_error != null ? {maxWidth: 320} : { display: 'none' }}>
-          {this.state.form_error}
-        </Alert>
-        <table cellPadding={3}>
-          <tbody><tr>
-            <td>
-              <TextField id="tf_content"  name="tf_content" InputLabelProps={{shrink:this.state.recommendation.content?true:false}} value={this.state.recommendation.content} label="Name" variant="outlined" margin="normal" style={{width: 350}} onChange={event => this.setState({recommendation:{...this.state.recommendation,content: event.target.value}})} />
-            </td>
-          </tr></tbody>
-          <tbody><tr>
-            <td>
-              <TextField id="tf_description"  name="tf_description" InputLabelProps={{shrink:this.state.recommendation.description?true:false}} value={this.state.recommendation.description} label="Description" variant="outlined" margin="normal" style={{width: 350}} onChange={event => this.setState({recommendation:{...this.state.recommendation,description: event.target.value}})} />
-              <Typography color="textSecondary" variant='subtitle2'>To link recommendations and modules please visit <br/> the 'Module' section of the administration panel.</Typography>
-            </td>
-          </tr></tbody>
-          <tbody><tr>
-            <td align="right" >
-                <label htmlFor="upload-guide">
-                    <input style={{ display: 'none' }} id="upload-guide" name="upload-guide" type="file" onChange={(event) => this.setState({recommendation: {...this.state.recommendation, n_guide: event.target.files}})} />
-                    <Button variant="contained" component="span" className={classes.button}  color="default" startIcon={<UploadIcon />}>
-                    {!this.state.recommendation.guide ? "Upload Guide" : "Remove and Upload new Guide" }
-                    </Button>
-                </label>
-             </td>
-          </tr></tbody>
-          <tbody><tr>
-            <td>
-            <Button variant="contained" className={classes.save_button} onClick={this.add_edit_module} color="primary" onClick={this.handle_add_edit_recommendation} startIcon={<SaveIcon />} fullWidth>
-            {!this.state.recommendation.id ? "Add Recommendation" : "Edit Recommendation"}
-            </Button>
-            </td>
-          </tr></tbody>
-          </table>
+        <div className={classes.root}>
+          <LoadingComponent open={this.state.loading}/>
+          <Alert severity="error"  style={this.state.form_error != null ? {width: '90%'} : { display: 'none' }}>
+            {this.state.form_error}
+          </Alert>
+          <table className={classes.table}>
+            <tbody><tr>
+              <td>
+                <TextField className={classes.fields} id="tf_content"  name="tf_content" InputLabelProps={{shrink:this.state.recommendation.content?true:false}} value={this.state.recommendation.content} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({recommendation:{...this.state.recommendation,content: event.target.value}})} />
+              </td>
+            </tr></tbody>
+            <tbody><tr>
+              <td>
+                <TextField className={classes.fields}  id="tf_description"  name="tf_description" InputLabelProps={{shrink:this.state.recommendation.description?true:false}} value={this.state.recommendation.description} label="Description" variant="outlined" margin="normal" onChange={event => this.setState({recommendation:{...this.state.recommendation,description: event.target.value}})} />
+                <Typography className={classes.fields} align="justify" color="textSecondary" variant='subtitle2'>To link recommendations and modules please visit the 'Module' section of the administration panel.</Typography>
+              </td>
+            </tr></tbody>
+            <tbody><tr>
+              <td align="right" >
+                  <label htmlFor="upload-guide">
+                      <input style={{ display: 'none' }} id="upload-guide" name="upload-guide" type="file" onChange={(event) => this.setState({recommendation: {...this.state.recommendation, n_guide: event.target.files}})} />
+                      <Button variant="contained" component="span" className={classes.button}  color="default" startIcon={<UploadIcon />}>
+                      {!this.state.recommendation.guide ? "Upload Guide" : "Remove and Upload new Guide" }
+                      </Button>
+                  </label>
+              </td>
+            </tr></tbody>
+            <tbody><tr>
+              <td>
+              <Button variant="contained" className={classes.save_button} onClick={this.add_edit_module} color="primary" onClick={this.handle_add_edit_recommendation} startIcon={<SaveIcon />} fullWidth>
+              {!this.state.recommendation.id ? "Add Recommendation" : "Edit Recommendation"}
+              </Button>
+              </td>
+            </tr></tbody>
+            </table>
+          </div>
       </React.Fragment>
     );
   }

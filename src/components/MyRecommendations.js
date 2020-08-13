@@ -75,13 +75,13 @@ class MySessions extends Component{
     return(
       <React.Fragment>
         <LoadingComponent open={this.state.loading}/>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} className={classes.root}>
             {this.props.recommendations.map((recommendation, index) => 
               <Grid item><Grid container>
                 <Card variant="outlined" className={classes.card}>
                   <CardContent>
                     <Typography variant="h5" component="h2">{recommendation['content']}</Typography>
-                    <Typography variant="body2" component="p">{recommendation['description']}</Typography>
+                    <Typography align="justify" variant="body2" component="p">{recommendation['description']}</Typography>
                   </CardContent>
                   <CardActions>
                     {recommendation['recommendation_guide'] ? (
