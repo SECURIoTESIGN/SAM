@@ -276,7 +276,7 @@ class Tree extends Component{
   */
   get_selected_data = (row_data) => {
     const DEBUG=false;
-    if (DEBUG) console_log("get_module_data", "Question or answer selected =" + JSON.stringify(row_data));
+    if (DEBUG) console_log("get_selected_data", "Question or answer selected =" + JSON.stringify(row_data));
     // Save selected question or answer as a new node.
     this.tree_save_node_selected(row_data['rid'], row_data['content'], this.state.node, this.state.path)
     this.setState({open: false})
@@ -331,7 +331,7 @@ class Tree extends Component{
        <LoadingComponent open={this.state.loading}/>    
        <PopupComponent title={this.state.type == 'answer' ? 'Stored Answers' : 'Stored Questions'} open={this.state.open} onClose={this.handleClose} aria-labelledby="simple-dialog-title" TransitionComponent={Transition}>
           {this.state.type == 'answer' ?
-            (<SelectionComponent title="" select={true} onSelect={this.get_selected_data} type={"answers"}/>) : (<SelectionComponent title="" select={true} onSelect={this.get_Module_Data} type={"questions"}/>)
+            (<SelectionComponent title="" select={true} onSelect={this.get_selected_data} type={"answers"}/>) : (<SelectionComponent title="" select={true} onSelect={this.get_selected_data} type={"questions"}/>)
           }
       </PopupComponent>
       <table border="0">
@@ -371,11 +371,11 @@ class Tree extends Component{
         <td>
           <label htmlFor="load-json-tree">
             <input style={{ display: 'none' }} id="load-json-tree" name="load-json-tree" type="file" onChange={(event) => this.load_tree_from_json(event.target.files[0])} />
-            <Button fullWidth startIcon={<ImportIcon/>} variant="contained" component="span" className={classes.button}  color="default">Import Tree</Button>
+            <Button style={this.props.selectOnly ? {display:'none'}: {}} fullWidth startIcon={<ImportIcon/>} variant="contained" component="span" className={classes.button}  color="default">Import Tree</Button>
           </label>
         </td>
         <td>
-          <Button fullWidth startIcon={<ExportIcon/>} variant="contained" component="span" className={classes.button} onClick={() => create_download("tree.json", "text/json", JSON.stringify(this.state.treeData))}  color="default">Export Tree</Button>
+          <Button fullWidth style={this.props.selectOnly ? {display:'none'}: {}} startIcon={<ExportIcon/>} variant="contained" component="span" className={classes.button} onClick={() => create_download("tree.json", "text/json", JSON.stringify(this.state.treeData))}  color="default">Export Tree</Button>
         </td>
       </tr></tbody></table>     
       </React.Fragment>
