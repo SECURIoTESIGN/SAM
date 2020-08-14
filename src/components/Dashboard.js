@@ -51,7 +51,6 @@ class Dashboard extends PureComponent{
     top_sessions: [],
   };
 
-
   componentWillMount(){
     this.fetch_stats();
   }
@@ -79,7 +78,103 @@ class Dashboard extends PureComponent{
                   questions: response[service_URL]['questions'],
                   answers: response[service_URL]['answers'],
                   sessions: response[service_URL]['sessions'],
-                  recommendations: response[service_URL]['recommendations'], loading: false})
+                  recommendations: response[service_URL]['recommendations'], loading: false}, () => {
+                    // Get the remaining stats after state change
+                    // Get Top recommendations
+                    this.setState({loading: true}, async () => {
+                      let service_URL = "/statistic/recommendations"
+                      let method_type = 'GET';
+                      console.log(service_URL)
+                      await fetch(service_URL, {method:method_type, headers: {
+                        'Authorization': getUserData()['token'],
+                        'Content-Type': 'application/json'
+                        }}).then(async res => res.json()).then(async response => {
+                          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
+                          switch (response[service_URL]['status']){
+                            // Code 200 - 'It's alive! It's alive!'.
+                            case 200:{
+                                let top = [];
+                                for(var i=0; i < (response[service_URL]['top']).length; i++){
+                                  let recommendation = response[service_URL]['top'][i];
+                                  let tmp = {}
+                                  tmp['name']   = recommendation['content'];
+                                  tmp['value']  = parseFloat(((recommendation['occurrences'])) / this.state.recommendations);
+                                  top.push(tmp)
+                                }
+                                this.setState({top_recommendations: top, loading: false})
+                              break; 
+                            }
+                            // Any other code - 'Houston, we have a problem'.
+                            default:{ 
+                              this.setState({loading: false})
+                              break;
+                            }
+                      }}).catch(function() { return; });
+                    });
+                    // Get Top modules
+                    this.setState({loading: true}, async () => {
+                      let service_URL = "/statistic/modules"
+                      let method_type = 'GET';
+                      console.log(service_URL)
+                      await fetch(service_URL, {method:method_type, headers: {
+                        'Authorization': getUserData()['token'],
+                        'Content-Type': 'application/json'
+                        }}).then(async res => res.json()).then(async response => {
+                          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
+                          switch (response[service_URL]['status']){
+                            // Code 200 - 'It's alive! It's alive!'.
+                            case 200:{
+                                let top = [];
+                                for(var i=0; i < (response[service_URL]['top']).length; i++){
+                                  let module = response[service_URL]['top'][i];
+                                  let tmp = {}
+                                  tmp['name']   = module['shortname'];
+                                  tmp['value']  = (parseInt(module['occurrences'])) / this.state.modules;
+                                  tmp['displayname'] = module['displayname'];
+                                  top.push(tmp)
+                                }
+                                this.setState({top_modules: top, loading: false})
+                              break; 
+                            }
+                            // Any other code - 'Houston, we have a problem'.
+                            default:{ 
+                              this.setState({loading: false})
+                              break;
+                            }
+                      }}).catch(function() { return; });
+                    });
+                    // Get Top Sessions (7 days)
+                    this.setState({loading: true}, async () => {
+                      let service_URL = "/statistic/sessions"
+                      let method_type = 'GET';
+                      console.log(service_URL)
+                      await fetch(service_URL, {method:method_type, headers: {
+                        'Authorization': getUserData()['token'],
+                        'Content-Type': 'application/json'
+                        }}).then(async res => res.json()).then(async response => {
+                          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
+                          switch (response[service_URL]['status']){
+                            // Code 200 - 'It's alive! It's alive!'.
+                            case 200:{
+                                let top = [];
+                                for(var i=0; i < (response[service_URL]['top']).length; i++){
+                                  let session = response[service_URL]['top'][i];
+                                  let tmp = {}
+                                  tmp['name']       = format_date(session['date'], "dd/mm");
+                                  tmp['sessions']   = parseInt(session['occurrences']);
+                                  top.push(tmp)
+                                }
+                                this.setState({top_sessions: top, loading: false})
+                              break; 
+                            }
+                            // Any other code - 'Houston, we have a problem'.
+                            default:{ 
+                              this.setState({loading: false})
+                              break;
+                            }
+                      }}).catch(function() { return; });
+                    });
+                  });
               break; 
             }
             // Any other code - 'Houston, we have a problem'.
@@ -89,106 +184,7 @@ class Dashboard extends PureComponent{
             }
       }}).catch(function() { return; });
     });
-    
 
-    // Get Top recommendations
-    this.setState({loading: true}, async () => {
-      let service_URL = "/statistic/recommendations"
-      let method_type = 'GET';
-      console.log(service_URL)
-      await fetch(service_URL, {method:method_type, headers: {
-        'Authorization': getUserData()['token'],
-        'Content-Type': 'application/json'
-        }}).then(async res => res.json()).then(async response => {
-          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
-          switch (response[service_URL]['status']){
-            // Code 200 - 'It's alive! It's alive!'.
-            case 200:{
-                let top = [];
-                for(var i=0; i < (response[service_URL]['top']).length; i++){
-                  let recommendation = response[service_URL]['top'][i];
-                  let tmp = {}
-                  tmp['name']   = recommendation['content'];
-                  tmp['value']  = (parseInt(recommendation['occurrences'])) / this.state.recommendations;
-                  top.push(tmp)
-                }
-                this.setState({top_recommendations: top, loading: false})
-              break; 
-            }
-            // Any other code - 'Houston, we have a problem'.
-            default:{ 
-              this.setState({loading: false})
-              break;
-            }
-      }}).catch(function() { return; });
-    });
-    
-    // Get Top modules
-    this.setState({loading: true}, async () => {
-      let service_URL = "/statistic/modules"
-      let method_type = 'GET';
-      console.log(service_URL)
-      await fetch(service_URL, {method:method_type, headers: {
-        'Authorization': getUserData()['token'],
-        'Content-Type': 'application/json'
-        }}).then(async res => res.json()).then(async response => {
-          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
-          switch (response[service_URL]['status']){
-            // Code 200 - 'It's alive! It's alive!'.
-            case 200:{
-                let top = [];
-                for(var i=0; i < (response[service_URL]['top']).length; i++){
-                  let module = response[service_URL]['top'][i];
-                  let tmp = {}
-                  tmp['name']   = module['shortname'];
-                  tmp['value']  = (parseInt(module['occurrences'])) / this.state.modules;
-                  tmp['displayname'] = module['displayname'];
-                  top.push(tmp)
-                }
-                this.setState({top_modules: top, loading: false})
-              break; 
-            }
-            // Any other code - 'Houston, we have a problem'.
-            default:{ 
-              this.setState({loading: false})
-              break;
-            }
-      }}).catch(function() { return; });
-    });
-
-
-    // Get Top Sessions (7 days)
-    this.setState({loading: true}, async () => {
-      let service_URL = "/statistic/sessions"
-      let method_type = 'GET';
-      console.log(service_URL)
-      await fetch(service_URL, {method:method_type, headers: {
-        'Authorization': getUserData()['token'],
-        'Content-Type': 'application/json'
-        }}).then(async res => res.json()).then(async response => {
-          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
-          switch (response[service_URL]['status']){
-            // Code 200 - 'It's alive! It's alive!'.
-            case 200:{
-                let top = [];
-                for(var i=0; i < (response[service_URL]['top']).length; i++){
-                  let session = response[service_URL]['top'][i];
-                  let tmp = {}
-                  tmp['name']       = format_date(session['date'], "dd/mm");
-                  tmp['sessions']   = parseInt(session['occurrences']);
-                  top.push(tmp)
-                }
-                this.setState({top_sessions: top, loading: false})
-              break; 
-            }
-            // Any other code - 'Houston, we have a problem'.
-            default:{ 
-              this.setState({loading: false})
-              break;
-            }
-      }}).catch(function() { return; });
-    });
-   
   }
  
   render(){
@@ -213,129 +209,132 @@ class Dashboard extends PureComponent{
       {name: '07/08', sessions: 2},
     ];
     */
-    return(
-      <React.Fragment>
-        <LoadingComponent open={this.state.loading}/>
-        <div className={classes.root}>
-          <div>
-            <div className={classes.wrapper}>
-                <Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>Top Recommendations Given</Typography>
-                <PieChart width={360} height={350} >
-                  {/* label={(entry) => entry.name + " (" + ((entry.percent*100).toFixed(0)) + "%)"} */}
-                  <Pie isAnimationActive={false} label={(entry) => (entry.value*100).toFixed(0) + "%"} data={this.state.top_recommendations} innerRadius={110} outerRadius={130} fill="#8884d8" paddingAngle={3} dataKey="value">
-                    {this.state.top_recommendations.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip formatter={(entry) => (entry*100).toFixed(0) + "%"} wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
-                  <Legend align="center" wrapperStyle={{fontSize: 14}}/>
-                </PieChart>
-            </div>
-          </div>
-
-          <div>
-            <div className={classes.wrapper}>
-                <Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>Top of the most used modules</Typography>
-                <PieChart width={350} height={200} >
-                  {/* label={(entry) => entry.name + " (" + ((entry.percent*100).toFixed(0)) + "%)"} */}
-                  <Pie isAnimationActive={false} data={this.state.top_modules} cy="90%" label={(entry) => (entry.value*100).toFixed(0) + "%"} startAngle={180} endAngle={0} outerRadius={130} fill="#8884d8" paddingAngle={3} dataKey="value">
-                    {this.state.top_modules.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip formatter={(entry) => (entry*100).toFixed(0) + "%"}  wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
-                  <Legend align="center" verticalAlign="bottom" wrapperStyle={{fontSize: 14}}/>
-                </PieChart>
+    if (this.state.top_recommendations.length == 0 || this.state.top_modules.length == 0 || this.state.top_sessions.length == 0){
+      return(<LoadingComponent open={this.state.loading}/>);
+    }else{
+      return(
+        <React.Fragment>
+          <div className={classes.root}>
+            <div>
+              <div className={classes.wrapper}>
+                  <Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>Top Recommendations Given</Typography>
+                  <PieChart width={360} height={350} >
+                    {/* label={(entry) => entry.name + " (" + ((entry.percent*100).toFixed(0)) + "%)"} */}
+                    <Pie isAnimationActive={true} label={(entry) => (entry.value*100).toFixed(0) + "%"} data={this.state.top_recommendations} innerRadius={110} outerRadius={130} fill="#8884d8" paddingAngle={3} dataKey="value">
+                      {this.state.top_recommendations.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip formatter={(entry) => (entry*100).toFixed(0) + "%"} wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
+                    <Legend align="center" wrapperStyle={{fontSize: 14}}/>
+                  </PieChart>
+              </div>
             </div>
 
-            <div className={classes.wrapper}>
-                <Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>Registrations</Typography>
-                <table border="0" width="80%">
-                  <tbody><tr>
-                    <td align="right" valign="top"><UsersIcon fontSize="large" color="disabled"/></td>
-                    <td>
-                      <table cellPadding="0" cellSpacing="0">
-                        <tbody><tr><td valign="top">
-                          <Typography variant="h4" color="textPrimary">{this.state.users}</Typography>
-                        </td></tr></tbody>
-                        <tbody><tr><td align="right">
-                            <Typography style={{fontSize: 10}} color="textSecondary">users</Typography>
-                        </td></tr></tbody>
-                      </table>
-                    </td>
-                    <td align="right" valign="top"><ModulesIcon fontSize="large" color="disabled"/></td>
-                    <td>
-                      <table cellPadding="0" cellSpacing="0">
-                        <tbody><tr><td valign="top">
-                          <Typography variant="h4" color="textPrimary">{this.state.modules}</Typography>
-                        </td></tr></tbody>
-                        <tbody><tr><td align="right">
-                            <Typography style={{fontSize: 10}} color="textSecondary">modules</Typography>
-                        </td></tr></tbody>
-                      </table>
-                    </td>
-                  </tr></tbody>
-                  <tbody><tr>
-                    <td align="right" valign="top"><QuestionIcon fontSize="large" color="disabled"/></td>
+            <div>
+              <div className={classes.wrapper}>
+                  <Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>Top of the most used modules</Typography>
+                  <PieChart width={350} height={200} >
+                    {/* label={(entry) => entry.name + " (" + ((entry.percent*100).toFixed(0)) + "%)"} */}
+                    <Pie isAnimationActive={true} data={this.state.top_modules} cy="90%" label={(entry) => (entry.value*100).toFixed(0) + "%"} startAngle={180} endAngle={0} outerRadius={130} fill="#8884d8" paddingAngle={3} dataKey="value">
+                      {this.state.top_modules.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip formatter={(entry) => (entry*100).toFixed(0) + "%"}  wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
+                    <Legend align="center" verticalAlign="bottom" wrapperStyle={{fontSize: 14}}/>
+                  </PieChart>
+              </div>
+
+              <div className={classes.wrapper}>
+                  <Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>Registrations</Typography>
+                  <table border="0" width="80%">
+                    <tbody><tr>
+                      <td align="right" valign="top"><UsersIcon fontSize="large" color="disabled"/></td>
                       <td>
                         <table cellPadding="0" cellSpacing="0">
                           <tbody><tr><td valign="top">
-                            <Typography variant="h4" color="textPrimary">{this.state.questions}</Typography>
+                            <Typography variant="h4" color="textPrimary">{this.state.users}</Typography>
                           </td></tr></tbody>
                           <tbody><tr><td align="right">
-                              <Typography style={{fontSize: 10}} color="textSecondary">questions</Typography>
+                              <Typography style={{fontSize: 10}} color="textSecondary">users</Typography>
                           </td></tr></tbody>
                         </table>
                       </td>
-                      <td align="right" valign="top"><AnswerIcon fontSize="large" color="disabled"/></td>
+                      <td align="right" valign="top"><ModulesIcon fontSize="large" color="disabled"/></td>
                       <td>
                         <table cellPadding="0" cellSpacing="0">
                           <tbody><tr><td valign="top">
-                            <Typography variant="h4" color="textPrimary">{this.state.answers}</Typography>
+                            <Typography variant="h4" color="textPrimary">{this.state.modules}</Typography>
                           </td></tr></tbody>
                           <tbody><tr><td align="right">
-                              <Typography style={{fontSize: 10}} color="textSecondary">answers</Typography>
+                              <Typography style={{fontSize: 10}} color="textSecondary">modules</Typography>
                           </td></tr></tbody>
                         </table>
                       </td>
-                  </tr></tbody>
-                  <tbody><tr>
-                    <td align="right" valign="top"><RecommendationsIcon fontSize="large" color="disabled"/></td>
-                      <td>
-                        <table cellPadding="0" cellSpacing="0">
-                          <tbody><tr><td valign="top">
-                            <Typography variant="h4" color="textPrimary">{this.state.recommendations}</Typography>
-                          </td></tr></tbody>
-                          <tbody><tr><td align="right">
-                              <Typography style={{fontSize: 10}} color="textSecondary">Recommendations</Typography>
-                          </td></tr></tbody>
-                        </table>
-                      </td>
-                      <td align="right" valign="top"><SessionsIcon fontSize="large" color="disabled"/></td>
-                      <td>
-                        <table cellPadding="0" cellSpacing="0">
-                          <tbody><tr><td valign="top">
-                            <Typography variant="h4" color="textPrimary">{this.state.sessions}</Typography>
-                          </td></tr></tbody>
-                          <tbody><tr><td align="right">
-                              <Typography style={{fontSize: 10}} color="textSecondary">sessions</Typography>
-                          </td></tr></tbody>
-                        </table>
-                      </td>
-                  </tr></tbody>
-                </table>
+                    </tr></tbody>
+                    <tbody><tr>
+                      <td align="right" valign="top"><QuestionIcon fontSize="large" color="disabled"/></td>
+                        <td>
+                          <table cellPadding="0" cellSpacing="0">
+                            <tbody><tr><td valign="top">
+                              <Typography variant="h4" color="textPrimary">{this.state.questions}</Typography>
+                            </td></tr></tbody>
+                            <tbody><tr><td align="right">
+                                <Typography style={{fontSize: 10}} color="textSecondary">questions</Typography>
+                            </td></tr></tbody>
+                          </table>
+                        </td>
+                        <td align="right" valign="top"><AnswerIcon fontSize="large" color="disabled"/></td>
+                        <td>
+                          <table cellPadding="0" cellSpacing="0">
+                            <tbody><tr><td valign="top">
+                              <Typography variant="h4" color="textPrimary">{this.state.answers}</Typography>
+                            </td></tr></tbody>
+                            <tbody><tr><td align="right">
+                                <Typography style={{fontSize: 10}} color="textSecondary">answers</Typography>
+                            </td></tr></tbody>
+                          </table>
+                        </td>
+                    </tr></tbody>
+                    <tbody><tr>
+                      <td align="right" valign="top"><RecommendationsIcon fontSize="large" color="disabled"/></td>
+                        <td>
+                          <table cellPadding="0" cellSpacing="0">
+                            <tbody><tr><td valign="top">
+                              <Typography variant="h4" color="textPrimary">{this.state.recommendations}</Typography>
+                            </td></tr></tbody>
+                            <tbody><tr><td align="right">
+                                <Typography style={{fontSize: 10}} color="textSecondary">Recommendations</Typography>
+                            </td></tr></tbody>
+                          </table>
+                        </td>
+                        <td align="right" valign="top"><SessionsIcon fontSize="large" color="disabled"/></td>
+                        <td>
+                          <table cellPadding="0" cellSpacing="0">
+                            <tbody><tr><td valign="top">
+                              <Typography variant="h4" color="textPrimary">{this.state.sessions}</Typography>
+                            </td></tr></tbody>
+                            <tbody><tr><td align="right">
+                                <Typography style={{fontSize: 10}} color="textSecondary">sessions</Typography>
+                            </td></tr></tbody>
+                          </table>
+                        </td>
+                    </tr></tbody>
+                  </table>
+              </div>
+            </div>
+
+            <div className={classes.wrapper} >
+              <Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>Number of Sessions in the last week</Typography>
+              <AreaChart isAnimationActive={true} width={600} style={{fontSize: 14}} height={400} data={this.state.top_sessions} margin={{top: 10, right: 30, left: 0, bottom: 0}}>
+                <CartesianGrid strokeDasharray="3 3"/>
+                <XAxis dataKey="name"/>
+                <YAxis tickFormatter={(tick) => tick+1}/>
+                <Tooltip wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
+                <Area type='monotone' dataKey='sessions' stroke='#8cb0f6' fill='#8cb0f6' />
+              </AreaChart>
             </div>
           </div>
-
-          <div className={classes.wrapper} >
-            <Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>Number of Sessions in the last week</Typography>
-            <AreaChart isAnimationActive={false} width={600} style={{fontSize: 14}} height={400} data={this.state.top_sessions} margin={{top: 10, right: 30, left: 0, bottom: 0}}>
-              <CartesianGrid strokeDasharray="3 3"/>
-              <XAxis dataKey="name"/>
-              <YAxis tickFormatter={(tick) => tick+1}/>
-              <Tooltip wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
-              <Area type='monotone' dataKey='sessions' stroke='#8cb0f6' fill='#8cb0f6' />
-            </AreaChart>
-          </div>
-        </div>
-        </React.Fragment>
-    );
+          </React.Fragment>
+      );
+    }
   }
 }
 
