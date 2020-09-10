@@ -105,11 +105,12 @@ class Dashboard extends PureComponent{
                               break; 
                             }
                             // Any other code - 'Houston, we have a problem'.
-                            default:{ 
+                            default:{
+                              this.setState({top_recommendations: 0, loading: false})
                               this.setState({loading: false})
                               break;
                             }
-                      }}).catch(function() { return; });
+                      }}).catch(function() { this.setState({loading: false}); return; });
                     });
                     // Get Top modules
                     this.setState({loading: true}, async () => {
@@ -138,10 +139,11 @@ class Dashboard extends PureComponent{
                             }
                             // Any other code - 'Houston, we have a problem'.
                             default:{ 
+                              this.setState({top_modules: 0, loading: false})
                               this.setState({loading: false})
                               break;
                             }
-                      }}).catch(function() { return; });
+                      }}).catch(function() { this.setState({loading: false}); return; });
                     });
                     // Get Top Sessions (7 days)
                     this.setState({loading: true}, async () => {
@@ -169,10 +171,11 @@ class Dashboard extends PureComponent{
                             }
                             // Any other code - 'Houston, we have a problem'.
                             default:{ 
+                              this.setState({top_sessions: 0, loading: false})
                               this.setState({loading: false})
                               break;
                             }
-                      }}).catch(function() { return; });
+                      }}).catch(function() { this.setState({loading: false}); return; });
                     });
                   });
               break; 
@@ -182,7 +185,7 @@ class Dashboard extends PureComponent{
               this.setState({loading: false})
               break;
             }
-      }}).catch(function() { return; });
+      }}).catch(function() { this.setState({loading: false}); return; });
     });
 
   }
