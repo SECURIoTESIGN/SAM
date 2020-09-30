@@ -106,7 +106,7 @@ class Dashboard extends PureComponent{
                             }
                             // Any other code - 'Houston, we have a problem'.
                             default:{
-                              this.setState({top_recommendations: 0, loading: false})
+                              this.setState({top_recommendations: [], loading: false})
                               this.setState({loading: false})
                               break;
                             }
