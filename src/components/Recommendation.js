@@ -91,7 +91,7 @@ class Recommendation extends Component{
           default:{ 
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
   }
 
   /* [Summary]: Handles the process of editing or adding a new recommendation. */
@@ -161,7 +161,7 @@ class Recommendation extends Component{
             this.setState({form_error: "'Houston, we have a problem'", loading: false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
      
   }
 

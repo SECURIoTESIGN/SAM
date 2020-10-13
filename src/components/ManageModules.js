@@ -91,7 +91,7 @@ class ManageModules extends Component{
             default:{ 
               break;
             }
-      }}).catch(function() { return; });
+      }}).catch( () => { return; });
     });
   }
 

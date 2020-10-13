@@ -100,7 +100,7 @@ class Login extends Component{
           break;
         }
       }
-    }).catch(function() {
+    }).catch( () => {
       return;
     });
     //

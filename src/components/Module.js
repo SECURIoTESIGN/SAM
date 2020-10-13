@@ -65,7 +65,7 @@ class Module extends Component{
       fullname: null,
       displayname: null,
       description: null,
-      logic:  null,
+      logic_filename:  null,
       avatar: null,
       tree: null,
       recommendations: [],        // List of recommendations mapped to this module.
@@ -75,6 +75,7 @@ class Module extends Component{
     questions_answers: null,      // Questions answer to be linked to this module
     form_error: null,
     loading: false, 
+    file_uploaded: false,
   };
   
   /* [Summary]: Get module types, dependencies and, if requested, set a module to be edited. */
@@ -115,7 +116,7 @@ class Module extends Component{
           default:{ 
             break;
           }
-     }}).catch(function() { return null; });
+     }}).catch( () => { this.setState({loading: false}); return; });
   }
 
   /* 
@@ -148,7 +149,7 @@ class Module extends Component{
           default:{ 
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
   }
 
   /* [Summary]: Fetch the list of modules using a backend service */
@@ -181,7 +182,7 @@ class Module extends Component{
           default:{ 
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
   }
 
   /* 
@@ -202,6 +203,7 @@ class Module extends Component{
 
   /* [Summary]: Handles the process of editing or adding a new module. */
   add_edit_module = () =>{   
+    console_log("add_edit_module", "UPLOADED? " + this.state.file_uploaded)
     const DEBUG=false;
     var service_URL = "/module";
     var method_type = null;
@@ -222,23 +224,23 @@ class Module extends Component{
     if (this.state.module.updatedon)           obj_module['updatedon']       = this.state.module.updatedon;
     if (this.state.module.dependencies)        obj_module['dependencies']    = this.state.module.dependencies;
     // store in the object the filename of the logic file.
-    if (this.state.module.logic)               obj_module['logic_filename'] = this.state.module.logic[0].name;
+    if (this.state.module.logic_filename)               obj_module['logic_filename'] = this.state.module.logic_filename[0].name;
     
     // Form Validations
     if (this.state.module.fullname == null || this.state.module.displayname == null || this.state.module.shortname == null || this.state.module.tree == null){
       this.setState({form_error: "Fields 'Name', 'Display Name', 'Abbreviation', 'Questions and Answers', and 'Recommendations' are required to add a new module."});
       return
     }
-    if (this.state.module.recommendations.length == 0){
-      if (!this.state.module.logic){
+    if (this.state.module.recommendations.length === 0){
+      if (!this.state.module.logic_filename){
         this.setState({form_error: "'Recommendations' or a 'logic file' is required to add a new module."});
         return
       }
     }
 
     // File type validation
-    if (this.state.module.logic){
-      if (obj_module['logic_filename'].substring(obj_module['logic_filename'].lastIndexOf('.')+1) != "py"){
+    if (this.state.module.file_uploaded){
+      if (obj_module['logic_filename'].substring(obj_module['logic_filename'].lastIndexOf('.')+1) !== "py"){
           this.setState({form_error: "Please, only logic '.py' files are allowed to be uploaded."})
           return false;
       }
@@ -270,9 +272,10 @@ class Module extends Component{
         switch (response[service_URL]['status']){
           // Code 200 - 'It's alive! It's alive!'.
           case 200:{
-            if (this.state.module.logic){
+            if (this.state.module.file_uploaded){
               let final_logic_filename = "logic_" + response[service_URL]['id'] + ".py";
-              this.upload_logic_file(this.state.module.logic, final_logic_filename);
+              this.upload_logic_file(this.state.module.logic_filename, final_logic_filename);
+              this.setState({module: {...this.state.module}, file_uploaded: false})
             }
             break; 
           }
@@ -281,7 +284,7 @@ class Module extends Component{
             this.setState({form_error: "'Houston, we have a problem'"});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
      
   }
 
@@ -297,7 +300,7 @@ class Module extends Component{
       // If the current dialog is to edit a module then we must flag this recommendation to be removed by the backend service.
       let tmp_rec = this.state.module.recommendations;
       for(let i=0; i < tmp_rec.length; i++){
-        if (tmp_rec[i]['id'] == chip_to_delete.id) tmp_rec[i]['to_remove'] = true;
+        if (tmp_rec[i]['id'] === chip_to_delete.id) tmp_rec[i]['to_remove'] = true;
       }
       this.setState({module:{...this.state.module, recommendations: tmp_rec}})
     }
@@ -315,7 +318,7 @@ class Module extends Component{
       // If the current dialog is to edit a module then we must flag this recommendation to be removed by the backend service.
       let tmp = this.state.module.dependencies;
       for(let i=0; i < tmp.length; i++){
-        if (tmp[i]['module']['id'] == chip_to_delete.module.id) tmp[i]['to_remove'] = true;
+        if (tmp[i]['module']['id'] === chip_to_delete.module.id) tmp[i]['to_remove'] = true;
       }
       this.setState({module:{...this.state.module, dependencies: tmp}})
     }
@@ -347,7 +350,7 @@ class Module extends Component{
     // Let's upload some logic for this module
     const data = new FormData()
     data.append('file', files[0])
-    console_log("upload_logic_file", "Logic file to be uploaded = '" + filename + "'");
+    if (DEBUG) console_log("upload_logic_file", "Logic file to be uploaded = '" + filename + "'");
     fetch(service_URL, {
       method: method_type, 
       headers: {'Authorization': getUserData()['token']},
@@ -410,7 +413,7 @@ class Module extends Component{
                     <Select defaultValue="" native inputProps={{name: 'type', id: 's_module_type'}} style={{width: 100}} onChange={event => this.setState({module:{...this.state.module,type_id: event.target.value}})}>
                       <option aria-label="None" value="" />
                       {this.state.module_types.map((type) => (
-                        type['id'] == this.state.module.type_id ? 
+                        type['id'] === this.state.module.type_id ? 
                         (<option value={type['id']} selected>{type['name']}</option>) : 
                         (<option value={type['id']}>{type['name']}</option>)
                         
@@ -422,11 +425,11 @@ class Module extends Component{
           {/* Dependency */}
           <tbody><tr>
             <td colSpan="2" style={{listStyle: 'none', paddingTop: 5}}>
-                {this.state.module.dependencies.length != 0 ? this.state.module.dependencies.map((dependency, i) => {
+                {this.state.module.dependencies.length !== 0 ? this.state.module.dependencies.map((dependency, i) => {
                     let icon = <SaveIcon/>;
                     let addChip = null;
                     let size = (this.state.module.dependencies.length - 1);
-                    size == i || size == 0 ? addChip = <Chip color="primary" icon={<AddChipIcon/>} label="Link Dependencies" onClick={() => {this.setState({open_dependencies: !this.state.open_dependencies})}} /> : addChip = null;
+                    size === i || size === 0 ? addChip = <Chip color="primary" icon={<AddChipIcon/>} label="Link Dependencies" onClick={() => {this.setState({open_dependencies: !this.state.open_dependencies})}} /> : addChip = null;
                     if (!dependency.to_remove){
                       return (
                         <Tooltip title={dependency.module.fullname} arrow>
@@ -453,7 +456,7 @@ class Module extends Component{
             {/* Module's Logic */}
             <td style={{paddingTop:10}}>
               <label htmlFor="upload-logic">
-                <input style={{ display: 'none' }} id="upload-logic" name="upload-logic" type="file" onChange={(event) => this.setState({module: {...this.state.module, logic: event.target.files}})} />
+                <input style={{ display: 'none' }} id="upload-logic" name="upload-logic" type="file" onChange={(event) => this.setState({module: {...this.state.module, logic_filename: event.target.files}, file_uploaded: true})} />
                 <Button variant="contained" component="span" className={classes.button}  color="default" startIcon={<CloudUploadIcon />} fullWidth>Logic</Button>
               </label>
             </td>
@@ -463,11 +466,11 @@ class Module extends Component{
           <tbody><tr>
             <td colSpan="2">
               <Collapse in={this.state.module.tree !== null} style={{listStyle: 'none', paddingTop: 5}}>
-                  {this.state.module.recommendations.length != 0 ? this.state.module.recommendations.map((recommendation, i) => {
+                  {this.state.module.recommendations.length !== 0 ? this.state.module.recommendations.map((recommendation, i) => {
                     let icon = <SaveIcon/>;
                     let addChip = null;
                     let size = (this.state.module.recommendations.length - 1);
-                    size == i || size == 0 ? addChip = <Chip color="primary" icon={<AddChipIcon/>} label="Link Recommendation" onClick={() => {this.setState({open_recommendations: !this.state.open_recommendations})}} /> : addChip = null;
+                    size === i || size === 0 ? addChip = <Chip color="primary" icon={<AddChipIcon/>} label="Link Recommendation" onClick={() => {this.setState({open_recommendations: !this.state.open_recommendations})}} /> : addChip = null;
                     if (!recommendation.to_remove){
                       return (
                         <Tooltip title={recommendation.content} arrow>

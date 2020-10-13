@@ -98,7 +98,7 @@ class Group extends Component{
             this.setState({loading:false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
   }
 
   /* [Summary]: Handles the process of editing or adding a new resource. */
@@ -143,7 +143,7 @@ class Group extends Component{
             this.setState({form_error: "'Houston, we have a problem'", loading: false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
      
   }
 

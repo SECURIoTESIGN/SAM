@@ -74,7 +74,7 @@ class MySessions extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
 
 
     this.setState({open_recommendations: true})

@@ -73,7 +73,7 @@ class ManageRecommendations extends Component{
               this.setState({loading: false});
               break;
             }
-      }}).catch(function() { return; });
+      }}).catch( () => { return; });
     });
   }
 

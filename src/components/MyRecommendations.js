@@ -67,7 +67,7 @@ class MySessions extends Component{
           a.click();    
           a.remove();
         });
-     }).catch(function() { return; });
+     }).catch( () => { return; });
   }
 
   render(){

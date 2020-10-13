@@ -121,7 +121,7 @@ class LinkRecommendations extends Component{
           default:{ 
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
   }
 
   /* [Summary]: Tree callback, triggered when a node is selected on the tree component. */

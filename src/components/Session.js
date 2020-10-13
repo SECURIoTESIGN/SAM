@@ -89,7 +89,7 @@ class Session extends Component{
             this.setState({loading: false}) 
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
   }
 
   /* [Summary]: Update session with all the answers given to particular question. */
@@ -121,7 +121,7 @@ class Session extends Component{
           this.setState({error_warning: "'Houston, we have a problem'", loading: false});
           break;
         }
-      }}).catch(function() { return; });   
+      }}).catch(() => { this.setState({loading: false}); return; });   
   }
 
   /* [Summary]: Fetch the list of available modules */
@@ -147,7 +147,7 @@ class Session extends Component{
             this.setState({loading: false})
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
   }
   
   /* [Summary]: Handles the selection of a new module, that is, start a new round of questions in a new session */
@@ -204,7 +204,7 @@ class Session extends Component{
             this.setState({error_warning: "'Houston, we have a problem'", loading: false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
     
   }
 
@@ -351,7 +351,7 @@ class Session extends Component{
           a.click();    
           a.remove();
         });
-     }).catch(function() { return; });
+     }).catch( () => { this.setState({loading: false}); return; });
   }
 
   render(){

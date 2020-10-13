@@ -106,11 +106,11 @@ class Dashboard extends PureComponent{
                             }
                             // Any other code - 'Houston, we have a problem'.
                             default:{
-                              this.setState({top_recommendations: [], loading: false})
+                              this.setState({top_recommendations: 0, loading: false})
                               this.setState({loading: false})
                               break;
                             }
-                      }}).catch(function() { this.setState({loading: false}); return; });
+                      }}).catch(() => { this.setState({loading: false}); return; });
                     });
                     // Get Top modules
                     this.setState({loading: true}, async () => {
@@ -139,11 +139,11 @@ class Dashboard extends PureComponent{
                             }
                             // Any other code - 'Houston, we have a problem'.
                             default:{ 
-                              this.setState({top_modules: 0, loading: false})
+                              this.setState({top_modules: [], loading: false})
                               this.setState({loading: false})
                               break;
                             }
-                      }}).catch(function() { this.setState({loading: false}); return; });
+                      }}).catch( () => { this.setState({loading: false}); return; });
                     });
                     // Get Top Sessions (7 days)
                     this.setState({loading: true}, async () => {
@@ -171,11 +171,11 @@ class Dashboard extends PureComponent{
                             }
                             // Any other code - 'Houston, we have a problem'.
                             default:{ 
-                              this.setState({top_sessions: 0, loading: false})
+                              this.setState({top_sessions: [], loading: false})
                               this.setState({loading: false})
                               break;
                             }
-                      }}).catch(function() { this.setState({loading: false}); return; });
+                      }}).catch( () => { this.setState({loading: false}); return; });
                     });
                   });
               break; 
@@ -185,7 +185,7 @@ class Dashboard extends PureComponent{
               this.setState({loading: false})
               break;
             }
-      }}).catch(function() { this.setState({loading: false}); return; });
+      }}).catch( () => { this.setState({loading: false}); return; });
     });
 
   }
@@ -212,7 +212,7 @@ class Dashboard extends PureComponent{
       {name: '07/08', sessions: 2},
     ];
     */
-    if (this.state.top_recommendations.length == 0 || this.state.top_modules.length == 0 || this.state.top_sessions.length == 0){
+    if (this.state.top_recommendations.length === 0 || this.state.top_modules.length === 0 || this.state.top_sessions.length === 0){
       return(<LoadingComponent open={this.state.loading}/>);
     }else{
       return(
@@ -224,7 +224,7 @@ class Dashboard extends PureComponent{
                   <PieChart width={360} height={350} >
                     {/* label={(entry) => entry.name + " (" + ((entry.percent*100).toFixed(0)) + "%)"} */}
                     <Pie isAnimationActive={true} label={(entry) => (entry.value*100).toFixed(0) + "%"} data={this.state.top_recommendations} innerRadius={110} outerRadius={130} fill="#8884d8" paddingAngle={3} dataKey="value">
-                      {this.state.top_recommendations.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                      { this.state.top_recommendations ? this.state.top_recommendations.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />) : null}
                     </Pie>
                     <Tooltip formatter={(entry) => (entry*100).toFixed(0) + "%"} wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
                     <Legend align="center" wrapperStyle={{fontSize: 14}}/>

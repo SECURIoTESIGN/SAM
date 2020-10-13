@@ -87,7 +87,7 @@ class Account extends Component{
             break;
           }
         }
-      }).catch(function() {
+      }).catch( () => {
         return;
       });
   }

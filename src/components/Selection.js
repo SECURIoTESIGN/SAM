@@ -138,7 +138,7 @@ class Selection extends Component{
               break;
             }
           }
-      }).catch(function() { return; });
+      }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of groups, using a backend service, to populate the table. */
@@ -188,7 +188,7 @@ class Selection extends Component{
               break;
             }
           }
-      }).catch(function() { return; });
+      }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of types, using a backend service, to populate the table. */
@@ -233,7 +233,7 @@ class Selection extends Component{
               break;
             }
           }
-      }).catch(function() { return; });
+      }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of recommendations, using a backend service, to populate the table. */
@@ -279,7 +279,7 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of sessions of a user, using a backend service, to populate the table. */
@@ -336,7 +336,7 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   /* [Summary]: Check if a row was previously selected. */
@@ -389,7 +389,7 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of answers, using a backend service, to populate the table. */
@@ -434,7 +434,7 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
   
   /* [Summary]: Fetch the list of questions, using a backend service, to populate the table. */
@@ -482,7 +482,7 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of modules, using a backend service, to populate the table. */
@@ -530,7 +530,7 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   render(){

@@ -64,18 +64,19 @@ class Tree extends Component{
 
   componentDidMount(){
     const DEBUG=false;
+
+    if (this.props.data){
+      if (DEBUG) console_log("componentDidMount", "Tree is loaded from prop (data) =" + this.props.data);
+      this.setState({treeData: this.props.data})
+      return
+    }
+
     if (this.props.module){
       this.setState({loading: true}, () => {
         if (DEBUG) console_log("componentDidMount", "Loading into the tree module =" + this.props.module);
         this.fetch_module(this.props.module)
       });
-      return
-    }
-
-    if (this.props.data){
-      if (DEBUG) console_log("componentDidMount", "Tree is loaded from prop (data) =" + this.props.data);
-      this.setState({treeData: this.props.data})
-    }
+    } 
   }
 
   /* [Summary]: Fetch a module with id equal [ID] using a backend service. */
@@ -99,7 +100,7 @@ class Tree extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of modules. */
@@ -131,7 +132,7 @@ class Tree extends Component{
           break;
         }
       }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   /* [Summary]: Load data of a module into the current tree. */
