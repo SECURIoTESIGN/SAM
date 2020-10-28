@@ -224,7 +224,7 @@ class Module extends Component{
     if (this.state.module.updatedon)           obj_module['updatedon']       = this.state.module.updatedon;
     if (this.state.module.dependencies)        obj_module['dependencies']    = this.state.module.dependencies;
     // store in the object the filename of the logic file.
-    if (this.state.module.logic_filename)               obj_module['logic_filename'] = this.state.module.logic_filename[0].name;
+    if (this.state.module.logic_filename)      obj_module['logic_filename']  = this.state.module.logic_filename[0].name;
     
     // Form Validations
     if (this.state.module.fullname == null || this.state.module.displayname == null || this.state.module.shortname == null || this.state.module.tree == null){

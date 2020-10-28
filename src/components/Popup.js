@@ -24,7 +24,7 @@
 // ---------------------------------------------------------------------------
 // This custom component is an extension to the material-ui dialog component
 import React, {Component} from 'react';
-import {withStyles, Dialog, DialogTitle, DialogContent, Typography, Button} from '@material-ui/core';
+import {withStyles, Dialog, DialogTitle, DialogContent, Typography} from '@material-ui/core';
 import {useStyles} from './PopupStyles'
 import {SAMIcon} from '../helpers/IconMakerHelper';
 

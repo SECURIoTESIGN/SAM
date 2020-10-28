@@ -27,7 +27,7 @@
 
 import React, {Component} from 'react';
 import {Slide, TextField, withStyles, Tooltip, Button}  from '@material-ui/core';
-import SortableTree, { addNodeUnderParent, removeNodeAtPath, changeNodeAtPath, getVisibleNodeCount, getNodeAtPath, getDepth, walk} from 'react-sortable-tree';
+import SortableTree, { addNodeUnderParent, removeNodeAtPath, changeNodeAtPath, getVisibleNodeCount, getNodeAtPath, walk} from 'react-sortable-tree';
 import {ArrowDownward as ImportIcon, ArrowUpward as ExportIcon, Save as SaveIcon, FileCopy as CopyIcon, Delete as DeleteIcon, ArrowBack as ArrowLeftIcon, ArrowDownward as ArrowDownIcon, Input as SelectIcon, CheckBoxOutlined as CheckboxIcon} from '@material-ui/icons/';
 import {orange, green} from '@material-ui/core/colors';
 import {useStyles} from './TreeStyles';
