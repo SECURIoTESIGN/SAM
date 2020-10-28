@@ -396,12 +396,12 @@ class Session extends Component{
           <React.Fragment>
             <LoadingComponent open={this.state.loading}/>
             {/* Warning error popup */}
-            <PopupComponent open={this.state.error_warning} onClose={() => this.setState({error_warning: null})}>
+            <PopupComponent open={this.state.error_warning} onClose={() => {this.setState({error_warning: null}); window.location.reload() }}>
               <Alert severity="warning">{this.state.error_warning}</Alert>
             </PopupComponent>
             {/* Recommendations Popup */}
             {this.state.session.recommendations ? (
-            <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload(true)}} TransitionComponent={Transition}>
+            <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload()}} TransitionComponent={Transition}>
               <MyRecommendationsComponent recommendations={this.state.session.recommendations}/>
             </PopupComponent>) : undefined}
             
