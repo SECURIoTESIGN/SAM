@@ -86,7 +86,7 @@ class Session extends Component{
           }
           // Any other code - 'Houston, we have a problem'.
           default:{
-            this.setState({loading: false}) 
+            this.setState({error_warning: response[service_URL]['message'].split(",")[1], loading: false}) 
             break;
           }
      }}).catch( () => { this.setState({loading: false}); return; });
