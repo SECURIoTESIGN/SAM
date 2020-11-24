@@ -207,8 +207,6 @@ class Tree extends Component{
   node_set_to_multiple_answers = (tree, node) => {
     var parent = this.get_parent_of_node (tree, node);
     if (!parent) return false;
-    console.log("NODE " + JSON.stringify(node.name) + " will be hidden or not (parent=" + parent.name + ") =" + parent.multipleAnswers);
-    
     if (parent.multipleAnswers) return true;
     return false;
   }
@@ -339,7 +337,7 @@ class Tree extends Component{
   }
 
   /* [Summary]: Checks if a parent node has grandchildren. */
-  node_has_grandparents = (node) => {
+  node_has_grandchildren = (node) => {
     for(let i=0; i < node.children.length; i++)
       // Check if the current parent node has grandchildren
       if (node.children[i].children.length != 0) return true;
@@ -386,7 +384,7 @@ class Tree extends Component{
         
           ],title: (
           <table border="0"><tr><td>
-            {node.type == 'question' && node.children.length != 0  && !this.node_has_grandparents(node) ? (
+            {node.type == 'question' && node.children.length != 0  && !this.node_has_grandchildren(node) ? (
               <Checkbox title="The user can choose multiple answers. This option can only be used when the answers have no questions."
                                      disabled={this.props.selectOnly}
                                      icon={<MultipleAnswersIcon color="disabled"/>} 
