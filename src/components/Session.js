@@ -50,6 +50,7 @@ class Session extends Component{
       q_index: 0,                     // Current array index of the question.
       question: null,                 // Current question being answered by the user.
       p_answers: null,                // List of previous answers.
+      answers: [],                  // Current answers being given by the user (only used if the current question was flagged as multipleAnswers)
       module: null,                   // Selected module for the current session.
       recommendations: null,          // List of recommendations given after the session has being closed.
     }
@@ -208,10 +209,47 @@ class Session extends Component{
     
   }
 
-  /* [Summary]: Handles the selection of answers, storing it and moving on to the next question or sub-question. */
+  /* [Summary]: Intermediate method to allow the user to answer multiple answers to a given question */
+  handle_answers = (event, answer, finished=false) => {
+    var DEBUG = false;
+    this.setState({loading: true});
+    
+    // BE AWARE - This implementation assumes that multi answer questions do not have children with sub-questions.
+    // ## Process multi answer questions. 
+    if (this.state.session.question['multipleAnswers']){
+      if (!finished){
+        let s_answers = []
+        if (this.state.session.answers){
+          s_answers = this.state.session.answers;
+          // avoid storing repeated answers 
+          if (s_answers.some(ans => ans.id === answer.id)){
+            this.setState({loading: false});
+            return;
+          }
+          s_answers.push(answer);
+        }else
+          s_answers.push(answer);
+        
+        this.setState({loading: false, session: {...this.state.session, answers: s_answers}}, () => {
+          if (DEBUG) console_log("handle_answers", "Answer added:" + JSON.stringify(answer));
+          if (DEBUG) console_log("handle_answers", "List of answers selected (" + this.state.session.answers.length + "):" + JSON.stringify(this.state.session.answers));
+        })
+      }else{
+        // After the user finishes answering the question (by pressing the corresponding button) the multiple answers can now be processed. 
+        // SECOND WARNING - This implementation assumes that multi answer questions do not have children with sub-questions.
+        for(let i=0; i < this.state.session.answers.length; i++)
+          this.handle_answer_selection(event, this.state.session.answers[i]);
+      }
+    }else{
+      // ### Process single answer questions. 
+      this.handle_answer_selection(event, answer)
+    }
+  }
+
+  /* [Summary]: Handles the selection of answers, storing it and moving on to the next question (if the question is set to multipleAnswers) or sub-question. */
   handle_answer_selection = (event, answer, index=null) => {
     const DEBUG = false;
-    if (DEBUG && answer)  console_log("handle_answer_selection", "answer selected :" + JSON.stringify(answer['name']));
+    if (answer)  console_log("handle_answer_selection", "answer selected :" + JSON.stringify(answer['name']));
     if (DEBUG && !answer) console_log("handle_answer_selection", "answer inputted :" + JSON.stringify(this.state.session.tmp));
 
     // Validation of an answer directly inputted by the user. 
@@ -414,16 +452,25 @@ class Session extends Component{
                 {this.state.session.question['name']}
               </Typography>
             </Fade>
+            <Fade in={true} timeout={500}>
+              <Typography variant="subtitle2" align="center" color="textSecondary" component="p">
+                  {this.state.session.question.multipleAnswers ? "This is a multiple choice question. Please, choose several options" : "" }
+                </Typography>
+            </Fade>
             <Avatar className={classes.avatar} src={process.env.PUBLIC_URL + '/avatar.png'} />
 
             {/* Render answers of the root questions, if no answers are linked than the question is user inputted. */}
             {this.state.session.question['children'].length != 0 ? 
               (<List component="nav" align="center" aria-label="main mailbox folders">
                 {this.state.session.question['children'].map((answer, index) => 
-                  (<Fade in={true} timeout={1500}><ListItem alignItems="center" key={index} data-answer={answer} button onClick={(event) => this.handle_answer_selection(event, answer)}> 
+                  (<Fade in={true} timeout={1500}><ListItem alignItems="center" key={index} data-answer={answer} button onClick={(event) => this.handle_answers(event, answer)}> 
                     <ListItemText align="center" primary={answer['name']} />
                   </ListItem></Fade>)
                 )}
+
+
+                <Button startIcon={<SaveIcon/>} style={this.state.session.question['multipleAnswers'] && this.state.session.answers.length != 0 ? {cursor: 'pointer'} : {display: 'none'}} 
+                          onClick={(event) => this.handle_answers(event, null, true)} color="primary">Save Answers</Button>
               </List>)
               : (
               <Fade in={true} timeout={1500}><div>
@@ -433,7 +480,7 @@ class Session extends Component{
                       <TextField id="tf_inputted_answer" width="250" label="Input your answer" onChange={event => this.setState({session:{...this.state.session,tmp: event.target.value}})} />
                      </td>
                     <td valign="bottom">
-                      <SaveIcon style={{cursor: 'pointer'}} onClick={(event) => this.handle_answer_selection(event, null)} color="primary"/>
+                      <Button startIcon={<SaveIcon/>} style={{cursor: 'pointer'}} onClick={(event) => this.handle_answers(event, null)} color="primary">Save Answer</Button>
                     </td>
                   </tr></tbody>
                 </table>

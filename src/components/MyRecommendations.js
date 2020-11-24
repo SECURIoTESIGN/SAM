@@ -44,9 +44,7 @@ class MySessions extends Component{
   };
 
   /* [Summary]: Load user data from a backend service */
-  componentDidMount(){
-
-  }
+  componentDidMount(){}
 
   /* [Summary]: Fetch a guide for a recommendation */
   fetch_guide = (event, name, filename) => {

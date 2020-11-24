@@ -26,9 +26,9 @@
 // - https://github.com/frontend-collective/react-sortable-tree/
 
 import React, {Component} from 'react';
-import {Slide, TextField, withStyles, Tooltip, Button}  from '@material-ui/core';
+import {Slide, TextField, withStyles, Tooltip, Button, Checkbox, IconButton}  from '@material-ui/core';
 import SortableTree, { addNodeUnderParent, removeNodeAtPath, changeNodeAtPath, getVisibleNodeCount, getNodeAtPath, walk} from 'react-sortable-tree';
-import {ArrowDownward as ImportIcon, ArrowUpward as ExportIcon, Save as SaveIcon, FileCopy as CopyIcon, Delete as DeleteIcon, ArrowBack as ArrowLeftIcon, ArrowDownward as ArrowDownIcon, Input as SelectIcon, CheckBoxOutlined as CheckboxIcon} from '@material-ui/icons/';
+import {DoneAll as MultipleAnswersIcon, ArrowDownward as ImportIcon, ArrowUpward as ExportIcon, Save as SaveIcon, FileCopy as CopyIcon, Delete as DeleteIcon, ArrowBack as ArrowLeftIcon, ArrowDownward as ArrowDownIcon, Search as SelectIcon, Create as UserAnswerIcon} from '@material-ui/icons/';
 import {orange, green} from '@material-ui/core/colors';
 import {useStyles} from './TreeStyles';
 import 'react-sortable-tree/style.css'; // SortableTree CSS
@@ -52,7 +52,7 @@ const getNodeKey = ({ treeIndex }) => treeIndex;
 class Tree extends Component{
   /* REACT Session state object */
   state = {
-    treeData: [{id: null, type:'question', name: 'Input your first question', selected: false, client_id: 0, children: []},],
+    treeData: [{id: null, type:'question', name: 'Input your first question', multipleAnswers: false, selected: false, client_id: 0, children: []},],
     type: "",             // The current node type selected
     modules: [],
     path: null,
@@ -149,7 +149,7 @@ class Tree extends Component{
 
   /* [Summmary]: Auxiliary method of get_parent_of_node -> Recursively find the parent of a [target_node] in the tree. */
   search_tree = (node, target_node, parent) => {
-    const DEBUG = true;
+    const DEBUG = false;
     if (node['type'] == 'answer'){
       if (DEBUG) console_log("search_tree", "node['id']="+ node['id'] + " target_node['id']="+target_node['id'] + " parentID="+ parent['id'])
       if (DEBUG) console_log("search_tree", "node['client_id']="+ node['client_id'] + " target_node['client_id']="+target_node['client_id'] + " parentID="+ parent['client_id'])
@@ -190,15 +190,27 @@ class Tree extends Component{
       console_log("get_parent_of_node", "(parent): " + JSON.stringify(parentNode))
     }
 
+    if (!parentNode) return(null);
+
     let parent = {}
     parent['id']          = parentNode['id']
     parent['client_id']   = parentNode['client_id']
     parent['name']        = parentNode['name']
     parent['type']        = parentNode['type']
     parent['selected']    = parentNode['selected']
+    parent['multipleAnswers'] = parentNode['multipleAnswers']
     if (DEBUG) console_log("get_parent_of_node", "(parent, filtered): " + JSON.stringify(parent))
     // 'May the Force be with you'.
     return(parent);
+  }
+
+  node_set_to_multiple_answers = (tree, node) => {
+    var parent = this.get_parent_of_node (tree, node);
+    if (!parent) return false;
+    console.log("NODE " + JSON.stringify(node.name) + " will be hidden or not (parent=" + parent.name + ") =" + parent.multipleAnswers);
+    
+    if (parent.multipleAnswers) return true;
+    return false;
   }
 
   /* [Summary]: Add a node to the tree that can be a question or an answer. */
@@ -223,6 +235,7 @@ class Tree extends Component{
             id: null,
             client_id: this.state.c_client_id,
             selected: false, 
+            multipleAnswers: false,
             children: [], 
             name: (down ? (parentNode.node.type == 'question' ? 'Input your answer' : 'Input your question') : (parentNode.node.type == 'question' ? 'Input your question' : 'Input your answer')),
             type: (down ? (parentNode.node.type == 'question' ? 'answer' : 'question') : (parentNode.node.type == 'question' ? 'question' : 'answer')),
@@ -311,6 +324,28 @@ class Tree extends Component{
     fileReader.readAsText(file)
   }
 
+  /* [Summary]: Update the current node question answer mode. I.e., several answers can be given to a question. */
+  tree_Node_Multiple_Answers = (event, node, path) => {
+    const multipleAnswers = event.target.checked;
+    this.setState(state => ({
+        treeData: changeNodeAtPath({
+        treeData: state.treeData,
+        path,
+        getNodeKey,
+        newNode: { ...node, multipleAnswers},
+      }),
+    }));
+    //console.log(node.multipleAnswers)
+  }
+
+  /* [Summary]: Checks if a parent node has grandchildren. */
+  node_has_grandparents = (node) => {
+    for(let i=0; i < node.children.length; i++)
+      // Check if the current parent node has grandchildren
+      if (node.children[i].children.length != 0) return true;
+    return false;
+  }
+
   // Render method
   render(){
     const DEBUG = false;
@@ -319,7 +354,7 @@ class Tree extends Component{
     // Let's get data to later compute suitable values of height and width for the container of the tree.
     const count = getVisibleNodeCount({treeData:this.state.treeData}) // Count the number of nodes of the tree in order to find a suitable size.
     const max_depth = this.get_max_depth();
-    const padding = 15;
+    const padding = 80;
     const max_height     = 600; // Set the maximum height that the tree can grow inside the table cell.
     const height_of_node = 52 + padding;
     const width_of_node  = 548 + padding;
@@ -340,18 +375,31 @@ class Tree extends Component{
         <td colSpan="3">
           <div style={ (count * height_of_node < max_height) ? {height: (count * height_of_node), width: (width_of_node+(max_depth*inc_size))} :  {height: max_height, width: (width_of_node+(max_depth*inc_size))} }>
           <SortableTree canDrag={!this.props.selectOnly}  treeData={this.state.treeData} onChange={treeData => this.setState({treeData})} generateNodeProps={({ node, path }) => ({buttons: [
-          <CopyIcon style={ (this.props.selectOnly && node.type == "answer") ? {} : { display: 'none' }} onClick={() => this.props.onSelect(this.get_parent_of_node(this.state.treeData, node), node)}/>,
-          <SelectIcon style={!this.props.selectOnly ? {} : { display: 'none' }} onClick={() => this.setState({open:true, path: path, node: node, type: node.type})}/>,
-          <DeleteIcon style={!this.props.selectOnly ? {} : { display: 'none' }} size="small" className={node.id == 0 ? classes.disabled : ""} color="primary" onClick={() => node.id != 0 ? this.tree_Remove_Node(path) : null }>Delete</DeleteIcon>,
-          <ArrowLeftIcon style={!this.props.selectOnly ? {} : { display: 'none' }}label="Add Question" size="small" color="primary" onClick={() => this.tree_Add_Node(node, path, false)}>Add Node</ArrowLeftIcon>, 
-          <ArrowDownIcon style={!this.props.selectOnly ? {} : { display: 'none' }} size="small" color="primary" onClick={() => this.tree_Add_Node(node, path, true)}>Add Node</ArrowDownIcon>, 
-        ],title: (
-          <table><tr><td>
+
+            <IconButton title="Copy" size="small"><CopyIcon style={ (this.props.selectOnly && node.type == "answer") ? {} : { display: 'none' }} onClick={() => this.props.onSelect(this.get_parent_of_node(this.state.treeData, node), node)}/></IconButton>,
+            <IconButton title="Select from database" size="small"><SelectIcon style={!this.props.selectOnly ? {} : { display: 'none' }} onClick={() => this.setState({open:true, path: path, node: node, type: node.type})}/></IconButton>,
+            
+            <IconButton title="Delete" size="small"><DeleteIcon style={!this.props.selectOnly ? {} : { display: 'none' }} size="small" className={node.id == 0 ? classes.disabled : ""} color="primary" onClick={() => node.id != 0 ? this.tree_Remove_Node(path) : null }>Delete</DeleteIcon></IconButton>,
+            <IconButton title="New parent" size="small"><ArrowLeftIcon style={!this.props.selectOnly ? {} : { display: 'none' }} label="Add Question" size="small" color="primary" onClick={() => this.tree_Add_Node(node, path, false)}>Add Node</ArrowLeftIcon></IconButton>,
+            <IconButton title="New child" size="small"><ArrowDownIcon style={ 
+              this.node_set_to_multiple_answers(this.state.treeData, node) || this.props.selectOnly ? {display: 'none'} : {}} size="small" color="primary" onClick={() => this.tree_Add_Node(node, path, true)}>Add Node</ArrowDownIcon></IconButton>,
+        
+          ],title: (
+          <table border="0"><tr><td>
+            {node.type == 'question' && node.children.length != 0  && !this.node_has_grandparents(node) ? (
+              <Checkbox title="The user can choose multiple answers. This option can only be used when the answers have no questions."
+                                     disabled={this.props.selectOnly}
+                                     icon={<MultipleAnswersIcon color="disabled"/>} 
+                                     checkedIcon={<MultipleAnswersIcon color="primary" />} 
+                                     checked={node.multipleAnswers}
+                                     onClick={(event) => this.tree_Node_Multiple_Answers(event, node, path)}  name="multipleAnswers" />
+            ) : (null) }
+          </td><td>
             {node.type == 'question' ? 
             (<Tooltip title={node.children != undefined ? (node.children.length > 0 ? "This question has predefined answers" :  "The answer to this question is user provided.") :  "The answer to this question is user provided."
             } aria-label="is_user_provided">
               {node.children != undefined ? (
-                node.children.length > 0 ? (<CheckboxIcon color="primary"/>) :  (<CheckboxIcon color="disabled"/>)) :  (<CheckboxIcon color="disabled"/>)
+                node.children.length > 0 ? (<UserAnswerIcon color="disabled" />) :  (<UserAnswerIcon style={{ color: orange[400] }} />)) :  (<UserAnswerIcon style={{ color: orange[400] }}/>)
               }
             </Tooltip>) : (null) }
           </td><td>
