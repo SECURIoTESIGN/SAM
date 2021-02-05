@@ -67,7 +67,7 @@ class Module extends Component{
       description: null,
       logic_filename:  null,
       avatar: null,
-      tree: null,
+      tree: [],
       recommendations: [],        // List of recommendations mapped to this module.
       createdon: null,
       updatedon: null,
@@ -204,7 +204,7 @@ class Module extends Component{
   /* [Summary]: Handles the process of editing or adding a new module. */
   add_edit_module = () =>{   
     console_log("add_edit_module", "UPLOADED? " + this.state.file_uploaded)
-    const DEBUG=false;
+    const DEBUG=true;
     var service_URL = "/module";
     var method_type = null;
     this.setState({form_error: null}) // Reset form error
@@ -218,21 +218,27 @@ class Module extends Component{
     if (this.state.module.displayname)         obj_module['displayname']     = this.state.module.displayname;
     if (this.state.module.description)         obj_module['description']     = this.state.module.description;
     if (this.state.module.avatar)              obj_module['avatar']          = this.state.module.avatar;
-    if (this.state.module.tree)                obj_module['tree']            = this.state.module.tree;
+    if (this.state.module.tree && this.state.module.tree.length != 0)                obj_module['tree']            = this.state.module.tree;
     if (this.state.module.recommendations)     obj_module['recommendations'] = this.state.module.recommendations;
     if (this.state.module.createdon)           obj_module['createdon']       = this.state.module.createdon;
     if (this.state.module.updatedon)           obj_module['updatedon']       = this.state.module.updatedon;
     if (this.state.module.dependencies)        obj_module['dependencies']    = this.state.module.dependencies;
     // store in the object the filename of the logic file.
     if (this.state.module.logic_filename)      obj_module['logic_filename']  = this.state.module.logic_filename[0].name;
-    
+
     // Form Validations
-    if (this.state.module.fullname == null || this.state.module.displayname == null || this.state.module.shortname == null || this.state.module.tree == null){
-      this.setState({form_error: "Fields 'Name', 'Display Name', 'Abbreviation', 'Questions and Answers', and 'Recommendations' are required to add a new module."});
+    if (obj_module['fullname'] == null || obj_module['displayname'] == null || obj_module['shortname'] == null) {
+      this.setState({form_error: "Fields 'Name', 'Display Name', and 'Abbreviation' are required to add a new module."});
       return
     }
-    if (this.state.module.recommendations.length === 0){
-      if (!this.state.module.logic_filename){
+    
+    if (obj_module['tree'] == null && obj_module['dependencies'] == "") {
+      this.setState({form_error: "'Questions and Answers' or 'Dependencies' is required to add a new module."});
+      return
+    }
+
+    if (obj_module['recommendations'].length === 0){
+      if (!obj_module['logic_filename']){
         this.setState({form_error: "'Recommendations' or a 'logic file' is required to add a new module."});
         return
       }
@@ -246,7 +252,7 @@ class Module extends Component{
       }
     }
 
-    console_log("add_edit_module()", "Object to be sent to the backend service: " + JSON.stringify(obj_module))
+    console_log("add_edit_module", "Object to be sent to the backend service: " + JSON.stringify(obj_module))
     
     // Check if the user wants to edit a module or add a new one
     if (this.state.module.id){
@@ -268,7 +274,7 @@ class Module extends Component{
       'Authorization': getUserData()['token'],
       'Content-Type': 'application/json'
       },body: JSON.stringify(obj_module)}).then(res => res.json()).then(response => {
-        if (DEBUG) console_log("add_edit_module()","Response: " + JSON.stringify(response[service_URL]));
+        if (DEBUG) console_log("add_edit_module","Response: " + JSON.stringify(response[service_URL]));
         switch (response[service_URL]['status']){
           // Code 200 - 'It's alive! It's alive!'.
           case 200:{

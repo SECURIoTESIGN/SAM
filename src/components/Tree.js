@@ -65,7 +65,7 @@ class Tree extends Component{
   componentDidMount(){
     const DEBUG=false;
 
-    if (this.props.data){
+    if (this.props.data && this.props.data.length != 0){
       if (DEBUG) console_log("componentDidMount", "Tree is loaded from prop (data) =" + this.props.data);
       this.setState({treeData: this.props.data})
       return
