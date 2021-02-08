@@ -352,23 +352,33 @@ class Session extends Component{
   iterate_tree_root_questions = (questions_of_answer_id=null) => {
     const DEBUG = false;
     let tree                      = this.state.session.module[0].tree;
-    let number_of_root_questions  = tree.length;
-    let q_index                   = this.state.session.q_index;
-    console_log("iterate_tree_root_questions", "Number of root questions: " + number_of_root_questions)
-    console_log("iterate_tree_root_questions", "Current index ="+ this.state.session.q_index)
-    this.setState({loading: true}); // Set the loading state
+    // See if it is a module or plugin
+    if(tree !== null){
 
-    if (q_index == tree.length){
-      // No more questions are mapped to this module, end the session and get the recommendations based on the answers given by the user.
+      let number_of_root_questions  = tree.length;
+      let q_index                   = this.state.session.q_index;
+      console_log("iterate_tree_root_questions", "Number of root questions: " + number_of_root_questions)
+      console_log("iterate_tree_root_questions", "Current index ="+ this.state.session.q_index)
+      this.setState({loading: true}); // Set the loading state
+
+      if (q_index == tree.length){
+        // No more questions are mapped to this module, end the session and get the recommendations based on the answers given by the user.
+        this.end_session();
+        return;
+      }
+
+      let _question = tree[q_index]
+      this.setState({loading: false, session: {...this.state.session, question: _question, q_index: this.state.session.q_index + 1 }}, () => {
+        if (DEBUG) console_log("iterate_tree_root_questions", "Current question ="+ JSON.stringify(this.state.session.question))
+      });
+    }
+    else{
       this.end_session();
       return;
     }
-
-    let _question = tree[q_index]
-    this.setState({loading: false, session: {...this.state.session, question: _question, q_index: this.state.session.q_index + 1 }}, () => {
-      if (DEBUG) console_log("iterate_tree_root_questions", "Current question ="+ JSON.stringify(this.state.session.question))
-    });
+   
   }
+
 
   /* [Summary]: Fetch a guide for a recommendation */
   fetch_guide = (event, name, filename) => {
