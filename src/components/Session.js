@@ -500,8 +500,17 @@ class Session extends Component{
             }
           </React.Fragment>
         );
-      }else{
-        return("");
+      } // If there are no questions, only show recommendations
+      else{
+        return(
+          <React.Fragment>
+            {/* Recommendations Popup */}
+            {this.state.session.recommendations ? (
+            <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload()}} TransitionComponent={Transition}>
+              <MyRecommendationsComponent recommendations={this.state.session.recommendations}/>
+            </PopupComponent>) : undefined}
+          </React.Fragment>
+          );
       }
     }
   }
