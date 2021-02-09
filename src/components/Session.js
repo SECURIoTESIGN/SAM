@@ -81,6 +81,7 @@ class Session extends Component{
             // Store the recommendations
             this.setState({loading: false, session:{...this.state.session, recommendations: response[service_URL]['recommendations'], open_recommendations: true}}, () => {
               if (DEBUG) console_log("end_session", "List of recommendations given after all question were made : " + JSON.stringify(this.state.session.recommendations));
+              if (DEBUG) console_log("end_session", "Open recommendations: " + JSON.stringify(this.state.session.open_recommendations))
             });
 
             break; 
