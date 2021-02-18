@@ -1,7 +1,8 @@
 # SAM
 <p align="center"> 
 <img src="https://github.com/SECURIoTESIGN/SAM-API/blob/master/static/logo.png"><br/>
-  SAM's Node.js REACT Web UI / Frontend <br/> Be aware this project is under initial development.
+  SAM's Node.js REACT Web UI / Frontend <br/> Be aware this project is under development.<br/>
+  <img src="https://github.com/SECURIoTESIGN/SAM-API/blob/master/static/sam-examples.png"><br/>
 </p>
 
 # Requirements
