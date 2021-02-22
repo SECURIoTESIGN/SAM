@@ -512,10 +512,9 @@ class Selection extends Component{
               // If multiple selection is set, check if the current item was previously selected
               let checkedFlag = false;
               let has_logic   = false;
-              let is_plugin   = true;
+              let is_plugin   = module['plugin'];
               if (this.props.selection) checkedFlag = this.row_was_selected(this.props.selection, module, "id");
               if (module['logic_filename']) has_logic=true;
-              if (module['questions']) is_plugin=false;
               
               data.push({id: i+1, rid: module['id'], logic: has_logic, plugin: is_plugin, fullname: module['fullname'], displayname: module['displayname'], shortname: module['shortname'], 
                          createdon: format_date(module['createdon'], "dd/mm/yy HH:MM"), updatedon: format_date(module['updatedon'], "dd/mm/yy HH:MM"),tableData: {checked: checkedFlag}}); 
