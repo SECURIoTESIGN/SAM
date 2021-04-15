@@ -95,7 +95,9 @@ class Login extends Component{
         // 'Houston, we have a problem'.
         default:{ // not 200
           // Set authentication error flag.
-          this.setState({auth_error: 1, loading: false})
+          this.setState({auth_error: 1, loading: false,})
+          this.setState({psw:{content: ""}})
+          document.getElementById('psw').value = ""
           // 'Hasta la vista, baby'.
           break;
         }
