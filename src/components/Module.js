@@ -245,7 +245,7 @@ class Module extends Component{
     }
 
     // File type validation
-    if (this.state.module.file_uploaded){
+    if (this.state.file_uploaded){
       if (obj_module['logic_filename'].substring(obj_module['logic_filename'].lastIndexOf('.')+1) !== "py"){
           this.setState({form_error: "Please, only logic '.py' files are allowed to be uploaded."})
           return false;
@@ -278,7 +278,7 @@ class Module extends Component{
         switch (response[service_URL]['status']){
           // Code 200 - 'It's alive! It's alive!'.
           case 200:{
-            if (this.state.module.file_uploaded){
+            if (this.state.file_uploaded){
               let final_logic_filename = "logic_" + response[service_URL]['id'] + ".py";
               this.upload_logic_file(this.state.module.logic_filename, final_logic_filename);
               this.setState({module: {...this.state.module}, file_uploaded: false})
