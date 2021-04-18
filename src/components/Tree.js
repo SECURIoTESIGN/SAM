@@ -403,7 +403,7 @@ class Tree extends Component{
           </td><td>
             <div>{node.type == 'answer' ? <AnswerIcon style={node.type == "" ? "" : { color: green[500] }} label="Node marked as an Answer." /> : <QuestionIcon label="Node marked as a question" style={{ color: orange[400] }} />}</div>
           </td><td>
-          <TextField value={node.name}  onChange={event => this.tree_save_node(event.target.value, node, path)} style={{width:'300px'}} />   
+          <TextField value={node.name} onClick= {event => this.tree_save_node("", node, path )}  onChange={event => this.tree_save_node(event.target.value, node, path)} style={{width:'300px'}} />   
           </td></tr></table>
           )})}
           treeData={this.state.treeData}/>
