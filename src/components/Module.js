@@ -207,7 +207,7 @@ class Module extends Component{
     const DEBUG=true;
     var service_URL = "/module";
     var method_type = null;
-    this.setState({form_error: null}) // Reset form error
+    this.setState({form_error: null, loading: true}) // Reset form error
     
     // [Module Services] Build the json, be aware that null values will not be stored in this object. 
     let obj_module = {}
@@ -283,6 +283,8 @@ class Module extends Component{
               this.upload_logic_file(this.state.module.logic_filename, final_logic_filename);
               this.setState({module: {...this.state.module}, file_uploaded: false})
             }
+            this.setState({loading: false})
+            this.props.onClose()
             break; 
           }
           // Any other code - 'Houston, we have a problem'.
