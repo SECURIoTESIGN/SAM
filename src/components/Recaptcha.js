@@ -27,7 +27,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import {console_log} from '../helpers/ToolsHelper';
 
 /* Google reCAPTCHA public site key */
-const LOCALHOST_SITE_KEY = "6LcLdO8UAAAAAGV--DAJa6NUFfoa8Y7b53u95amY";
+const LOCALHOST_SITE_KEY = "6LfrlqwaAAAAACDtDi5wKCSYKT4nruzyRvWNnBY-";
 const DELAY = 1500;
 
 class Recaptcha extends Component {
