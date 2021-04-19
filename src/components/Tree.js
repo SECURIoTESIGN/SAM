@@ -52,7 +52,7 @@ const getNodeKey = ({ treeIndex }) => treeIndex;
 class Tree extends Component{
   /* REACT Session state object */
   state = {
-    treeData: [{id: null, type:'question', name: 'Input your first question', multipleAnswers: false, selected: false, client_id: 0, children: []},],
+    treeData: [{id: null, type:'question', multipleAnswers: false, selected: false, client_id: 0, children: []},],
     type: "",             // The current node type selected
     modules: [],
     path: null,
@@ -105,7 +105,7 @@ class Tree extends Component{
 
   /* [Summary]: Fetch the list of modules. */
   fetch_modules = () => {
-    const DEBUG=false;
+    const DEBUG=true;
     // Get all data of a module (questions, childs, answers, etc).
     let service_URL = '/module/all';
     let method_type = 'GET';
@@ -118,6 +118,7 @@ class Tree extends Component{
           for(var i=0; i < response[service_URL]['content'].length; i++){
             let mod = response[service_URL]['content'][i];
             this.setState({module: {id: mod['id'],name: mod['name'], tree: mod['tree'], size:  0}}, () => {
+              if(DEBUG) console_log("fetch_modules", "Tree: " + JSON.stringify(mod['tree']))
               let data = {}
               data['id']    = mod['id'];
               data['name']  = mod['name'];
@@ -235,7 +236,7 @@ class Tree extends Component{
             selected: false, 
             multipleAnswers: false,
             children: [], 
-            name: (down ? (parentNode.node.type == 'question' ? 'Input your answer' : 'Input your question') : (parentNode.node.type == 'question' ? 'Input your question' : 'Input your answer')),
+            name: '',
             type: (down ? (parentNode.node.type == 'question' ? 'answer' : 'question') : (parentNode.node.type == 'question' ? 'question' : 'answer')),
           },
           addAsFirstChild: state.addAsFirstChild,
@@ -403,7 +404,7 @@ class Tree extends Component{
           </td><td>
             <div>{node.type == 'answer' ? <AnswerIcon style={node.type == "" ? "" : { color: green[500] }} label="Node marked as an Answer." /> : <QuestionIcon label="Node marked as a question" style={{ color: orange[400] }} />}</div>
           </td><td>
-          <TextField value={node.name} onClick= {event => this.tree_save_node("", node, path )}  onChange={event => this.tree_save_node(event.target.value, node, path)} style={{width:'300px'}} />   
+          <TextField placeholder={node.name == '' ? (node.type == 'question' ? 'Input your question' : 'Input your answer') : 'Input your first question' } value={node.name}  onChange={event => this.tree_save_node(event.target.value, node, path)} style={{width:'300px'}} />   
           </td></tr></table>
           )})}
           treeData={this.state.treeData}/>
