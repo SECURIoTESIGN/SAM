@@ -491,7 +491,7 @@ class Session extends Component{
                       <TextField id="tf_inputted_answer" width="250" label="Input your answer" onChange={event => this.setState({session:{...this.state.session,tmp: event.target.value}})} />
                      </td>
                     <td valign="bottom">
-                      <Button startIcon={<SaveIcon/>} style={{cursor: 'pointer'}} onClick={(event) => this.handle_answers(event, null)} color="primary">Save Answer</Button>
+                      <Button startIcon={<SaveIcon/>} style={{cursor: 'pointer'}} onClick={(event) => (this.handle_answers(event, null), document.getElementById('tf_inputted_answer').value = "")}  color="primary">Save Answer</Button>
                     </td>
                   </tr></tbody>
                 </table>
