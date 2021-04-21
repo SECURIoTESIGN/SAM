@@ -61,7 +61,7 @@ class AppBar extends Component{
       <div className={classes.root}>
       <RAppBar position="static" color="default" elevation={0} className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
-          <SAMIcon color="disabled" style={{padding:"0 3 0"}}/>
+          <a href="/" ><SAMIcon color="disabled" style={{padding:"0 3 0"}}/></a>
           <Typography variant="h6" className={classes.title}>SAM</Typography>
           {!is_user_admin() ? (
           <Router>
