@@ -23,7 +23,7 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
-import {withStyles, Slide, Stepper, Step, StepContent, StepLabel, Button, Collapse, TextField, FormControl, Select, InputLabel, MenuItem, Chip, Tooltip}  from '@material-ui/core';
+import {withStyles, Slide, Stepper, Step, StepContent, StepLabel, Button, Collapse, TextField, FormControl, Select, InputLabel, MenuItem, Chip, Tooltip, Grid}  from '@material-ui/core';
 import {CloudUpload as UploadIcon, AddBox as AddIcon, IndeterminateCheckBox as RemoveIcon, ArrowBackIos as BackIcon, ArrowForwardIos as ForwardIcon, Save as SaveIcon, AddCircleRounded as AddChipIcon} from '@material-ui/icons/';
 import {Alert} from '@material-ui/lab';
 
@@ -162,7 +162,14 @@ class LinkRecommendations extends Component{
     return(
       <React.Fragment>
         <PopupComponent title="Stored Answers" open={this.state.add_chip} onClose={() => {this.setState({add_chip: false})}} aria-labelledby="simple-dialog-title" TransitionComponent={Transition}>
-          <TreeComponent data={this.props.tree} selectOnly={true} onSelect={this.get_node_tree_selected} />
+          <Grid container direction="column" fullWidth>
+            <Grid item>
+              <TreeComponent data={this.props.tree} selectOnly={true} onSelect={this.get_node_tree_selected} />
+            </Grid>
+            <Grid item fullWidth>
+              <Button variant="contained" className={classes.saveButton} onClick={() => {this.setState({add_chip: false})}} startIcon={<SaveIcon />} fullWidth>Save</Button>
+            </Grid>
+          </Grid>
         </PopupComponent>
         <Alert severity="error" style={this.state.form_error != null ? {} : { display: 'none' }}>{this.state.form_error}</Alert>
 
