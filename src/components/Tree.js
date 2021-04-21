@@ -418,7 +418,7 @@ class Tree extends Component{
         </td>
         <td>
           <label htmlFor="load-json-tree">
-            <input style={{ display: 'none' }} id="load-json-tree" name="load-json-tree" type="file" onChange={(event) => this.load_tree_from_json(event.target.files[0])} />
+            <input style={{ display: 'none' }} id="load-json-tree" name="load-json-tree" type="file" onChange={(event) => this.load_tree_from_json(event.target.files[0])} accept=".json, .JSON" />
             <Button style={this.props.selectOnly ? {display:'none'}: {}} fullWidth startIcon={<ImportIcon/>} variant="contained" component="span" className={classes.button}  color="default">Import Tree</Button>
           </label>
         </td>
