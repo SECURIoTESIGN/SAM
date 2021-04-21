@@ -464,7 +464,7 @@ class Module extends Component{
             {/* Module's Logic */}
             <td style={{paddingTop:10}}>
               <label htmlFor="upload-logic">
-                <input style={{ display: 'none' }} id="upload-logic" name="upload-logic" type="file" onChange={(event) => this.setState({module: {...this.state.module, logic_filename: event.target.files}, file_uploaded: true})} />
+                <input style={{ display: 'none' }} id="upload-logic" name="upload-logic" type="file" onChange={(event) => this.setState({module: {...this.state.module, logic_filename: event.target.files}, file_uploaded: true})} accept=".py" />
                 <Button variant="contained" component="span" className={classes.button}  color="default" startIcon={<CloudUploadIcon />} fullWidth>Logic</Button>
               </label>
             </td>
