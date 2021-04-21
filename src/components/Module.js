@@ -393,7 +393,7 @@ class Module extends Component{
 
       {/* Dependency Modules Selection */}
       <PopupComponent title="Link Dependencies (Modules)" open={this.state.open_dependencies} onClose={() => {this.setState({open_dependencies: false})}} TransitionComponent={Transition}>
-       <SelectionComponent type={"modules"} select={true} onSelect={this.get_dependency_selection}/>
+       <SelectionComponent type={"modules"} select={true} onSelect={this.get_dependency_selection} onClose={() => {this.setState({open_dependencies: false})}} popup={true}/>
       </PopupComponent>
 
       <Alert severity="error" style={this.state.form_error != null ? {} : { display: 'none' }}>

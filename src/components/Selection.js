@@ -27,7 +27,8 @@
 // - https://www.npmjs.com/package/dateformat
 
 import React, {Component} from 'react';
-import {Paper, Typography, withStyles, TextField, Tooltip,Button}  from '@material-ui/core';
+import {Paper, Typography, withStyles, TextField, Tooltip, Button}  from '@material-ui/core';
+import {Save as SaveIcon} from '@material-ui/icons';
 import MaterialTable from "material-table";
 import MTableCell from "material-table";
 import MTableRow from "material-table";
@@ -583,6 +584,7 @@ class Selection extends Component{
             title=""
 
           />
+          {this.props.popup ? <Button variant="contained" className={classes.saveButton} onClick={() => {this.props.onClose()}} startIcon={<SaveIcon />} fullWidth >Save</Button> : undefined}
         </Paper>
       </React.Fragment>
     );
