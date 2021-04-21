@@ -158,25 +158,25 @@ class Account extends Component{
             <Avatar className={classes.avatar}>
               <div style={{fontSize:60}}>{this.state.avatar}</div>
             </Avatar>
-            <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address"
+            <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address" inputProps={{maxLength: 45}}
                       autoComplete="email" fullWidth
                       value={this.state.email.content}
                       onChange={(event) => {this.setState({email: {new: event.target.value}})}}
                       helperText= {this.state.email.error}
                       />
-            <TextField className={classes.text} id="firstname" name="firstname" variant="outlined" margin="normal" label="First Name"
+            <TextField className={classes.text} id="firstname" name="firstname" variant="outlined" margin="normal" label="First Name" inputProps={{maxLength: 30}}
                       autoComplete="email" fullWidth
                       value={this.state.firstname.content}
                       onChange={(event) => {this.setState({firstname: {new: event.target.value}})}}
                       helperText= {this.state.firstname.error}
                       />
-            <TextField className={classes.text} id="lastname" name="lastname" variant="outlined" margin="normal" label="Last Name"
+            <TextField className={classes.text} id="lastname" name="lastname" variant="outlined" margin="normal" label="Last Name" inputProps={{maxLength: 30}}
                       autoComplete="email" fullWidth
                       value={this.state.lastname.content}
                       onChange={(event) => {this.setState({lastname: {new: event.target.value}})}}
                       helperText= {this.state.lastname.error}
                       />
-            <TextField className={classes.text} width={10} id="psw" name="psw" variant="outlined" margin="normal" 
+            <TextField className={classes.text} width={10} id="psw" name="psw" variant="outlined" margin="normal" inputProps={{maxLength: 255}}
                         label="New Password" type="password" autoComplete="new-password" fullWidth
                         onChange={(event) => {this.setState({psw: {new: event.target.value}})}} 
                         helperText= {this.state.psw.error}

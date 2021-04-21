@@ -154,7 +154,7 @@ class Answer extends Component{
         <table className={classes.table}>
           <tbody><tr>
             <td>
-              <TextField className={classes.fields} id="tf_content" name="tf_content" InputLabelProps={{shrink:this.state.resource.content?true:false}} value={this.state.resource.content} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,content: event.target.value}})} />
+              <TextField className={classes.fields} id="tf_content" name="tf_content" inputProps={{maxLength: 100}} InputLabelProps={{shrink:this.state.resource.content?true:false}} value={this.state.resource.content} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,content: event.target.value}})} />
             </td>
           </tr></tbody>
           <tbody><tr>

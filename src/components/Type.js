@@ -154,7 +154,7 @@ class Type extends Component{
         <table className={classes.table}>
           <tbody><tr>
             <td>
-              <TextField className={classes.fields} id="tf_name" name="tf_name" InputLabelProps={{shrink:this.state.resource.name?true:false}} value={this.state.resource.name} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,name: event.target.value}})} />
+              <TextField className={classes.fields} id="tf_name" name="tf_name" inputProps={{maxLength: 45}} InputLabelProps={{shrink:this.state.resource.name?true:false}} value={this.state.resource.name} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,name: event.target.value}})} />
             </td>
           </tr></tbody>
           <tbody><tr>

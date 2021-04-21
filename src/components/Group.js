@@ -236,7 +236,7 @@ class Group extends Component{
         <table border="0" className={classes.table}>
           <tbody><tr>
             <td>
-              <TextField className={classes.fields} id="tf_designation" name="tf_designation" InputLabelProps={{shrink:this.state.resource.designation?true:false}} value={this.state.resource.designation} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,designation: event.target.value}})} />
+              <TextField className={classes.fields} id="tf_designation" name="tf_designation" inputProps={{maxLength: 45}} InputLabelProps={{shrink:this.state.resource.designation?true:false}} value={this.state.resource.designation} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,designation: event.target.value}})} />
             </td>
           </tr></tbody>
           <tbody><tr> 

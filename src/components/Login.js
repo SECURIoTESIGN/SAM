@@ -119,12 +119,12 @@ class Login extends Component{
         </Alert>
 
         <form className={classes.form} onSubmit={this.handle_submit} noValidate>
-        <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address"
+        <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address" inputProps={{maxLength: 45}}
                    autoComplete="email" autoFocus required fullWidth
                    onChange={(event) => {this.setState({email: {content: event.target.value}})}}
                    helperText= {this.state.email.error}
                    />
-        <TextField className={classes.text} id="psw" name="psw" variant="outlined" margin="normal" 
+        <TextField className={classes.text} id="psw" name="psw" variant="outlined" margin="normal" inputProps={{maxLength: 255}}
                    label="Password" type="password" autoComplete="current-password" fullWidth required
                    onChange={(event) => {this.setState({psw: {content: event.target.value}})}} 
                    helperText= {this.state.psw.error}

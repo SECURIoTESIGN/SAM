@@ -199,7 +199,7 @@ class LinkRecommendations extends Component{
                           {/* Add New Recommendation */}
                           <Collapse in={this.state.add_recommendation}>
                             <table><tbody><tr><td>
-                              <TextField id="tf_content"  name="tf_content" value={this.state.recommendation.content} label="Name" variant="outlined" margin="normal" style={{width: 350}} onChange={event => this.setState({recommendation:{...this.state.recommendation,content: event.target.value}})} />
+                              <TextField id="tf_content"  name="tf_content" value={this.state.recommendation.content} label="Name" inputProps={{maxLength: 100}} variant="outlined" margin="normal" style={{width: 350}} onChange={event => this.setState({recommendation:{...this.state.recommendation,content: event.target.value}})} />
                             </td></tr></tbody>
                             <tbody><tr><td>
                               <TextField id="tf_description"  name="tf_description" value={this.state.recommendation.description} label="Description" variant="outlined" margin="normal" style={{width: 350}} onChange={event => this.setState({recommendation:{...this.state.recommendation,description: event.target.value}})} />

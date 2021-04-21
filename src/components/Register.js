@@ -110,16 +110,16 @@ class Register extends Component{
         </Alert>
 
         <form className={classes.form} onSubmit={this.handle_submit} noValidate>
-        <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email"
+        <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email" inputProps={{maxLength: 45}}
                    autoComplete="email" autoFocus required fullWidth
                    onChange={(event) => {this.setState({email: event.target.value})}} />
-        <TextField className={classes.text} id="firstName" name="firstName" variant="outlined" margin="normal" label="First Name"
+        <TextField className={classes.text} id="firstName" name="firstName" variant="outlined" margin="normal" label="First Name" inputProps={{maxLength: 30}}
                    autoComplete="firstName" autoFocus required fullWidth
                    onChange={(event) => {this.setState({firstName: event.target.value})}} />
-        <TextField className={classes.text} id="lastName" name="lastName" variant="outlined" margin="normal" label="Last Name"
+        <TextField className={classes.text} id="lastName" name="lastName" variant="outlined" margin="normal" label="Last Name" inputProps={{maxLength: 30}}
                    autoComplete="lastName" autoFocus required fullWidth 
                    onChange={(event) => {this.setState({lastName: event.target.value})}} />
-        <TextField className={classes.text} id="psw" name="psw" variant="outlined" margin="normal" 
+        <TextField className={classes.text} id="psw" name="psw" variant="outlined" margin="normal"  inputProps={{maxLength: 255}}
                    label="Password" type="password" autoComplete="current-password" fullWidth required
                    onChange={(event) => {this.setState({psw: event.target.value})}} />
         

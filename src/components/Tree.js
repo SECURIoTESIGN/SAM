@@ -404,7 +404,7 @@ class Tree extends Component{
           </td><td>
             <div>{node.type == 'answer' ? <AnswerIcon style={node.type == "" ? "" : { color: green[500] }} label="Node marked as an Answer." /> : <QuestionIcon label="Node marked as a question" style={{ color: orange[400] }} />}</div>
           </td><td>
-          <TextField placeholder={node.name == '' ? (node.type == 'question' ? 'Input your question' : 'Input your answer') : 'Input your first question' } value={node.name} onChange={event => this.tree_save_node(event.target.value, node, path)} style={{width:'300px'}} InputProps={this.props.selectOnly ? {readOnly: true} : {}} />   
+          <TextField placeholder={node.name == '' ? (node.type == 'question' ? 'Input your question' : 'Input your answer') : 'Input your first question' }  inputProps={node.type == 'question' ? {maxLength: 255} : {maxLength: 100}} value={node.name} onChange={event => this.tree_save_node(event.target.value, node, path)} style={{width:'300px'}} InputProps={this.props.selectOnly ? {readOnly: true} : {}} />   
           </td></tr></table>
           )})}
           treeData={this.state.treeData}/>

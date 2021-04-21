@@ -422,15 +422,15 @@ class Module extends Component{
           <table className={classes.main_table} border="0">
           <tbody><tr>
             <td width="80%">
-              <TextField value={this.state.module.fullname} InputLabelProps={{shrink:this.state.module.fullname?true:false}} label="Full Name"  required id="tf_fullname" name="tf_fullname" onChange={event => this.setState({module:{...this.state.module,fullname: event.target.value}})} variant="outlined" margin="normal" fullWidth />
+              <TextField value={this.state.module.fullname}  label="Full Name"  required id="tf_fullname" name="tf_fullname" inputProps={{maxLength: 100}} onChange={event => this.setState({module:{...this.state.module,fullname: event.target.value}})} variant="outlined" margin="normal" fullWidth />
             </td>
             <td width="20%">
-              <TextField value={this.state.module.shortname} InputLabelProps={{shrink:this.state.module.shortname?true:false}} required id="tf_shortname" name="tf_shortname" onChange={event => this.setState({module:{...this.state.module,shortname: event.target.value}})}  label="Abbrev." variant="outlined" margin="normal" fullWidth />
+              <TextField value={this.state.module.shortname} InputLabelProps={{shrink:this.state.module.shortname?true:false}} required id="tf_shortname" name="tf_shortname" inputProps={{maxLength: 45}} onChange={event => this.setState({module:{...this.state.module,shortname: event.target.value}})}  label="Abbrev." variant="outlined" margin="normal" fullWidth />
             </td>
           </tr></tbody>
           <tbody><tr>
             <td>
-              <TextField value={this.state.module.displayname} InputLabelProps={{shrink:this.state.module.displayname?true:false}} required id="tf_displayname" name="tf_displayname" className={classes.text} onChange={event => this.setState({module:{...this.state.module,displayname: event.target.value}})}  label="Display Name"  variant="outlined" margin="normal" fullWidth />
+              <TextField value={this.state.module.displayname} InputLabelProps={{shrink:this.state.module.displayname?true:false}} required id="tf_displayname" name="tf_displayname" inputProps={{maxLength: 45}} className={classes.text} onChange={event => this.setState({module:{...this.state.module,displayname: event.target.value}})}  label="Display Name"  variant="outlined" margin="normal" fullWidth />
             </td>
             <td width="20%">
               <FormControl className={classes.formControl}>

@@ -204,7 +204,7 @@ class Recommendation extends Component{
           <table className={classes.table}>
             <tbody><tr>
               <td>
-                <TextField className={classes.fields} id="tf_content"  name="tf_content" InputLabelProps={{shrink:this.state.recommendation.content?true:false}} value={this.state.recommendation.content} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({recommendation:{...this.state.recommendation,content: event.target.value}})} />
+                <TextField className={classes.fields} id="tf_content"  name="tf_content" inputProps={{maxLength: 100}} InputLabelProps={{shrink:this.state.recommendation.content?true:false}} value={this.state.recommendation.content} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({recommendation:{...this.state.recommendation,content: event.target.value}})} />
               </td>
             </tr></tbody>
             <tbody><tr>
