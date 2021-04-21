@@ -190,9 +190,19 @@ class Module extends Component{
     [Notes]: Recommendation component calback.
   */
   store_recommendation = (recommendation) => {
-    const DEBUG = true;
+    const DEBUG = false;
     // Store the new recommendation into the state array.
     let recs = this.state.module.recommendations;
+
+    var i;
+    for(i = 0; i < recs.length; i++) {
+      if(recs[i]['id'] == recommendation['id']){
+        recs[i] = recommendation
+        this.setState({open_recommendations: false})
+        return
+      }
+    }
+
     recs.push(recommendation); 
     // 'fancy way' of doing push().
     this.setState({module: {...this.state.module, recommendations: recs}}, () => {
@@ -337,13 +347,20 @@ class Module extends Component{
     [Notes]: Select component calback.
   */
   get_dependency_selection = (row_data) => {
-    
     let t_dependencies = this.state.module.dependencies
+    var i;
+    for(i = 0; i < t_dependencies.length; i++) {
+      if(t_dependencies[i]['module']['fullname'] == row_data['fullname']){
+        return
+      }
+    }
+
     let dependency = {}
     let module = {}  
     module['id']           = row_data['rid']
     module['fullname']     = row_data['fullname']
     dependency['module']   = module
+
     t_dependencies.push(dependency)
     
     this.setState({module:{...this.state.module,dependencies: t_dependencies}})
