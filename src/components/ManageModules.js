@@ -102,7 +102,7 @@ class ManageModules extends Component{
       <React.Fragment>
         <LoadingComponent open={this.state.loading}/>
         <PopupComponent title={this.state.edit_module ? "Edit Module" : "Add Module"} open={this.state.add_module || this.state.edit_module} 
-                        TransitionComponent={Transition}>
+                        onClose={() => {this.setState({edit_module: false, add_module: false})}} TransitionComponent={Transition}>
           <ModuleComponent {...(this.state.module_selected  && { module: this.state.module_selected })} onClose={() => {this.setState({edit_module: false, add_module: false}); window.location.reload(false)}} />
         </PopupComponent>
 
