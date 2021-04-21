@@ -228,18 +228,18 @@ class Module extends Component{
 
     // Form Validations
     if (obj_module['fullname'] == null || obj_module['displayname'] == null || obj_module['shortname'] == null) {
-      this.setState({form_error: "Fields 'Name', 'Display Name', and 'Abbreviation' are required to add a new module."});
+      this.setState({form_error: "Fields 'Name', 'Display Name', and 'Abbreviation' are required to add a new module.", loading: false});
       return
     }
     
     if (obj_module['tree'] == null && obj_module['dependencies'] == "") {
-      this.setState({form_error: "'Questions and Answers' or 'Dependencies' is required to add a new module."});
+      this.setState({form_error: "'Questions and Answers' or 'Dependencies' is required to add a new module.", loading: false});
       return
     }
 
     if (obj_module['recommendations'].length === 0){
       if (!obj_module['logic_filename']){
-        this.setState({form_error: "'Recommendations' or a 'logic file' is required to add a new module."});
+        this.setState({form_error: "'Recommendations' or a 'logic file' is required to add a new module.", loading: false});
         return
       }
     }
@@ -247,7 +247,7 @@ class Module extends Component{
     // File type validation
     if (this.state.file_uploaded){
       if (obj_module['logic_filename'].substring(obj_module['logic_filename'].lastIndexOf('.')+1) !== "py"){
-          this.setState({form_error: "Please, only logic '.py' files are allowed to be uploaded."})
+          this.setState({form_error: "Please, only logic '.py' files are allowed to be uploaded.", loading: false})
           return false;
       }
     }
