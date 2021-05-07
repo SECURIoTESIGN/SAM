@@ -55,7 +55,7 @@ export const is_user_admin = (DEBUG=false) => {
 export const logoutNow = (debug=false) => { 
   var token = localStorage.getItem(TOKEN_KEY); 
   // Perform the logout server, and client side. 
-  fetch('sam-api-joana.herokuapp.com/user/logout', { method:'post', 
+  fetch('/user/logout', { method:'post', 
                           headers: new Headers({'Authorization': token})}).
     then(res => res.json()).then(response => {
       switch (response['/user/logout']['status']){
