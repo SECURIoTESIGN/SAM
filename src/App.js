@@ -41,6 +41,7 @@ function App(){
   if (isAuthenticated()){
     // User was successfully authenticated.
     
+    console_log("App", "Authentication Token: " + getAuthenticationToken());
     if (is_user_admin(false)){
       return(
         <div style={{margin:0, padding:0, height: "100%", width:"100%", display: "flex", flexDirection: "column"}}>
