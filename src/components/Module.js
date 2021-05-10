@@ -258,7 +258,18 @@ class Module extends Component{
     if (this.state.file_uploaded){
       if (obj_module['logic_filename'].substring(obj_module['logic_filename'].lastIndexOf('.')+1) !== "py"){
           this.setState({form_error: "Please, only logic '.py' files are allowed to be uploaded.", loading: false})
-          return false;
+          return false
+      }
+    }
+
+    // Check if there are user inputted answers
+    if (obj_module['tree'] != null) {
+      for(let i=0; i < obj_module['tree'].length; i++) {
+        let component = obj_module['tree'][i]
+        if (component['type'] == 'question' && component['multipleAnswers'] == false && component['children'].length == 0) {
+          this.setState({form_error: "'Logic File' is required to add/edit a module with user inputted answers.", loading: false});
+          return
+        }
       }
     }
 
