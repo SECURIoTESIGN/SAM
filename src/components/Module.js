@@ -310,7 +310,8 @@ class Module extends Component{
           }
           // Any other code - 'Houston, we have a problem'.
           default:{
-            this.setState({form_error: "'Houston, we have a problem'"});
+            let error_message = response[service_URL]['message']
+            this.setState({form_error: error_message, loading: false});
             break;
           }
      }}).catch( () => { this.setState({loading: false}); return; });
