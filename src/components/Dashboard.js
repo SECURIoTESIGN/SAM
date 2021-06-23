@@ -62,7 +62,69 @@ class Dashboard extends PureComponent{
     
     // Global stats
     this.setState({loading: true}, async () => {
-      let service_URL = "/statistics"
+      let service_URL = "/api/statistics"
+      let method_type = 'GET';
+
+      await fetch(service_URL, {method:method_type, headers: {
+        'Authorization': getUserData()['token'],
+        'Content-Type': 'application/json'
+        }}).then(async res => res.json()).then(async response => {
+          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
+
+          switch (response[service_URL]['status']){
+            // Code 200 - 'It's alive! It's alive!'.
+            case 200:{
+              this.setState({users: response[service_URL]['users'],
+                modules: response[service_URL]['modules'],
+                questions: response[service_URL]['questions'],
+                answers: response[service_URL]['answers'],
+                sessions: response[service_URL]['sessions'],
+                recommendations: response[service_URL]['recommendations']})
+              break; 
+            }
+            // Any other code - 'Houston, we have a problem'.
+            default:{ 
+              this.setState({loading: false})
+              break;
+            }
+      }}).catch( () => { this.setState({loading: false}); return; });
+    });
+    
+    // Get Top recommendations
+    this.setState({loading: true}, async () => {
+      let service_URL = "/api/statistic/recommendations"
+      let method_type = 'GET';
+                      
+      await fetch(service_URL, {method:method_type, headers: {
+        'Authorization': getUserData()['token'],
+        'Content-Type': 'application/json'
+        }}).then(async res => res.json()).then(async response => {
+          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
+          switch (response[service_URL]['status']){
+            // Code 200 - 'It's alive! It's alive!'.
+            case 200:{
+                let top = [];
+                for(var i=0; i < (response[service_URL]['top']).length; i++){
+                  let recommendation = response[service_URL]['top'][i];
+                  let tmp = {}
+                  tmp['name']   = recommendation['content'];
+                  tmp['value']  = parseFloat(((recommendation['occurrences'])) / response[service_URL]['size']);
+                  top.push(tmp)
+                }
+                this.setState({top_recommendations: top, loading: false})
+              break; 
+            }
+            // Any other code - 'Houston, we have a problem'.
+            default:{
+              this.setState({loading: false})
+              break;
+            }
+      }}).catch(() => { this.setState({loading: false}); return; });
+    })
+    
+    // Get Top modules
+    this.setState({loading: true}, async () => {
+      let service_URL = "/api/statistic/modules"
       let method_type = 'GET';
       console.log(service_URL)
       await fetch(service_URL, {method:method_type, headers: {
@@ -73,111 +135,16 @@ class Dashboard extends PureComponent{
           switch (response[service_URL]['status']){
             // Code 200 - 'It's alive! It's alive!'.
             case 200:{
-                this.setState({users: response[service_URL]['users'],
-                  modules: response[service_URL]['modules'],
-                  questions: response[service_URL]['questions'],
-                  answers: response[service_URL]['answers'],
-                  sessions: response[service_URL]['sessions'],
-                  recommendations: response[service_URL]['recommendations'], loading: false}, () => {
-                    // Get the remaining stats after state change
-                    // Get Top recommendations
-                    this.setState({loading: true}, async () => {
-                      let service_URL = "/statistic/recommendations"
-                      let method_type = 'GET';
-                      console.log(service_URL)
-                      await fetch(service_URL, {method:method_type, headers: {
-                        'Authorization': getUserData()['token'],
-                        'Content-Type': 'application/json'
-                        }}).then(async res => res.json()).then(async response => {
-                          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
-                          switch (response[service_URL]['status']){
-                            // Code 200 - 'It's alive! It's alive!'.
-                            case 200:{
-                                let top = [];
-                                for(var i=0; i < (response[service_URL]['top']).length; i++){
-                                  let recommendation = response[service_URL]['top'][i];
-                                  let tmp = {}
-                                  tmp['name']   = recommendation['content'];
-                                  tmp['value']  = parseFloat(((recommendation['occurrences'])) / this.state.recommendations);
-                                  top.push(tmp)
-                                }
-                                this.setState({top_recommendations: top, loading: false})
-                              break; 
-                            }
-                            // Any other code - 'Houston, we have a problem'.
-                            default:{
-                              this.setState({top_recommendations: 0, loading: false})
-                              this.setState({loading: false})
-                              break;
-                            }
-                      }}).catch(() => { this.setState({loading: false}); return; });
-                    });
-                    // Get Top modules
-                    this.setState({loading: true}, async () => {
-                      let service_URL = "/statistic/modules"
-                      let method_type = 'GET';
-                      console.log(service_URL)
-                      await fetch(service_URL, {method:method_type, headers: {
-                        'Authorization': getUserData()['token'],
-                        'Content-Type': 'application/json'
-                        }}).then(async res => res.json()).then(async response => {
-                          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
-                          switch (response[service_URL]['status']){
-                            // Code 200 - 'It's alive! It's alive!'.
-                            case 200:{
-                                let top = [];
-                                for(var i=0; i < (response[service_URL]['top']).length; i++){
-                                  let module = response[service_URL]['top'][i];
-                                  let tmp = {}
-                                  tmp['name']   = module['shortname'];
-                                  tmp['value']  = (parseInt(module['occurrences'])) / this.state.modules;
-                                  tmp['displayname'] = module['displayname'];
-                                  top.push(tmp)
-                                }
-                                this.setState({top_modules: top, loading: false})
-                              break; 
-                            }
-                            // Any other code - 'Houston, we have a problem'.
-                            default:{ 
-                              this.setState({top_modules: [], loading: false})
-                              this.setState({loading: false})
-                              break;
-                            }
-                      }}).catch( () => { this.setState({loading: false}); return; });
-                    });
-                    // Get Top Sessions (7 days)
-                    this.setState({loading: true}, async () => {
-                      let service_URL = "/statistic/sessions"
-                      let method_type = 'GET';
-                      console.log(service_URL)
-                      await fetch(service_URL, {method:method_type, headers: {
-                        'Authorization': getUserData()['token'],
-                        'Content-Type': 'application/json'
-                        }}).then(async res => res.json()).then(async response => {
-                          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
-                          switch (response[service_URL]['status']){
-                            // Code 200 - 'It's alive! It's alive!'.
-                            case 200:{
-                                let top = [];
-                                for(var i=0; i < (response[service_URL]['top']).length; i++){
-                                  let session = response[service_URL]['top'][i];
-                                  let tmp = {}
-                                  tmp['name']       = format_date(session['date'], "dd/mm");
-                                  tmp['sessions']   = parseInt(session['occurrences']);
-                                  top.push(tmp)
-                                }
-                                this.setState({top_sessions: top, loading: false})
-                              break; 
-                            }
-                            // Any other code - 'Houston, we have a problem'.
-                            default:{ 
-                              this.setState({top_sessions: [], loading: false})
-                              this.setState({loading: false})
-                              break;
-                            }
-                      }}).catch( () => { this.setState({loading: false}); return; });
-                    });
-                  });
+                let top = [];
+                for(var i=0; i < (response[service_URL]['top']).length; i++){
+                  let module = response[service_URL]['top'][i];
+                  let tmp = {}
+                  tmp['name']   = module['shortname'];
+                  tmp['value']  = (parseInt(module['occurrences'])) / response[service_URL]['size'];
+                  tmp['displayname'] = module['displayname'];
+                  top.push(tmp)
+                }
+                this.setState({top_modules: top, loading: false})
               break; 
             }
             // Any other code - 'Houston, we have a problem'.
@@ -186,13 +153,44 @@ class Dashboard extends PureComponent{
               break;
             }
       }}).catch( () => { this.setState({loading: false}); return; });
-    });
-
+    })
+    
+    // Get Top Sessions (7 days)
+    this.setState({loading: true}, async () => {
+      let service_URL = "/api/statistic/sessions"
+      let method_type = 'GET';
+      console.log(service_URL)
+      await fetch(service_URL, {method:method_type, headers: {
+        'Authorization': getUserData()['token'],
+        'Content-Type': 'application/json'
+        }}).then(async res => res.json()).then(async response => {
+          if (DEBUG) console_log("fetch_stats", "Response: " + JSON.stringify(response[service_URL]));
+          switch (response[service_URL]['status']){
+            // Code 200 - 'It's alive! It's alive!'.
+            case 200:{
+                let top = [];
+                for(var i=0; i < (response[service_URL]['top']).length; i++){
+                  let session = response[service_URL]['top'][i];
+                  let tmp = {}
+                  tmp['name']       = format_date(session['date'], "dd/mm");
+                  tmp['sessions']   = parseInt(session['occurrences']);
+                  top.push(tmp)
+                }
+                this.setState({top_sessions: top, loading: false})
+              break; 
+            }
+            // Any other code - 'Houston, we have a problem'.
+            default:{ 
+              this.setState({loading: false})
+              break;
+            }
+      }}).catch( () => { this.setState({loading: false}); return; });
+    })
   }
  
   render(){
     const {classes} = this.props;
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#E5989B'];
     /* Static test data for the piechart.
     const recommendations = [
       { name: 'Rec A', value: 40 },
@@ -221,12 +219,12 @@ class Dashboard extends PureComponent{
             <div>
               <div className={classes.wrapper}>
                   <Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>Top Recommendations Given</Typography>
-                  <PieChart width={360} height={350} >
+                  <PieChart width={360} height={500} >
                     {/* label={(entry) => entry.name + " (" + ((entry.percent*100).toFixed(0)) + "%)"} */}
-                    <Pie isAnimationActive={true} label={(entry) => (entry.value*100).toFixed(0) + "%"} data={this.state.top_recommendations} innerRadius={110} outerRadius={130} fill="#8884d8" paddingAngle={3} dataKey="value">
+                    <Pie isAnimationActive={true} label={(entry) => (entry.value*100).toFixed(1) + "%"} data={this.state.top_recommendations} innerRadius={110} outerRadius={130} fill="#8884d8" paddingAngle={3} dataKey="value">
                       { this.state.top_recommendations ? this.state.top_recommendations.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />) : null}
                     </Pie>
-                    <Tooltip formatter={(entry) => (entry*100).toFixed(0) + "%"} wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
+                    <Tooltip formatter={(entry) => (entry*100).toFixed(1) + "%"} wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
                     <Legend align="center" wrapperStyle={{fontSize: 14}}/>
                   </PieChart>
               </div>
@@ -235,12 +233,12 @@ class Dashboard extends PureComponent{
             <div>
               <div className={classes.wrapper}>
                   <Typography style={{fontWeight: 'bold', fontSize: 17, textTransform: 'uppercase'}} color="textPrimary" gutterBottom>Top of the most used modules</Typography>
-                  <PieChart width={350} height={200} >
+                  <PieChart width={380} height={240} >
                     {/* label={(entry) => entry.name + " (" + ((entry.percent*100).toFixed(0)) + "%)"} */}
-                    <Pie isAnimationActive={true} data={this.state.top_modules} cy="90%" label={(entry) => (entry.value*100).toFixed(0) + "%"} startAngle={180} endAngle={0} outerRadius={130} fill="#8884d8" paddingAngle={3} dataKey="value">
+                    <Pie isAnimationActive={true} data={this.state.top_modules} cy="90%" label={(entry) => (entry.value*100).toFixed(1) + "%"} startAngle={180} endAngle={0} outerRadius={130} fill="#8884d8" paddingAngle={3} dataKey="value">
                       {this.state.top_modules.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                     </Pie>
-                    <Tooltip formatter={(entry) => (entry*100).toFixed(0) + "%"}  wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
+                    <Tooltip formatter={(entry) => (entry*100).toFixed(1) + "%"}  wrapperStyle={{fontSize: 14, fontWeight: 'bold'}}/>
                     <Legend align="center" verticalAlign="bottom" wrapperStyle={{fontSize: 14}}/>
                   </PieChart>
               </div>
