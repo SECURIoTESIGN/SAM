@@ -38,7 +38,6 @@ class Popup extends Component{
     const {classes} = this.props;
     return(
       <Dialog {...this.props} maxWidth>
-        <div className={classes.root} >
         {this.props.title ? (
           <DialogTitle className={classes.header} color="disabled" id="form-dialog-title">
             <table cellPadding="0" cellSpacing="0">
@@ -55,7 +54,6 @@ class Popup extends Component{
         <DialogContent className={classes.body}>
             {this.props.children}
         </DialogContent>
-        </div>
       </Dialog>
     );
   }
