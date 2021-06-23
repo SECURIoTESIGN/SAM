@@ -55,7 +55,10 @@ class Authentication extends Component{
   }
 
   render(){
+
+
     const {classes} = this.props;
+    
     return (
       <Grid container spacing={0} direction="column" alignItems="center" justify="center" className={classes.root}>
         <Box width="30%" mx="auto" height="50%"> 
@@ -75,6 +78,17 @@ class Authentication extends Component{
               <RegisterComponent/>
           </this.TabPanel>
         </Paper>
+        </Box>
+        <Box contentJustify="center" marginTop="1%" width="30%" mx="auto" height="50%" > 
+          <img style={{width:"20%", minWidth:"10%", marginLeft: "2%", marginRight: "2%"}} alt="Portugal2020" src={process.env.PUBLIC_URL + '/Portugal2020.png'} />
+          <img style={{width:"20%", minWidth:"10%", marginRight: "1%"}} alt="FCT" src={process.env.PUBLIC_URL + '/FCT.png'} />
+          <img style={{width:"20%", minWidth:"10%", marginRight: "2%"}} alt="Compete2020" src={process.env.PUBLIC_URL + '/Compete2020.png'} />
+          <img style={{width:"20%", minWidth:"10%"}} alt="FEDER" src={process.env.PUBLIC_URL + '/feder.png'} />
+        </Box>
+        <Box contentJustify="center" marginTop="1%" width="30%" mx="auto" height="50%">
+          <img style={{contentJustify:"center", minWidth: "10%", marginLeft: "28%"}} alt="SECURIoTESIGN" src={process.env.PUBLIC_URL + '/project_transparent.png'} />
+          <br />
+          <Typography style={{fontSize: "5pt", marginLeft: "17%"}} variant="overline" align="left" color="textSecondary">Towards the assurance of SECURity by dESIGN of the Internet of Things</Typography>  
         </Box>
       </Grid>
     );
