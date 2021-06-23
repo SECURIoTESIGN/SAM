@@ -37,19 +37,22 @@ import SelectionComponent from './Selection';
 //
 const Transition = React.forwardRef(function Transition(props, ref) {return <Slide direction="up" ref={ref} {...props} />;});
 
-class MySessions extends Component{
+class MyRecommendations extends Component{
    /* REACT Session state object */
   state = {
     loading: false,
   };
 
   /* [Summary]: Load user data from a backend service */
-  componentDidMount(){}
+  componentDidMount(){
+    if(this.props.module_name !== undefined && this.props.session_id !== undefined) 
+      this.fetch_recommendations_zip(this.props.module_name, this.props.session_id)
+  }
 
   /* [Summary]: Fetch a guide for a recommendation */
   fetch_guide = (event, name, filename) => {
     const DEBUG = false;
-    let service_URL = '/file/' + filename;
+    let service_URL = '/api/file/' + filename;
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -68,6 +71,26 @@ class MySessions extends Component{
      }).catch( () => { return; });
   }
 
+  /* [Summary]: Fetch the ZIP for recommendations */
+  fetch_recommendations_zip = (module_name, session_id) => {
+    let service_URL = '/api/file/module/'+module_name+'/session/'+session_id
+    let method_type = 'GET'
+    fetch(service_URL, {method:method_type, headers: {
+      'Authorization': getUserData()['token'],
+      'Content-Type': 'application/json'
+      }}).then(res => res.blob())
+      .then(blob => {
+        this.setState({loading: false}, () => {
+          let url = window.URL.createObjectURL(blob);
+          let a = document.createElement('a');
+          a.href = url;
+          a.download = module_name+'_session_'+session_id+'.zip';
+          a.click();
+          a.remove();
+        });
+      }).catch( () => { this.setState({loading: false}); return; });
+  }
+
   render(){
     const {classes} = this.props;
     return(
@@ -75,7 +98,7 @@ class MySessions extends Component{
         <LoadingComponent open={this.state.loading}/>
           <Grid container spacing={2} className={classes.root}>
             {this.props.recommendations.map((recommendation, index) => 
-              <Grid item><Grid container>
+              <Grid item xs><Grid container>
                 <Card variant="outlined" className={classes.card}>
                   <CardContent>
                     <Typography variant="h5" component="h2">{recommendation['content']}</Typography>
@@ -97,4 +120,4 @@ class MySessions extends Component{
 }
 
 
-export default withStyles(useStyles)(MySessions)
+export default withStyles(useStyles)(MyRecommendations)

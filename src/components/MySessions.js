@@ -47,6 +47,8 @@ class MySessions extends Component{
     open: true,
     open_recommendations: false,
     recommendations: null,
+    module_name: null,
+    session_id: null,
   };
 
   /* [Summary]: Load user data from a backend service */
@@ -56,8 +58,8 @@ class MySessions extends Component{
 
   /* [Summary]: Show recommendations for the selected session. */
   show_recommendations = (row_data) => {
-    const DEBUG=true;
-    let service_URL = '/session/' + row_data['rid'];
+    const DEBUG=false;
+    let service_URL = '/api/session/' + row_data['rid'];
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -65,7 +67,20 @@ class MySessions extends Component{
         if (DEBUG) console_log("show_recommendations()", "Response: " + JSON.stringify(response[service_URL]));
         switch (response[service_URL]['status']){
           case 200:{
-            this.setState({open_recommendations: true, loading:false, recommendations: response[service_URL]['recommendations']})
+            let service_URL2 = '/api/module/'+response[service_URL]['module_id']
+            let method_type2 = 'GET'
+            fetch(service_URL2, {method:method_type2, headers: new Headers({'Authorization': token})}).then(res2 => res2.json()).then(response2 => {
+              switch (response2[service_URL2]['status']) {
+                case 200: {      
+                  this.setState({open_recommendations: true, loading: false, recommendations: response[service_URL]['recommendations'], session_id: row_data['rid'], module_name: response2[service_URL2]['content'][0]['shortname']})
+                  break
+                }
+                default: {
+                  this.setState({loading: false})
+                  break
+                }
+              }
+            }).catch( () => { return; })
             break;
           }
           // 'Houston, we have a problem'.
@@ -75,9 +90,6 @@ class MySessions extends Component{
           }
         }
     }).catch( () => { return; });
-
-
-    this.setState({open_recommendations: true})
   }
 
   render(){
@@ -90,7 +102,7 @@ class MySessions extends Component{
         </PopupComponent>
         {this.state.recommendations ? (
         <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.open_recommendations} onClose={() => this.setState({open_recommendations: false})} TransitionComponent={Transition}>
-          <MyRecommendationsComponent recommendations={this.state.recommendations}/>
+          <MyRecommendationsComponent recommendations={this.state.recommendations} module_name={this.state.module_name} session_id={this.state.session_id} />
         </PopupComponent>
         ) : undefined}
         
