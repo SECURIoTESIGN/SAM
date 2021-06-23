@@ -57,7 +57,7 @@ class Account extends Component{
     // 1. Get stored data of the session 
     var email = localStorage.getItem(USER_EMAIL);
     var token = localStorage.getItem(TOKEN_KEY)
-    var service_URL   = "/user/" + email;
+    var service_URL   = "/api/user/" + email;
     var method_type   = "GET";
     
     // 2. Show loading component.
@@ -117,20 +117,20 @@ class Account extends Component{
     var j_obj = {};
     j_obj['avatar']     = "default";
     j_obj['email']      = this.state.email.content !== this.state.email.new ? this.state.email.new : this.state.email.content;
-    j_obj['firstname']  = this.state.firstname.content !== this.state.firstname.new ? this.state.firstname.new : this.state.firstname.content;
-    j_obj['lastname']   = this.state.lastname.content !== this.state.lastname.new ? this.state.lastname.new : this.state.lastname.content;
+    j_obj['firstName']  = this.state.firstname.content !== this.state.firstname.new ? this.state.firstname.new : this.state.firstname.content;
+    j_obj['lastName']   = this.state.lastname.content !== this.state.lastname.new ? this.state.lastname.new : this.state.lastname.content;
     // 2.1. Store new password - IF inputted.
     if (this.state.psw.new !== "") j_obj['psw'] = this.state.psw.new;
     // Debug only: console.log("INPUT:" + JSON.stringify(j_obj));
     
     // 3. Request or send, in an asynchronous manner, data into a backend service.
-    fetch('/user/' + email, {method:'PUT', headers: {
+    fetch('/api/user/' + email, {method:'PUT', headers: {
       'Accept': 'application/json',
       'Authorization': token,
       'Content-Type': 'application/json'
       },body: JSON.stringify(j_obj)}).then(res => res.json()).then(data => {
-        // Debug only: console.log("OUTPUT:" + JSON.stringify(data));
-        switch (data['/user/'+email]['status']){
+        // console.log("OUTPUT:" + JSON.stringify(data));
+        switch (data['/api/user/'+email]['status']){
           case 200:{ 
             this.setState({open: false})
             return;
@@ -180,6 +180,9 @@ class Account extends Component{
                         label="New Password" type="password" autoComplete="new-password" fullWidth
                         onChange={(event) => {this.setState({psw: {new: event.target.value}})}} 
                         helperText= {this.state.psw.error}
+                      />
+            <TextField className={classes.text} width={10} id="ver_psw" name="ver_psw" variant="outlined" margin="normal" inputProps={{maxLength: 255}}
+                        label="Confirm Password" type="password" fullWidth
                       />
             <Button type="submit" variant="contained" color="primary" className={classes.submit} fullWidth>Update</Button>
           </form>
