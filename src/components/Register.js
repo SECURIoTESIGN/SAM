@@ -66,12 +66,12 @@ class Register extends Component{
     j_obj['psw']        = this.state.psw;
 
     // 3. Request or send, in an asynchronous manner, data into a backend service.
-    fetch('/user', {method:'post', headers: {
+    fetch('/api/user', {method:'post', headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
           },body: JSON.stringify(j_obj)}).then(res => res.json()).then(data => {
             // Debug only: console.log("OUTPUT:" + JSON.stringify(data));
-            switch (data['/user']['status']){
+            switch (data['/api/user']['status']){
               case 200:{ // User is ready to follow the 'white rabbit into the hole'.
                 this.setState({open: true});
                 return;
@@ -122,7 +122,6 @@ class Register extends Component{
         <TextField className={classes.text} id="psw" name="psw" variant="outlined" margin="normal"  inputProps={{maxLength: 255}}
                    label="Password" type="password" autoComplete="current-password" fullWidth required
                    onChange={(event) => {this.setState({psw: event.target.value})}} />
-        
         <Recaptcha ref={this.recaptchaRef}/>  
 
         <Button type="submit" variant="contained" color="primary" className={classes.submit} fullWidth>Sign up</Button>

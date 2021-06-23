@@ -82,7 +82,7 @@ class Tree extends Component{
   /* [Summary]: Fetch a module with id equal [ID] using a backend service. */
   fetch_module = (ID) => {
     const DEBUG=false;
-    let service_URL = '/module/'+ID+"/tree";
+    let service_URL = '/api/module/'+ID+"/tree";
     let method_type = 'GET';
     let token      = getUserData()['token'];
     //
@@ -107,7 +107,7 @@ class Tree extends Component{
   fetch_modules = () => {
     const DEBUG=true;
     // Get all data of a module (questions, childs, answers, etc).
-    let service_URL = '/module/all';
+    let service_URL = '/api/module/all';
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {

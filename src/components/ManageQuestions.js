@@ -57,7 +57,7 @@ class ManageQuestions extends Component{
   /* [Summary]: Delete the resource using a backend service. */
   handle_delete = (event) => {
     const DEBUG = false;
-    let service_URL = '/question/' + this.state.selected_id;
+    let service_URL = '/api/question/' + this.state.selected_id;
     let method_type = 'DELETE';
     if (DEBUG) console_log("handle_delete()", " ID Selected = " + this.state.selected_id + " will be removed from the platform.");
     this.setState({open_delete: false, loading: true}, () => {

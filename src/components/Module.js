@@ -93,7 +93,7 @@ class Module extends Component{
   /* [Summary]: Fetch the module to be edited on the current component. */
   fetch_module_to_edit = (module_id) => {
     const DEBUG = true;
-    let service_URL = '/module/' + module_id;
+    let service_URL = '/api/module/' + module_id;
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -132,7 +132,7 @@ class Module extends Component{
   /* [Summary]: Fetch module types using a backend service. */
   fetch_module_types = () => {
     const DEBUG = false;
-    let service_URL = '/types';
+    let service_URL = '/api/types';
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -155,7 +155,7 @@ class Module extends Component{
   /* [Summary]: Fetch the list of modules using a backend service */
   fetch_modules = () => {
     const DEBUG = false;
-    let service_URL = '/modules';
+    let service_URL = '/api/modules';
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -215,7 +215,7 @@ class Module extends Component{
   add_edit_module = () =>{   
     console_log("add_edit_module", "UPLOADED? " + this.state.file_uploaded)
     const DEBUG=true;
-    var service_URL = "/module";
+    var service_URL = "/api/module";
     var method_type = null;
     this.setState({form_error: null, loading: true}) // Reset form error
     
@@ -381,7 +381,7 @@ class Module extends Component{
   /* [Summary]: Uploads a logic file, if requested. */
   upload_logic_file = (files, filename) => {
     const DEBUG        = true;
-    let service_URL    = '/file/' + filename
+    let service_URL    = '/api/file/' + filename
     let method_type    = 'POST';
 
     // Let's upload some logic for this module

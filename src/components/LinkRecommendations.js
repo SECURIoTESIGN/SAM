@@ -104,7 +104,7 @@ class LinkRecommendations extends Component{
   /* [Summary]: Get the list of available recommendations using a backend service. */
   fetch_recommendations = () => {
     const DEBUG = false;
-    let service_URL = '/recommendations';
+    let service_URL = '/api/recommendations';
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],

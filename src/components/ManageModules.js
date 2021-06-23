@@ -71,7 +71,7 @@ class ManageModules extends Component{
     const DEBUG = false;
     if (DEBUG) console_log("delete_module", "Module id =" + this.state.delete_module_id + " will be removed from the platform.");
     this.setState({delete_module: false, loading: true}, () => {
-      let service_URL = '/module/' + this.state.delete_module_id;
+      let service_URL = '/api/module/' + this.state.delete_module_id;
       let method_type = 'DELETE';
       if (full_delete) service_URL = service_URL + "/full";
       // 'Let's make the magic happen'

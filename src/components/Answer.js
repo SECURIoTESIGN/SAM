@@ -74,7 +74,7 @@ class Answer extends Component{
   /* [Summary]: Get a resource, using a backend service. */
   fetch_resource = (resource_id) => {
     const DEBUG = true;
-    let service_URL = '/answer/' + resource_id;
+    let service_URL = '/api/answer/' + resource_id;
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -98,7 +98,7 @@ class Answer extends Component{
   /* [Summary]: Handles the process of editing or adding a new resource. */
   handle_add_edit_resource = () => {
     const DEBUG=true;
-    var service_URL = "/answer";
+    var service_URL = "/api/answer";
     var method_type = "POST";
     var to_edit     = false;
     if (this.state.resource.id){

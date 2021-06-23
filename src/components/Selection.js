@@ -97,7 +97,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of users, using a backend service, to populate the table. */
   fetch_users = () => {
       const DEBUG = false;
-      let service_URL = '/users';
+      let service_URL = '/api/users';
       let method_type = 'GET';
       let token      = getUserData()['token'];
       fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -145,7 +145,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of groups, using a backend service, to populate the table. */
   fetch_groups = () => {
       const DEBUG = false;
-      let service_URL = '/groups';
+      let service_URL = '/api/groups';
       let method_type = 'GET';
       let token      = getUserData()['token'];
       fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -195,7 +195,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of types, using a backend service, to populate the table. */
   fetch_types = () => {
       const DEBUG = false;
-      let service_URL = '/types';
+      let service_URL = '/api/types';
       let method_type = 'GET';
       let token      = getUserData()['token'];
       fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -240,7 +240,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of recommendations, using a backend service, to populate the table. */
   fetch_recommendations = () => {
     const DEBUG = false;
-    let service_URL = '/recommendations';
+    let service_URL = '/api/recommendations';
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -286,7 +286,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of sessions of a user, using a backend service, to populate the table. */
   fetch_sessions = () => {
     const DEBUG=true;
-    let service_URL = '/sessions/user/' + getUserData()['email'];
+    let service_URL = '/api/sessions/user/' + getUserData()['email'];
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -354,7 +354,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of questions/answers, using a backend service, to populate the table. */
   fetch_questions_answers = () => {
     const DEBUG=false;
-    let service_URL = '/questions/answers'
+    let service_URL = '/api/questions/answers'
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -396,7 +396,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of answers, using a backend service, to populate the table. */
   fetch_answers = () => {
     const DEBUG=false;
-    let service_URL = '/answers';
+    let service_URL = '/api/answers';
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -441,7 +441,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of questions, using a backend service, to populate the table. */
   fetch_questions = () => {
     const DEBUG=false;
-    let service_URL = '/questions';
+    let service_URL = '/api/questions';
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -489,7 +489,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of modules, using a backend service, to populate the table. */
   fetch_modules = () => {
     const DEBUG = false;
-    let service_URL = '/modules';
+    let service_URL = '/api/modules';
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {

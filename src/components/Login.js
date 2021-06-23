@@ -79,16 +79,16 @@ class Login extends Component{
     this.setState({loading: true})
     
     // 3. Request or send, in an asynchronous manner, data into a backend service.
-    fetch('/user/login', {method:'post', body: data}).then(res => res.json()).then(data => {
+    fetch('/api/user/login', {method:'post', body: data}).then(res => res.json()).then(data => {
       // Debug only: console.log(JSON.stringify(data));
-      switch (data['/user/login']['status']){
+      switch (data['/api/user/login']['status']){
         // 'It's alive! It's alive!'.
         case 200:{ 
           // Reset authentication error flag.
           this.setState({auth_error: 0}) 
           // Store the authentication token - Available on the response JSON object that is returned by the backend service.
-          this.login(data['/user/login']['token'], data['/user/login']['email']);
-          console.log(data['/user/login']['token']);
+          this.login(data['/api/user/login']['token'], data['/api/user/login']['email']);
+          console.log(data['/api/user/login']['token']);
           window.location.reload(false);
           break;
         }

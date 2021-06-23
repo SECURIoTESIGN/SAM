@@ -53,7 +53,7 @@ class ManageRecommendations extends Component{
     const DEBUG = false;
     if (DEBUG) console_log("handle_delete_recommendation()", "Recommendation id = " + this.state.selected_recommendation_id + " will be removed from the platform.");
     this.setState({delete_recommendation: false, loading: true}, () => {
-      let service_URL = '/recommendation/' + this.state.selected_recommendation_id;
+      let service_URL = '/api/recommendation/' + this.state.selected_recommendation_id;
       let method_type = 'DELETE';
       // 'Let's make the magic happen'
       fetch(service_URL, {method:method_type, headers: {

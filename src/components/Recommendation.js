@@ -74,7 +74,7 @@ class Recommendation extends Component{
   /* [Summary]: Get a recommendation, using a backend service. */
   fetch_recommendation = (recommendation_id) => {
     const DEBUG = true;
-    let service_URL = '/recommendation/' + recommendation_id;
+    let service_URL = '/api/recommendation/' + recommendation_id;
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -97,7 +97,7 @@ class Recommendation extends Component{
   /* [Summary]: Handles the process of editing or adding a new recommendation. */
   handle_add_edit_recommendation = () => {
     const DEBUG=false;
-    var service_URL = "/recommendation";
+    var service_URL = "/api/recommendation";
     var method_type = "POST";
     var to_edit     = false;
     if (this.state.recommendation.id){
@@ -168,7 +168,7 @@ class Recommendation extends Component{
   /* [Summary]: Uploads a guide file, if requested. */
   upload_file = (files, filename) => {
       const DEBUG        = true;
-      let service_URL    = '/file/' + filename
+      let service_URL    = '/api/file/' + filename
       let method_type    = 'POST';
   
       // Let's upload some logic for this module
