@@ -65,11 +65,11 @@ class Session extends Component{
     [Notes]: If this module has some kind of logic, to reach a recommendation, the logic file will be executed on the backend.
   */
   end_session = () => {
-    const DEBUG = true;
-    let service_URL = '/session/' + this.state.session.id + "/end";
+    const DEBUG = false;
+    let service_URL = '/api/session/' + this.state.session.id + "/end";
     let method_type = 'PUT';
-    this.setState({loading: true}); // Set the loading state
 
+    this.setState({loading: true}); // Set the loading state
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
       'Content-Type': 'application/json'
@@ -86,7 +86,6 @@ class Session extends Component{
 
             break; 
           }
-          // Any other code - 'Houston, we have a problem'.
           default:{
             this.setState({error_warning: response[service_URL]['message'].split(",")[1], loading: false}) 
             break;
@@ -97,7 +96,7 @@ class Session extends Component{
   /* [Summary]: Update session with all the answers given to particular question. */
   update_session = (question_id, answer_id, input) => {
     const DEBUG = false;
-    let service_URL = '/session/' + this.state.session.id;
+    let service_URL = '/api/session/' + this.state.session.id;
     let method_type = 'PUT';
     let json_obj = {}
     json_obj['question_id'] = question_id;
@@ -115,7 +114,7 @@ class Session extends Component{
       switch (response[service_URL]['status']){
         // Code 200 - 'It's alive! It's alive!'.
         case 200:{
-          this.setState({loading: false});
+          // this.setState({loading: false});
           break; 
         }
         // Any other code - 'Houston, we have a problem'.
@@ -129,7 +128,7 @@ class Session extends Component{
   /* [Summary]: Fetch the list of available modules */
   fetch_modules = () => {
     const DEBUG = false;
-    let service_URL = '/modules';
+    let service_URL = '/api/modules';
     let method_type = 'GET';
     this.setState({loading: true}); // Set the loading state
 
@@ -155,7 +154,7 @@ class Session extends Component{
   /* [Summary]: Handles the selection of a new module, that is, start a new round of questions in a new session */
   handle_module_selection = (event) => {
     const DEBUG = false;
-    let service_URL = '/session';
+    let service_URL = '/api/session';
     let method_type = 'POST';
     let module_id   = event.currentTarget.dataset.id
     if (DEBUG) console_log("handle_module_selection", "Module ["+ module_id +"] was selected.")
@@ -242,7 +241,7 @@ class Session extends Component{
           this.handle_answer_selection(event, this.state.session.answers[i]);
       }
     }else{
-      // ### Process single answer questions. 
+      // Process single answer questions. 
       this.handle_answer_selection(event, answer)
     }
   }
@@ -380,29 +379,6 @@ class Session extends Component{
    
   }
 
-
-  /* [Summary]: Fetch a guide for a recommendation */
-  fetch_guide = (event, name, filename) => {
-    const DEBUG = false;
-    let service_URL = '/file/' + filename;
-    let method_type = 'GET';
-    fetch(service_URL, {method:method_type, headers: {
-      'Authorization': getUserData()['token'],
-      'Content-Type': 'application/json'
-      }}).then(res => res.blob())
-      .then(blob => {
-        this.setState({loading: false}, () => {
-          var url = window.URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = "SAM_Guide_" + name + ".md";
-          document.body.appendChild(a); // Firefox support workaround. 
-          a.click();    
-          a.remove();
-        });
-     }).catch( () => { this.setState({loading: false}); return; });
-  }
-
   render(){
     const {classes} = this.props;
     // If the user is not in session is in a state of selecting a module.
@@ -449,9 +425,9 @@ class Session extends Component{
               <Alert severity="warning">{this.state.error_warning}</Alert>
             </PopupComponent>
             {/* Recommendations Popup */}
-            {this.state.session.recommendations ? (
+            {this.state.session.recommendations ? ( 
             <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload()}} TransitionComponent={Transition}>
-              <MyRecommendationsComponent recommendations={this.state.session.recommendations}/>
+              <MyRecommendationsComponent recommendations={this.state.session.recommendations} module_name={this.state.session.module[0].shortname} session_id={this.state.session.id}/>
             </PopupComponent>) : undefined}
             
             <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
@@ -512,7 +488,7 @@ class Session extends Component{
             {/* Recommendations Popup */}
             {this.state.session.recommendations ? (
             <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload()}} TransitionComponent={Transition}>
-              <MyRecommendationsComponent recommendations={this.state.session.recommendations}/>
+              <MyRecommendationsComponent recommendations={this.state.session.recommendations} module_name={this.state.session.module[0].shortname} session_id={this.state.session.id}/>
             </PopupComponent>) : undefined}
           </React.Fragment>
           );
