@@ -74,7 +74,7 @@ class Type extends Component{
   /* [Summary]: Get a resource, using a backend service. */
   fetch_resource = (resource_id) => {
     const DEBUG = true;
-    let service_URL = '/type/' + resource_id;
+    let service_URL = '/api/type/' + resource_id;
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -92,13 +92,13 @@ class Type extends Component{
             this.setState({loading:false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
   }
 
   /* [Summary]: Handles the process of editing or adding a new resource. */
   handle_add_edit_resource = () => {
     const DEBUG=true;
-    var service_URL = "/type";
+    var service_URL = "/api/type";
     var method_type = "POST";
     var to_edit     = false;
     if (this.state.resource.id){
@@ -136,7 +136,7 @@ class Type extends Component{
             this.setState({form_error: "'Houston, we have a problem'", loading: false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
      
   }
 
@@ -154,7 +154,7 @@ class Type extends Component{
         <table className={classes.table}>
           <tbody><tr>
             <td>
-              <TextField className={classes.fields} id="tf_name" name="tf_name" InputLabelProps={{shrink:this.state.resource.name?true:false}} value={this.state.resource.name} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,name: event.target.value}})} />
+              <TextField className={classes.fields} id="tf_name" name="tf_name" inputProps={{maxLength: 45}} InputLabelProps={{shrink:this.state.resource.name?true:false}} value={this.state.resource.name} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,name: event.target.value}})} />
             </td>
           </tr></tbody>
           <tbody><tr>

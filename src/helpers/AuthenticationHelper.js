@@ -55,10 +55,10 @@ export const is_user_admin = (DEBUG=false) => {
 export const logoutNow = (debug=false) => { 
   var token = localStorage.getItem(TOKEN_KEY); 
   // Perform the logout server, and client side. 
-  fetch('/user/logout', { method:'post', 
+  fetch('/api/user/logout', { method:'post', 
                           headers: new Headers({'Authorization': token})}).
     then(res => res.json()).then(response => {
-      switch (response['/user/logout']['status']){
+      switch (response['/api/user/logout']['status']){
         case 200:{ 
           if (debug) console.log(JSON.stringify(response));
           localStorage.removeItem(TOKEN_KEY); 

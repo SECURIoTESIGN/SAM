@@ -74,7 +74,7 @@ class Question extends Component{
   /* [Summary]: Get a resource, using a backend service. */
   fetch_resource = (resource_id) => {
     const DEBUG = true;
-    let service_URL = '/question/' + resource_id;
+    let service_URL = '/api/question/' + resource_id;
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -92,13 +92,13 @@ class Question extends Component{
             this.setState({loading:false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
   }
 
   /* [Summary]: Handles the process of editing or adding a new resource. */
   handle_add_edit_resource = () => {
     const DEBUG=true;
-    var service_URL = "/question";
+    var service_URL = "/api/question";
     var method_type = "POST";
     var to_edit     = false;
     if (this.state.resource.id){
@@ -108,8 +108,8 @@ class Question extends Component{
     this.setState({form_error: null, loading: false}) // Reset form error and start the loading animation
     
     // Form validation
-    if (!this.state.resource.content || !this.state.resource.description){
-      this.setState({form_error: "Fields 'Name' and 'Description' are required to add a new " + resource_name_singular, loading: false});
+    if (!this.state.resource.content){
+      this.setState({form_error: "Field 'Name' is required to add a new " + resource_name_singular, loading: false});
       return
     }
 
@@ -136,7 +136,7 @@ class Question extends Component{
             this.setState({form_error: "'Houston, we have a problem'", loading: false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
      
   }
 
@@ -154,7 +154,7 @@ class Question extends Component{
           <table className={classes.table}>
             <tbody><tr>
               <td>
-                <TextField className={classes.fields}  id="tf_content"  name="tf_content" InputLabelProps={{shrink:this.state.resource.content?true:false}} value={this.state.resource.content} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,content: event.target.value}})} />
+                <TextField className={classes.fields}  id="tf_content"  name="tf_content" inputProps={{maxLength: 255}} InputLabelProps={{shrink:this.state.resource.content?true:false}} value={this.state.resource.content} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,content: event.target.value}})} />
               </td>
             </tr></tbody>
             <tbody><tr>

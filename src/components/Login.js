@@ -79,28 +79,30 @@ class Login extends Component{
     this.setState({loading: true})
     
     // 3. Request or send, in an asynchronous manner, data into a backend service.
-    fetch('/user/login', {method:'post', body: data}).then(res => res.json()).then(data => {
+    fetch('/api/user/login', {method:'post', body: data}).then(res => res.json()).then(data => {
       // Debug only: console.log(JSON.stringify(data));
-      switch (data['/user/login']['status']){
+      switch (data['/api/user/login']['status']){
         // 'It's alive! It's alive!'.
         case 200:{ 
           // Reset authentication error flag.
           this.setState({auth_error: 0}) 
           // Store the authentication token - Available on the response JSON object that is returned by the backend service.
-          this.login(data['/user/login']['token'], data['/user/login']['email']);
-          console.log(data['/user/login']['token']);
+          this.login(data['/api/user/login']['token'], data['/api/user/login']['email']);
+          console.log(data['/api/user/login']['token']);
           window.location.reload(false);
           break;
         }
         // 'Houston, we have a problem'.
         default:{ // not 200
           // Set authentication error flag.
-          this.setState({auth_error: 1, loading: false})
+          this.setState({auth_error: 1, loading: false,})
+          this.setState({psw:{content: ""}})
+          document.getElementById('psw').value = ""
           // 'Hasta la vista, baby'.
           break;
         }
       }
-    }).catch(function() {
+    }).catch( () => {
       return;
     });
     //
@@ -117,12 +119,12 @@ class Login extends Component{
         </Alert>
 
         <form className={classes.form} onSubmit={this.handle_submit} noValidate>
-        <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address"
+        <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address" inputProps={{maxLength: 45}}
                    autoComplete="email" autoFocus required fullWidth
                    onChange={(event) => {this.setState({email: {content: event.target.value}})}}
                    helperText= {this.state.email.error}
                    />
-        <TextField className={classes.text} id="psw" name="psw" variant="outlined" margin="normal" 
+        <TextField className={classes.text} id="psw" name="psw" variant="outlined" margin="normal" inputProps={{maxLength: 255}}
                    label="Password" type="password" autoComplete="current-password" fullWidth required
                    onChange={(event) => {this.setState({psw: {content: event.target.value}})}} 
                    helperText= {this.state.psw.error}

@@ -28,4 +28,12 @@ export const useStyles = theme => ({
     maxWidth: "100%",
     minWidth: 750,
   },
+  saveButton: {
+    color: "white",
+    backgroundColor: theme.palette.success.light,
+    '&:hover': {
+        backgroundColor: theme.palette.success.light,
+        color: "white",
+    },
+},
 });

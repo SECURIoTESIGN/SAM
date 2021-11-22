@@ -57,7 +57,7 @@ class Account extends Component{
     // 1. Get stored data of the session 
     var email = localStorage.getItem(USER_EMAIL);
     var token = localStorage.getItem(TOKEN_KEY)
-    var service_URL   = "/user/" + email;
+    var service_URL   = "/api/user/" + email;
     var method_type   = "GET";
     
     // 2. Show loading component.
@@ -87,7 +87,7 @@ class Account extends Component{
             break;
           }
         }
-      }).catch(function() {
+      }).catch( () => {
         return;
       });
   }
@@ -117,20 +117,20 @@ class Account extends Component{
     var j_obj = {};
     j_obj['avatar']     = "default";
     j_obj['email']      = this.state.email.content !== this.state.email.new ? this.state.email.new : this.state.email.content;
-    j_obj['firstname']  = this.state.firstname.content !== this.state.firstname.new ? this.state.firstname.new : this.state.firstname.content;
-    j_obj['lastname']   = this.state.lastname.content !== this.state.lastname.new ? this.state.lastname.new : this.state.lastname.content;
+    j_obj['firstName']  = this.state.firstname.content !== this.state.firstname.new ? this.state.firstname.new : this.state.firstname.content;
+    j_obj['lastName']   = this.state.lastname.content !== this.state.lastname.new ? this.state.lastname.new : this.state.lastname.content;
     // 2.1. Store new password - IF inputted.
     if (this.state.psw.new !== "") j_obj['psw'] = this.state.psw.new;
     // Debug only: console.log("INPUT:" + JSON.stringify(j_obj));
     
     // 3. Request or send, in an asynchronous manner, data into a backend service.
-    fetch('/user/' + email, {method:'PUT', headers: {
+    fetch('/api/user/' + email, {method:'PUT', headers: {
       'Accept': 'application/json',
       'Authorization': token,
       'Content-Type': 'application/json'
       },body: JSON.stringify(j_obj)}).then(res => res.json()).then(data => {
-        // Debug only: console.log("OUTPUT:" + JSON.stringify(data));
-        switch (data['/user/'+email]['status']){
+        // console.log("OUTPUT:" + JSON.stringify(data));
+        switch (data['/api/user/'+email]['status']){
           case 200:{ 
             this.setState({open: false})
             return;
@@ -158,28 +158,31 @@ class Account extends Component{
             <Avatar className={classes.avatar}>
               <div style={{fontSize:60}}>{this.state.avatar}</div>
             </Avatar>
-            <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address"
+            <TextField className={classes.text} id="email" name="email" variant="outlined" margin="normal" label="Email Address" inputProps={{maxLength: 45}}
                       autoComplete="email" fullWidth
                       value={this.state.email.content}
                       onChange={(event) => {this.setState({email: {new: event.target.value}})}}
                       helperText= {this.state.email.error}
                       />
-            <TextField className={classes.text} id="firstname" name="firstname" variant="outlined" margin="normal" label="First Name"
+            <TextField className={classes.text} id="firstname" name="firstname" variant="outlined" margin="normal" label="First Name" inputProps={{maxLength: 30}}
                       autoComplete="email" fullWidth
                       value={this.state.firstname.content}
                       onChange={(event) => {this.setState({firstname: {new: event.target.value}})}}
                       helperText= {this.state.firstname.error}
                       />
-            <TextField className={classes.text} id="lastname" name="lastname" variant="outlined" margin="normal" label="Last Name"
+            <TextField className={classes.text} id="lastname" name="lastname" variant="outlined" margin="normal" label="Last Name" inputProps={{maxLength: 30}}
                       autoComplete="email" fullWidth
                       value={this.state.lastname.content}
                       onChange={(event) => {this.setState({lastname: {new: event.target.value}})}}
                       helperText= {this.state.lastname.error}
                       />
-            <TextField className={classes.text} width={10} id="psw" name="psw" variant="outlined" margin="normal" 
+            <TextField className={classes.text} width={10} id="psw" name="psw" variant="outlined" margin="normal" inputProps={{maxLength: 255}}
                         label="New Password" type="password" autoComplete="new-password" fullWidth
                         onChange={(event) => {this.setState({psw: {new: event.target.value}})}} 
                         helperText= {this.state.psw.error}
+                      />
+            <TextField className={classes.text} width={10} id="ver_psw" name="ver_psw" variant="outlined" margin="normal" inputProps={{maxLength: 255}}
+                        label="Confirm Password" type="password" fullWidth
                       />
             <Button type="submit" variant="contained" color="primary" className={classes.submit} fullWidth>Update</Button>
           </form>

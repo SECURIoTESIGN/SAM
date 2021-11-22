@@ -74,7 +74,7 @@ class Recommendation extends Component{
   /* [Summary]: Get a recommendation, using a backend service. */
   fetch_recommendation = (recommendation_id) => {
     const DEBUG = true;
-    let service_URL = '/recommendation/' + recommendation_id;
+    let service_URL = '/api/recommendation/' + recommendation_id;
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -91,13 +91,13 @@ class Recommendation extends Component{
           default:{ 
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
   }
 
   /* [Summary]: Handles the process of editing or adding a new recommendation. */
   handle_add_edit_recommendation = () => {
     const DEBUG=false;
-    var service_URL = "/recommendation";
+    var service_URL = "/api/recommendation";
     var method_type = "POST";
     var to_edit     = false;
     if (this.state.recommendation.id){
@@ -161,14 +161,14 @@ class Recommendation extends Component{
             this.setState({form_error: "'Houston, we have a problem'", loading: false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
      
   }
 
   /* [Summary]: Uploads a guide file, if requested. */
   upload_file = (files, filename) => {
       const DEBUG        = true;
-      let service_URL    = '/file/' + filename
+      let service_URL    = '/api/file/' + filename
       let method_type    = 'POST';
   
       // Let's upload some logic for this module
@@ -204,7 +204,7 @@ class Recommendation extends Component{
           <table className={classes.table}>
             <tbody><tr>
               <td>
-                <TextField className={classes.fields} id="tf_content"  name="tf_content" InputLabelProps={{shrink:this.state.recommendation.content?true:false}} value={this.state.recommendation.content} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({recommendation:{...this.state.recommendation,content: event.target.value}})} />
+                <TextField className={classes.fields} id="tf_content"  name="tf_content" inputProps={{maxLength: 100}} InputLabelProps={{shrink:this.state.recommendation.content?true:false}} value={this.state.recommendation.content} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({recommendation:{...this.state.recommendation,content: event.target.value}})} />
               </td>
             </tr></tbody>
             <tbody><tr>

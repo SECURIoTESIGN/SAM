@@ -23,7 +23,7 @@
 //  POCI-01-0145-FEDER-030657) 
 // ---------------------------------------------------------------------------
 import React, {Component} from 'react';
-import {withStyles, Slide, Stepper, Step, StepContent, StepLabel, Button, Collapse, TextField, FormControl, Select, InputLabel, MenuItem, Chip, Tooltip}  from '@material-ui/core';
+import {withStyles, Slide, Stepper, Step, StepContent, StepLabel, Button, Collapse, TextField, FormControl, Select, InputLabel, MenuItem, Chip, Tooltip, Grid}  from '@material-ui/core';
 import {CloudUpload as UploadIcon, AddBox as AddIcon, IndeterminateCheckBox as RemoveIcon, ArrowBackIos as BackIcon, ArrowForwardIos as ForwardIcon, Save as SaveIcon, AddCircleRounded as AddChipIcon} from '@material-ui/icons/';
 import {Alert} from '@material-ui/lab';
 
@@ -104,7 +104,7 @@ class LinkRecommendations extends Component{
   /* [Summary]: Get the list of available recommendations using a backend service. */
   fetch_recommendations = () => {
     const DEBUG = false;
-    let service_URL = '/recommendations';
+    let service_URL = '/api/recommendations';
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -121,7 +121,7 @@ class LinkRecommendations extends Component{
           default:{ 
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
   }
 
   /* [Summary]: Tree callback, triggered when a node is selected on the tree component. */
@@ -162,7 +162,14 @@ class LinkRecommendations extends Component{
     return(
       <React.Fragment>
         <PopupComponent title="Stored Answers" open={this.state.add_chip} onClose={() => {this.setState({add_chip: false})}} aria-labelledby="simple-dialog-title" TransitionComponent={Transition}>
-          <TreeComponent data={this.props.tree} selectOnly={true} onSelect={this.get_node_tree_selected} />
+          <Grid container direction="column" fullWidth>
+            <Grid item>
+              <TreeComponent data={this.props.tree} selectOnly={true} onSelect={this.get_node_tree_selected} />
+            </Grid>
+            <Grid item fullWidth>
+              <Button variant="contained" className={classes.saveButton} onClick={() => {this.setState({add_chip: false})}} startIcon={<SaveIcon />} fullWidth>Save</Button>
+            </Grid>
+          </Grid>
         </PopupComponent>
         <Alert severity="error" style={this.state.form_error != null ? {} : { display: 'none' }}>{this.state.form_error}</Alert>
 
@@ -192,7 +199,7 @@ class LinkRecommendations extends Component{
                           {/* Add New Recommendation */}
                           <Collapse in={this.state.add_recommendation}>
                             <table><tbody><tr><td>
-                              <TextField id="tf_content"  name="tf_content" value={this.state.recommendation.content} label="Name" variant="outlined" margin="normal" style={{width: 350}} onChange={event => this.setState({recommendation:{...this.state.recommendation,content: event.target.value}})} />
+                              <TextField id="tf_content"  name="tf_content" value={this.state.recommendation.content} label="Name" inputProps={{maxLength: 100}} variant="outlined" margin="normal" style={{width: 350}} onChange={event => this.setState({recommendation:{...this.state.recommendation,content: event.target.value}})} />
                             </td></tr></tbody>
                             <tbody><tr><td>
                               <TextField id="tf_description"  name="tf_description" value={this.state.recommendation.description} label="Description" variant="outlined" margin="normal" style={{width: 350}} onChange={event => this.setState({recommendation:{...this.state.recommendation,description: event.target.value}})} />

@@ -71,7 +71,7 @@ class ManageModules extends Component{
     const DEBUG = false;
     if (DEBUG) console_log("delete_module", "Module id =" + this.state.delete_module_id + " will be removed from the platform.");
     this.setState({delete_module: false, loading: true}, () => {
-      let service_URL = '/module/' + this.state.delete_module_id;
+      let service_URL = '/api/module/' + this.state.delete_module_id;
       let method_type = 'DELETE';
       if (full_delete) service_URL = service_URL + "/full";
       // 'Let's make the magic happen'
@@ -91,7 +91,7 @@ class ManageModules extends Component{
             default:{ 
               break;
             }
-      }}).catch(function() { return; });
+      }}).catch( () => { return; });
     });
   }
 
@@ -103,7 +103,7 @@ class ManageModules extends Component{
         <LoadingComponent open={this.state.loading}/>
         <PopupComponent title={this.state.edit_module ? "Edit Module" : "Add Module"} open={this.state.add_module || this.state.edit_module} 
                         onClose={() => {this.setState({edit_module: false, add_module: false})}} TransitionComponent={Transition}>
-          <ModuleComponent {...(this.state.module_selected  && { module: this.state.module_selected })} />
+          <ModuleComponent {...(this.state.module_selected  && { module: this.state.module_selected })} onClose={() => {this.setState({edit_module: false, add_module: false}); window.location.reload(false)}} />
         </PopupComponent>
 
         <PopupComponent style={{backgroundColor:"none !important"}} onClose={() => this.setState({delete_module: false})} open={this.state.delete_module}> 

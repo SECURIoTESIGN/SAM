@@ -27,7 +27,8 @@
 // - https://www.npmjs.com/package/dateformat
 
 import React, {Component} from 'react';
-import {Paper, Typography, withStyles, TextField, Tooltip,Button}  from '@material-ui/core';
+import {Paper, Typography, withStyles, TextField, Tooltip, Button}  from '@material-ui/core';
+import {Save as SaveIcon} from '@material-ui/icons';
 import MaterialTable from "material-table";
 import MTableCell from "material-table";
 import MTableRow from "material-table";
@@ -96,7 +97,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of users, using a backend service, to populate the table. */
   fetch_users = () => {
       const DEBUG = false;
-      let service_URL = '/users';
+      let service_URL = '/api/users';
       let method_type = 'GET';
       let token      = getUserData()['token'];
       fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -138,13 +139,13 @@ class Selection extends Component{
               break;
             }
           }
-      }).catch(function() { return; });
+      }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of groups, using a backend service, to populate the table. */
   fetch_groups = () => {
       const DEBUG = false;
-      let service_URL = '/groups';
+      let service_URL = '/api/groups';
       let method_type = 'GET';
       let token      = getUserData()['token'];
       fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -188,13 +189,13 @@ class Selection extends Component{
               break;
             }
           }
-      }).catch(function() { return; });
+      }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of types, using a backend service, to populate the table. */
   fetch_types = () => {
       const DEBUG = false;
-      let service_URL = '/types';
+      let service_URL = '/api/types';
       let method_type = 'GET';
       let token      = getUserData()['token'];
       fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -233,13 +234,13 @@ class Selection extends Component{
               break;
             }
           }
-      }).catch(function() { return; });
+      }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of recommendations, using a backend service, to populate the table. */
   fetch_recommendations = () => {
     const DEBUG = false;
-    let service_URL = '/recommendations';
+    let service_URL = '/api/recommendations';
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -279,13 +280,13 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of sessions of a user, using a backend service, to populate the table. */
   fetch_sessions = () => {
     const DEBUG=true;
-    let service_URL = '/sessions/user/' + getUserData()['email'];
+    let service_URL = '/api/sessions/user/' + getUserData()['email'];
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -336,7 +337,7 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   /* [Summary]: Check if a row was previously selected. */
@@ -353,7 +354,7 @@ class Selection extends Component{
   /* [Summary]: Fetch the list of questions/answers, using a backend service, to populate the table. */
   fetch_questions_answers = () => {
     const DEBUG=false;
-    let service_URL = '/questions/answers'
+    let service_URL = '/api/questions/answers'
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -389,13 +390,13 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of answers, using a backend service, to populate the table. */
   fetch_answers = () => {
     const DEBUG=false;
-    let service_URL = '/answers';
+    let service_URL = '/api/answers';
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -434,13 +435,13 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
   
   /* [Summary]: Fetch the list of questions, using a backend service, to populate the table. */
   fetch_questions = () => {
     const DEBUG=false;
-    let service_URL = '/questions';
+    let service_URL = '/api/questions';
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -482,13 +483,13 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   /* [Summary]: Fetch the list of modules, using a backend service, to populate the table. */
   fetch_modules = () => {
     const DEBUG = false;
-    let service_URL = '/modules';
+    let service_URL = '/api/modules';
     let method_type = 'GET';
     let token      = getUserData()['token'];
     fetch(service_URL, {method:method_type, headers: new Headers({'Authorization': token})}).then(res => res.json()).then(response => {
@@ -502,6 +503,7 @@ class Selection extends Component{
             columns.push({title: "Display Name", field: "displayname", width: 'auto'});
             columns.push({title: "Abbreviation", field: "shortname", width: 'auto'});
             columns.push({title: "Logic", field: "logic", type: "boolean", width: 'auto'});
+            columns.push({title: "Plugin", field: "plugin", type: "boolean", width: 'auto'});
             columns.push({title: "Created On", field: "createdon", width: 'auto'});
             columns.push({title: "Updated On", field: "updatedon", width: 'auto'});
             
@@ -510,11 +512,12 @@ class Selection extends Component{
               let module = response[service_URL]['content'][i];
               // If multiple selection is set, check if the current item was previously selected
               let checkedFlag = false;
-              let has_logic = false;
+              let has_logic   = false;
+              let is_plugin   = module['plugin'];
               if (this.props.selection) checkedFlag = this.row_was_selected(this.props.selection, module, "id");
               if (module['logic_filename']) has_logic=true;
               
-              data.push({id: i+1, rid: module['id'], logic: has_logic, fullname: module['fullname'], displayname: module['displayname'], shortname: module['shortname'], 
+              data.push({id: i+1, rid: module['id'], logic: has_logic, plugin: is_plugin, fullname: module['fullname'], displayname: module['displayname'], shortname: module['shortname'], 
                          createdon: format_date(module['createdon'], "dd/mm/yy HH:MM"), updatedon: format_date(module['updatedon'], "dd/mm/yy HH:MM"),tableData: {checked: checkedFlag}}); 
             }
             results.push(columns)
@@ -530,7 +533,7 @@ class Selection extends Component{
             break;
           }
         }
-    }).catch(function() { return; });
+    }).catch( () => { return; });
   }
 
   render(){
@@ -581,6 +584,7 @@ class Selection extends Component{
             title=""
 
           />
+          {this.props.popup ? <Button variant="contained" className={classes.saveButton} onClick={() => {this.props.onClose()}} startIcon={<SaveIcon />} fullWidth >Save</Button> : undefined}
         </Paper>
       </React.Fragment>
     );

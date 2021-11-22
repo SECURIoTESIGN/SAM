@@ -80,7 +80,7 @@ class Group extends Component{
   /* [Summary]: Get a resource, using a backend service. */
   fetch_resource = (resource_id) => {
     const DEBUG = true;
-    let service_URL = '/group/' + resource_id;
+    let service_URL = '/api/group/' + resource_id;
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -98,13 +98,13 @@ class Group extends Component{
             this.setState({loading:false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
   }
 
   /* [Summary]: Handles the process of editing or adding a new resource. */
   handle_add_edit_resource = () => {
     const DEBUG=true;
-    var service_URL = "/group";
+    var service_URL = "/api/group";
     var method_type = "POST";
     var to_edit     = false;
     if (this.state.resource.id){
@@ -143,7 +143,7 @@ class Group extends Component{
             this.setState({form_error: "'Houston, we have a problem'", loading: false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { return; });
      
   }
 
@@ -236,7 +236,7 @@ class Group extends Component{
         <table border="0" className={classes.table}>
           <tbody><tr>
             <td>
-              <TextField className={classes.fields} id="tf_designation" name="tf_designation" InputLabelProps={{shrink:this.state.resource.designation?true:false}} value={this.state.resource.designation} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,designation: event.target.value}})} />
+              <TextField className={classes.fields} id="tf_designation" name="tf_designation" inputProps={{maxLength: 45}} InputLabelProps={{shrink:this.state.resource.designation?true:false}} value={this.state.resource.designation} label="Name" variant="outlined" margin="normal" onChange={event => this.setState({resource:{...this.state.resource,designation: event.target.value}})} />
             </td>
           </tr></tbody>
           <tbody><tr> 

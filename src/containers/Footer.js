@@ -39,7 +39,7 @@ class Footer extends Component{
         <GitHubIcon  variant="link" fontSize="small" style={{padding: "0 2 0", cursor: "pointer"}} color="disabled" onClick={() =>  window.open('https://github.com/SECURIoTESIGN/','_blank')}/>
         &nbsp;<Divider orientation="vertical" flexItem/>&nbsp;
         <Typography color="textSecondary" variant='subtitle2'>&nbsp;SAM&nbsp;</Typography>
-        <Typography color="textSecondary" variant='subtitle2'><b>{version}</b></Typography>
+        <Typography color="textSecondary" variant='subtitle2'><b>{version} alpha</b></Typography>
       </div>
       </React.Fragment>
     );

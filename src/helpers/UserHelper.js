@@ -25,7 +25,7 @@
 import {USER_EMAIL, getAuthenticationToken} from './AuthenticationHelper';
 
 export const getUserName = (callback, debug = false) => {
-  let serviceURL = '/user/' + localStorage.getItem(USER_EMAIL);
+  let serviceURL = '/api/user/' + localStorage.getItem(USER_EMAIL);
   let methodType = 'GET';
   // 'E.T. phone home' and wait for the response from 'home' before doing anything else, 'Sorry, Elliot'.
   fetch(serviceURL, { method:methodType, headers: new Headers({'Authorization': getAuthenticationToken()})}).then(res => res.json()).then(response => {

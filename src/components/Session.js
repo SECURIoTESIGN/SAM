@@ -50,6 +50,7 @@ class Session extends Component{
       q_index: 0,                     // Current array index of the question.
       question: null,                 // Current question being answered by the user.
       p_answers: null,                // List of previous answers.
+      answers: [],                  // Current answers being given by the user (only used if the current question was flagged as multipleAnswers)
       module: null,                   // Selected module for the current session.
       recommendations: null,          // List of recommendations given after the session has being closed.
     }
@@ -64,11 +65,11 @@ class Session extends Component{
     [Notes]: If this module has some kind of logic, to reach a recommendation, the logic file will be executed on the backend.
   */
   end_session = () => {
-    const DEBUG = true;
-    let service_URL = '/session/' + this.state.session.id + "/end";
+    const DEBUG = false;
+    let service_URL = '/api/session/' + this.state.session.id + "/end";
     let method_type = 'PUT';
-    this.setState({loading: true}); // Set the loading state
 
+    this.setState({loading: true}); // Set the loading state
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
       'Content-Type': 'application/json'
@@ -80,22 +81,22 @@ class Session extends Component{
             // Store the recommendations
             this.setState({loading: false, session:{...this.state.session, recommendations: response[service_URL]['recommendations'], open_recommendations: true}}, () => {
               if (DEBUG) console_log("end_session", "List of recommendations given after all question were made : " + JSON.stringify(this.state.session.recommendations));
+              if (DEBUG) console_log("end_session", "Open recommendations: " + JSON.stringify(this.state.session.open_recommendations))
             });
 
             break; 
           }
-          // Any other code - 'Houston, we have a problem'.
           default:{
-            this.setState({loading: false}) 
+            this.setState({error_warning: response[service_URL]['message'].split(",")[1], loading: false}) 
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
   }
 
   /* [Summary]: Update session with all the answers given to particular question. */
   update_session = (question_id, answer_id, input) => {
     const DEBUG = false;
-    let service_URL = '/session/' + this.state.session.id;
+    let service_URL = '/api/session/' + this.state.session.id;
     let method_type = 'PUT';
     let json_obj = {}
     json_obj['question_id'] = question_id;
@@ -113,7 +114,7 @@ class Session extends Component{
       switch (response[service_URL]['status']){
         // Code 200 - 'It's alive! It's alive!'.
         case 200:{
-          this.setState({loading: false});
+          // this.setState({loading: false});
           break; 
         }
         // Any other code - 'Houston, we have a problem'.
@@ -121,13 +122,13 @@ class Session extends Component{
           this.setState({error_warning: "'Houston, we have a problem'", loading: false});
           break;
         }
-      }}).catch(function() { return; });   
+      }}).catch(() => { this.setState({loading: false}); return; });   
   }
 
   /* [Summary]: Fetch the list of available modules */
   fetch_modules = () => {
     const DEBUG = false;
-    let service_URL = '/modules';
+    let service_URL = '/api/modules';
     let method_type = 'GET';
     this.setState({loading: true}); // Set the loading state
 
@@ -147,13 +148,13 @@ class Session extends Component{
             this.setState({loading: false})
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
   }
   
   /* [Summary]: Handles the selection of a new module, that is, start a new round of questions in a new session */
   handle_module_selection = (event) => {
     const DEBUG = false;
-    let service_URL = '/session';
+    let service_URL = '/api/session';
     let method_type = 'POST';
     let module_id   = event.currentTarget.dataset.id
     if (DEBUG) console_log("handle_module_selection", "Module ["+ module_id +"] was selected.")
@@ -204,14 +205,51 @@ class Session extends Component{
             this.setState({error_warning: "'Houston, we have a problem'", loading: false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
     
   }
 
-  /* [Summary]: Handles the selection of answers, storing it and moving on to the next question or sub-question. */
+  /* [Summary]: Intermediate method to allow the user to answer multiple answers to a given question */
+  handle_answers = (event, answer, finished=false) => {
+    var DEBUG = false;
+    this.setState({loading: true});
+    
+    // BE AWARE - This implementation assumes that multi answer questions do not have children with sub-questions.
+    // ## Process multi answer questions. 
+    if (this.state.session.question['multipleAnswers']){
+      if (!finished){
+        let s_answers = []
+        if (this.state.session.answers){
+          s_answers = this.state.session.answers;
+          // avoid storing repeated answers 
+          if (s_answers.some(ans => ans.id === answer.id)){
+            this.setState({loading: false});
+            return;
+          }
+          s_answers.push(answer);
+        }else
+          s_answers.push(answer);
+        
+        this.setState({loading: false, session: {...this.state.session, answers: s_answers}}, () => {
+          if (DEBUG) console_log("handle_answers", "Answer added:" + JSON.stringify(answer));
+          if (DEBUG) console_log("handle_answers", "List of answers selected (" + this.state.session.answers.length + "):" + JSON.stringify(this.state.session.answers));
+        })
+      }else{
+        // After the user finishes answering the question (by pressing the corresponding button) the multiple answers can now be processed. 
+        // SECOND WARNING - This implementation assumes that multi answer questions do not have children with sub-questions.
+        for(let i=0; i < this.state.session.answers.length; i++)
+          this.handle_answer_selection(event, this.state.session.answers[i]);
+      }
+    }else{
+      // Process single answer questions. 
+      this.handle_answer_selection(event, answer)
+    }
+  }
+
+  /* [Summary]: Handles the selection of answers, storing it and moving on to the next question (if the question is set to multipleAnswers) or sub-question. */
   handle_answer_selection = (event, answer, index=null) => {
     const DEBUG = false;
-    if (DEBUG && answer)  console_log("handle_answer_selection", "answer selected :" + JSON.stringify(answer['name']));
+    if (answer)  console_log("handle_answer_selection", "answer selected :" + JSON.stringify(answer['name']));
     if (DEBUG && !answer) console_log("handle_answer_selection", "answer inputted :" + JSON.stringify(this.state.session.tmp));
 
     // Validation of an answer directly inputted by the user. 
@@ -314,44 +352,31 @@ class Session extends Component{
   iterate_tree_root_questions = (questions_of_answer_id=null) => {
     const DEBUG = false;
     let tree                      = this.state.session.module[0].tree;
-    let number_of_root_questions  = tree.length;
-    let q_index                   = this.state.session.q_index;
-    console_log("iterate_tree_root_questions", "Number of root questions: " + number_of_root_questions)
-    console_log("iterate_tree_root_questions", "Current index ="+ this.state.session.q_index)
-    this.setState({loading: true}); // Set the loading state
+    // See if it is a module or plugin
+    if(tree !== null){
 
-    if (q_index == tree.length){
-      // No more questions are mapped to this module, end the session and get the recommendations based on the answers given by the user.
+      let number_of_root_questions  = tree.length;
+      let q_index                   = this.state.session.q_index;
+      console_log("iterate_tree_root_questions", "Number of root questions: " + number_of_root_questions)
+      console_log("iterate_tree_root_questions", "Current index ="+ this.state.session.q_index)
+      this.setState({loading: true}); // Set the loading state
+
+      if (q_index == tree.length){
+        // No more questions are mapped to this module, end the session and get the recommendations based on the answers given by the user.
+        this.end_session();
+        return;
+      }
+
+      let _question = tree[q_index]
+      this.setState({loading: false, session: {...this.state.session, question: _question, q_index: this.state.session.q_index + 1 }}, () => {
+        if (DEBUG) console_log("iterate_tree_root_questions", "Current question ="+ JSON.stringify(this.state.session.question))
+      });
+    }
+    else{
       this.end_session();
       return;
     }
-
-    let _question = tree[q_index]
-    this.setState({loading: false, session: {...this.state.session, question: _question, q_index: this.state.session.q_index + 1 }}, () => {
-      if (DEBUG) console_log("iterate_tree_root_questions", "Current question ="+ JSON.stringify(this.state.session.question))
-    });
-  }
-
-  /* [Summary]: Fetch a guide for a recommendation */
-  fetch_guide = (event, name, filename) => {
-    const DEBUG = false;
-    let service_URL = '/file/' + filename;
-    let method_type = 'GET';
-    fetch(service_URL, {method:method_type, headers: {
-      'Authorization': getUserData()['token'],
-      'Content-Type': 'application/json'
-      }}).then(res => res.blob())
-      .then(blob => {
-        this.setState({loading: false}, () => {
-          var url = window.URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = "SAM_Guide_" + name + ".md";
-          document.body.appendChild(a); // Firefox support workaround. 
-          a.click();    
-          a.remove();
-        });
-     }).catch(function() { return; });
+   
   }
 
   render(){
@@ -396,13 +421,13 @@ class Session extends Component{
           <React.Fragment>
             <LoadingComponent open={this.state.loading}/>
             {/* Warning error popup */}
-            <PopupComponent open={this.state.error_warning} onClose={() => this.setState({error_warning: null})}>
+            <PopupComponent open={this.state.error_warning} onClose={() => {this.setState({error_warning: null}); window.location.reload() }}>
               <Alert severity="warning">{this.state.error_warning}</Alert>
             </PopupComponent>
             {/* Recommendations Popup */}
-            {this.state.session.recommendations ? (
-            <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload(true)}} TransitionComponent={Transition}>
-              <MyRecommendationsComponent recommendations={this.state.session.recommendations}/>
+            {this.state.session.recommendations ? ( 
+            <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload()}} TransitionComponent={Transition}>
+              <MyRecommendationsComponent recommendations={this.state.session.recommendations} module_name={this.state.session.module[0].shortname} session_id={this.state.session.id}/>
             </PopupComponent>) : undefined}
             
             <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
@@ -414,16 +439,25 @@ class Session extends Component{
                 {this.state.session.question['name']}
               </Typography>
             </Fade>
+            <Fade in={true} timeout={500}>
+              <Typography variant="subtitle2" align="center" color="textSecondary" component="p">
+                  {this.state.session.question.multipleAnswers ? "This is a multiple choice question. Please, choose several options" : "" }
+                </Typography>
+            </Fade>
             <Avatar className={classes.avatar} src={process.env.PUBLIC_URL + '/avatar.png'} />
 
             {/* Render answers of the root questions, if no answers are linked than the question is user inputted. */}
             {this.state.session.question['children'].length != 0 ? 
               (<List component="nav" align="center" aria-label="main mailbox folders">
                 {this.state.session.question['children'].map((answer, index) => 
-                  (<Fade in={true} timeout={1500}><ListItem alignItems="center" key={index} data-answer={answer} button onClick={(event) => this.handle_answer_selection(event, answer)}> 
+                  (<Fade in={true} timeout={1500}><ListItem alignItems="center" key={index} data-answer={answer} button onClick={(event) => this.handle_answers(event, answer)}> 
                     <ListItemText align="center" primary={answer['name']} />
                   </ListItem></Fade>)
                 )}
+
+
+                <Button startIcon={<SaveIcon/>} style={this.state.session.question['multipleAnswers'] && this.state.session.answers.length != 0 ? {cursor: 'pointer'} : {display: 'none'}} 
+                          onClick={(event) => this.handle_answers(event, null, true)} color="primary">Save Answers</Button>
               </List>)
               : (
               <Fade in={true} timeout={1500}><div>
@@ -433,7 +467,7 @@ class Session extends Component{
                       <TextField id="tf_inputted_answer" width="250" label="Input your answer" onChange={event => this.setState({session:{...this.state.session,tmp: event.target.value}})} />
                      </td>
                     <td valign="bottom">
-                      <SaveIcon style={{cursor: 'pointer'}} onClick={(event) => this.handle_answer_selection(event, null)} color="primary"/>
+                      <Button startIcon={<SaveIcon/>} style={{cursor: 'pointer'}} onClick={(event) => (this.handle_answers(event, null), document.getElementById('tf_inputted_answer').value = "")}  color="primary">Save Answer</Button>
                     </td>
                   </tr></tbody>
                 </table>
@@ -442,8 +476,22 @@ class Session extends Component{
             }
           </React.Fragment>
         );
-      }else{
-        return("");
+      } // If there are no questions, only show recommendations
+      else{
+        return(
+          <React.Fragment>
+            <LoadingComponent open={this.state.loading}/>
+            {/* Warning error popup */}
+            <PopupComponent open={this.state.error_warning} onClose={() => {this.setState({error_warning: null}); window.location.reload() }}>
+              <Alert severity="warning">{this.state.error_warning}</Alert>
+            </PopupComponent>
+            {/* Recommendations Popup */}
+            {this.state.session.recommendations ? (
+            <PopupComponent popupIcon={<RecommendationsIcon color="disabled"/>} title="My Recommendations" open={this.state.session.open_recommendations} onClose={() => {window.location.reload()}} TransitionComponent={Transition}>
+              <MyRecommendationsComponent recommendations={this.state.session.recommendations} module_name={this.state.session.module[0].shortname} session_id={this.state.session.id}/>
+            </PopupComponent>) : undefined}
+          </React.Fragment>
+          );
       }
     }
   }

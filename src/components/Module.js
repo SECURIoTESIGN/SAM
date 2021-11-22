@@ -65,9 +65,9 @@ class Module extends Component{
       fullname: null,
       displayname: null,
       description: null,
-      logic:  null,
+      logic_filename:  null,
       avatar: null,
-      tree: null,
+      tree: [],
       recommendations: [],        // List of recommendations mapped to this module.
       createdon: null,
       updatedon: null,
@@ -75,6 +75,7 @@ class Module extends Component{
     questions_answers: null,      // Questions answer to be linked to this module
     form_error: null,
     loading: false, 
+    file_uploaded: false,
   };
   
   /* [Summary]: Get module types, dependencies and, if requested, set a module to be edited. */
@@ -92,7 +93,7 @@ class Module extends Component{
   /* [Summary]: Fetch the module to be edited on the current component. */
   fetch_module_to_edit = (module_id) => {
     const DEBUG = true;
-    let service_URL = '/module/' + module_id;
+    let service_URL = '/api/module/' + module_id;
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -115,7 +116,7 @@ class Module extends Component{
           default:{ 
             break;
           }
-     }}).catch(function() { return null; });
+     }}).catch( () => { this.setState({loading: false}); return; });
   }
 
   /* 
@@ -131,7 +132,7 @@ class Module extends Component{
   /* [Summary]: Fetch module types using a backend service. */
   fetch_module_types = () => {
     const DEBUG = false;
-    let service_URL = '/types';
+    let service_URL = '/api/types';
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -148,13 +149,13 @@ class Module extends Component{
           default:{ 
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
   }
 
   /* [Summary]: Fetch the list of modules using a backend service */
   fetch_modules = () => {
     const DEBUG = false;
-    let service_URL = '/modules';
+    let service_URL = '/api/modules';
     let method_type = 'GET';
     fetch(service_URL, {method:method_type, headers: {
       'Authorization': getUserData()['token'],
@@ -181,7 +182,7 @@ class Module extends Component{
           default:{ 
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
   }
 
   /* 
@@ -189,9 +190,19 @@ class Module extends Component{
     [Notes]: Recommendation component calback.
   */
   store_recommendation = (recommendation) => {
-    const DEBUG = true;
+    const DEBUG = false;
     // Store the new recommendation into the state array.
     let recs = this.state.module.recommendations;
+
+    var i;
+    for(i = 0; i < recs.length; i++) {
+      if(recs[i]['id'] == recommendation['id']){
+        recs[i] = recommendation
+        this.setState({open_recommendations: false})
+        return
+      }
+    }
+
     recs.push(recommendation); 
     // 'fancy way' of doing push().
     this.setState({module: {...this.state.module, recommendations: recs}}, () => {
@@ -202,10 +213,11 @@ class Module extends Component{
 
   /* [Summary]: Handles the process of editing or adding a new module. */
   add_edit_module = () =>{   
-    const DEBUG=false;
-    var service_URL = "/module";
+    console_log("add_edit_module", "UPLOADED? " + this.state.file_uploaded)
+    const DEBUG=true;
+    var service_URL = "/api/module";
     var method_type = null;
-    this.setState({form_error: null}) // Reset form error
+    this.setState({form_error: null, loading: true}) // Reset form error
     
     // [Module Services] Build the json, be aware that null values will not be stored in this object. 
     let obj_module = {}
@@ -216,35 +228,52 @@ class Module extends Component{
     if (this.state.module.displayname)         obj_module['displayname']     = this.state.module.displayname;
     if (this.state.module.description)         obj_module['description']     = this.state.module.description;
     if (this.state.module.avatar)              obj_module['avatar']          = this.state.module.avatar;
-    if (this.state.module.tree)                obj_module['tree']            = this.state.module.tree;
+    if (this.state.module.tree && this.state.module.tree.length != 0)                obj_module['tree']            = this.state.module.tree;
     if (this.state.module.recommendations)     obj_module['recommendations'] = this.state.module.recommendations;
     if (this.state.module.createdon)           obj_module['createdon']       = this.state.module.createdon;
     if (this.state.module.updatedon)           obj_module['updatedon']       = this.state.module.updatedon;
     if (this.state.module.dependencies)        obj_module['dependencies']    = this.state.module.dependencies;
     // store in the object the filename of the logic file.
-    if (this.state.module.logic)               obj_module['logic_filename'] = this.state.module.logic[0].name;
-    
+    if (this.state.module.logic_filename)      obj_module['logic_filename']  = this.state.module.logic_filename[0].name;
+
     // Form Validations
-    if (this.state.module.fullname == null || this.state.module.displayname == null || this.state.module.shortname == null || this.state.module.tree == null){
-      this.setState({form_error: "Fields 'Name', 'Display Name', 'Abbreviation', 'Questions and Answers', and 'Recommendations' are required to add a new module."});
+    if (obj_module['fullname'] == null || obj_module['displayname'] == null || obj_module['shortname'] == null) {
+      this.setState({form_error: "Fields 'Name', 'Display Name', and 'Abbreviation' are required to add a new module.", loading: false});
       return
     }
-    if (this.state.module.recommendations.length == 0){
-      if (!this.state.module.logic){
-        this.setState({form_error: "'Recommendations' or a 'logic file' is required to add a new module."});
+    
+    if (obj_module['tree'] == null && obj_module['dependencies'] == "") {
+      this.setState({form_error: "'Questions and Answers' or 'Dependencies' is required to add a new module.", loading: false});
+      return
+    }
+
+    if (obj_module['recommendations'].length === 0){
+      if (!obj_module['logic_filename']){
+        this.setState({form_error: "'Recommendations' or a 'logic file' is required to add a new module.", loading: false});
         return
       }
     }
 
     // File type validation
-    if (this.state.module.logic){
-      if (obj_module['logic_filename'].substring(obj_module['logic_filename'].lastIndexOf('.')+1) != "py"){
-          this.setState({form_error: "Please, only logic '.py' files are allowed to be uploaded."})
-          return false;
+    if (this.state.file_uploaded){
+      if (obj_module['logic_filename'].substring(obj_module['logic_filename'].lastIndexOf('.')+1) !== "py"){
+          this.setState({form_error: "Please, only logic '.py' files are allowed to be uploaded.", loading: false})
+          return false
       }
     }
 
-    console_log("add_edit_module()", "Object to be sent to the backend service: " + JSON.stringify(obj_module))
+    // Check if there are user inputted answers
+    if (obj_module['tree'] != null) {
+      for(let i=0; i < obj_module['tree'].length; i++) {
+        let component = obj_module['tree'][i]
+        if (component['type'] == 'question' && component['multipleAnswers'] == false && component['children'].length == 0) {
+          this.setState({form_error: "'Logic File' is required to add/edit a module with user inputted answers.", loading: false});
+          return
+        }
+      }
+    }
+
+    console_log("add_edit_module", "Object to be sent to the backend service: " + JSON.stringify(obj_module))
     
     // Check if the user wants to edit a module or add a new one
     if (this.state.module.id){
@@ -266,22 +295,26 @@ class Module extends Component{
       'Authorization': getUserData()['token'],
       'Content-Type': 'application/json'
       },body: JSON.stringify(obj_module)}).then(res => res.json()).then(response => {
-        if (DEBUG) console_log("add_edit_module()","Response: " + JSON.stringify(response[service_URL]));
+        if (DEBUG) console_log("add_edit_module","Response: " + JSON.stringify(response[service_URL]));
         switch (response[service_URL]['status']){
           // Code 200 - 'It's alive! It's alive!'.
           case 200:{
-            if (this.state.module.logic){
+            if (this.state.file_uploaded){
               let final_logic_filename = "logic_" + response[service_URL]['id'] + ".py";
-              this.upload_logic_file(this.state.module.logic, final_logic_filename);
+              this.upload_logic_file(this.state.module.logic_filename, final_logic_filename);
+              this.setState({module: {...this.state.module}, file_uploaded: false})
             }
+            this.setState({loading: false})
+            this.props.onClose()
             break; 
           }
           // Any other code - 'Houston, we have a problem'.
           default:{
-            this.setState({form_error: "'Houston, we have a problem'"});
+            let error_message = response[service_URL]['message']
+            this.setState({form_error: error_message, loading: false});
             break;
           }
-     }}).catch(function() { return; });
+     }}).catch( () => { this.setState({loading: false}); return; });
      
   }
 
@@ -297,7 +330,7 @@ class Module extends Component{
       // If the current dialog is to edit a module then we must flag this recommendation to be removed by the backend service.
       let tmp_rec = this.state.module.recommendations;
       for(let i=0; i < tmp_rec.length; i++){
-        if (tmp_rec[i]['id'] == chip_to_delete.id) tmp_rec[i]['to_remove'] = true;
+        if (tmp_rec[i]['id'] === chip_to_delete.id) tmp_rec[i]['to_remove'] = true;
       }
       this.setState({module:{...this.state.module, recommendations: tmp_rec}})
     }
@@ -315,7 +348,7 @@ class Module extends Component{
       // If the current dialog is to edit a module then we must flag this recommendation to be removed by the backend service.
       let tmp = this.state.module.dependencies;
       for(let i=0; i < tmp.length; i++){
-        if (tmp[i]['module']['id'] == chip_to_delete.module.id) tmp[i]['to_remove'] = true;
+        if (tmp[i]['module']['id'] === chip_to_delete.module.id) tmp[i]['to_remove'] = true;
       }
       this.setState({module:{...this.state.module, dependencies: tmp}})
     }
@@ -326,13 +359,20 @@ class Module extends Component{
     [Notes]: Select component calback.
   */
   get_dependency_selection = (row_data) => {
-    
     let t_dependencies = this.state.module.dependencies
+    var i;
+    for(i = 0; i < t_dependencies.length; i++) {
+      if(t_dependencies[i]['module']['fullname'] == row_data['fullname']){
+        return
+      }
+    }
+
     let dependency = {}
     let module = {}  
     module['id']           = row_data['rid']
     module['fullname']     = row_data['fullname']
     dependency['module']   = module
+
     t_dependencies.push(dependency)
     
     this.setState({module:{...this.state.module,dependencies: t_dependencies}})
@@ -341,13 +381,13 @@ class Module extends Component{
   /* [Summary]: Uploads a logic file, if requested. */
   upload_logic_file = (files, filename) => {
     const DEBUG        = true;
-    let service_URL    = '/file/' + filename
+    let service_URL    = '/api/file/' + filename
     let method_type    = 'POST';
 
     // Let's upload some logic for this module
     const data = new FormData()
     data.append('file', files[0])
-    console_log("upload_logic_file", "Logic file to be uploaded = '" + filename + "'");
+    if (DEBUG) console_log("upload_logic_file", "Logic file to be uploaded = '" + filename + "'");
     fetch(service_URL, {
       method: method_type, 
       headers: {'Authorization': getUserData()['token']},
@@ -382,7 +422,7 @@ class Module extends Component{
 
       {/* Dependency Modules Selection */}
       <PopupComponent title="Link Dependencies (Modules)" open={this.state.open_dependencies} onClose={() => {this.setState({open_dependencies: false})}} TransitionComponent={Transition}>
-       <SelectionComponent type={"modules"} select={true} onSelect={this.get_dependency_selection}/>
+       <SelectionComponent type={"modules"} select={true} onSelect={this.get_dependency_selection} onClose={() => {this.setState({open_dependencies: false})}} popup={true}/>
       </PopupComponent>
 
       <Alert severity="error" style={this.state.form_error != null ? {} : { display: 'none' }}>
@@ -394,15 +434,15 @@ class Module extends Component{
           <table className={classes.main_table} border="0">
           <tbody><tr>
             <td width="80%">
-              <TextField value={this.state.module.fullname} InputLabelProps={{shrink:this.state.module.fullname?true:false}} label="Full Name"  required id="tf_fullname" name="tf_fullname" onChange={event => this.setState({module:{...this.state.module,fullname: event.target.value}})} variant="outlined" margin="normal" fullWidth />
+              <TextField value={this.state.module.fullname}  label="Full Name"  required id="tf_fullname" name="tf_fullname" inputProps={{maxLength: 100}} onChange={event => this.setState({module:{...this.state.module,fullname: event.target.value}})} variant="outlined" margin="normal" fullWidth />
             </td>
             <td width="20%">
-              <TextField value={this.state.module.shortname} InputLabelProps={{shrink:this.state.module.shortname?true:false}} required id="tf_shortname" name="tf_shortname" onChange={event => this.setState({module:{...this.state.module,shortname: event.target.value}})}  label="Abbrev." variant="outlined" margin="normal" fullWidth />
+              <TextField value={this.state.module.shortname} InputLabelProps={{shrink:this.state.module.shortname?true:false}} required id="tf_shortname" name="tf_shortname" inputProps={{maxLength: 45}} onChange={event => this.setState({module:{...this.state.module,shortname: event.target.value}})}  label="Abbrev." variant="outlined" margin="normal" fullWidth />
             </td>
           </tr></tbody>
           <tbody><tr>
             <td>
-              <TextField value={this.state.module.displayname} InputLabelProps={{shrink:this.state.module.displayname?true:false}} required id="tf_displayname" name="tf_displayname" className={classes.text} onChange={event => this.setState({module:{...this.state.module,displayname: event.target.value}})}  label="Display Name"  variant="outlined" margin="normal" fullWidth />
+              <TextField value={this.state.module.displayname} InputLabelProps={{shrink:this.state.module.displayname?true:false}} required id="tf_displayname" name="tf_displayname" inputProps={{maxLength: 45}} className={classes.text} onChange={event => this.setState({module:{...this.state.module,displayname: event.target.value}})}  label="Display Name"  variant="outlined" margin="normal" fullWidth />
             </td>
             <td width="20%">
               <FormControl className={classes.formControl}>
@@ -410,7 +450,7 @@ class Module extends Component{
                     <Select defaultValue="" native inputProps={{name: 'type', id: 's_module_type'}} style={{width: 100}} onChange={event => this.setState({module:{...this.state.module,type_id: event.target.value}})}>
                       <option aria-label="None" value="" />
                       {this.state.module_types.map((type) => (
-                        type['id'] == this.state.module.type_id ? 
+                        type['id'] === this.state.module.type_id ? 
                         (<option value={type['id']} selected>{type['name']}</option>) : 
                         (<option value={type['id']}>{type['name']}</option>)
                         
@@ -422,11 +462,11 @@ class Module extends Component{
           {/* Dependency */}
           <tbody><tr>
             <td colSpan="2" style={{listStyle: 'none', paddingTop: 5}}>
-                {this.state.module.dependencies.length != 0 ? this.state.module.dependencies.map((dependency, i) => {
+                {this.state.module.dependencies.length !== 0 ? this.state.module.dependencies.map((dependency, i) => {
                     let icon = <SaveIcon/>;
                     let addChip = null;
                     let size = (this.state.module.dependencies.length - 1);
-                    size == i || size == 0 ? addChip = <Chip color="primary" icon={<AddChipIcon/>} label="Link Dependencies" onClick={() => {this.setState({open_dependencies: !this.state.open_dependencies})}} /> : addChip = null;
+                    size === i || size === 0 ? addChip = <Chip color="primary" icon={<AddChipIcon/>} label="Link Dependencies" onClick={() => {this.setState({open_dependencies: !this.state.open_dependencies})}} /> : addChip = null;
                     if (!dependency.to_remove){
                       return (
                         <Tooltip title={dependency.module.fullname} arrow>
@@ -453,7 +493,7 @@ class Module extends Component{
             {/* Module's Logic */}
             <td style={{paddingTop:10}}>
               <label htmlFor="upload-logic">
-                <input style={{ display: 'none' }} id="upload-logic" name="upload-logic" type="file" onChange={(event) => this.setState({module: {...this.state.module, logic: event.target.files}})} />
+                <input style={{ display: 'none' }} id="upload-logic" name="upload-logic" type="file" onChange={(event) => this.setState({module: {...this.state.module, logic_filename: event.target.files}, file_uploaded: true})} accept=".py" />
                 <Button variant="contained" component="span" className={classes.button}  color="default" startIcon={<CloudUploadIcon />} fullWidth>Logic</Button>
               </label>
             </td>
@@ -463,11 +503,11 @@ class Module extends Component{
           <tbody><tr>
             <td colSpan="2">
               <Collapse in={this.state.module.tree !== null} style={{listStyle: 'none', paddingTop: 5}}>
-                  {this.state.module.recommendations.length != 0 ? this.state.module.recommendations.map((recommendation, i) => {
+                  {this.state.module.recommendations.length !== 0 ? this.state.module.recommendations.map((recommendation, i) => {
                     let icon = <SaveIcon/>;
                     let addChip = null;
                     let size = (this.state.module.recommendations.length - 1);
-                    size == i || size == 0 ? addChip = <Chip color="primary" icon={<AddChipIcon/>} label="Link Recommendation" onClick={() => {this.setState({open_recommendations: !this.state.open_recommendations})}} /> : addChip = null;
+                    size === i || size === 0 ? addChip = <Chip color="primary" icon={<AddChipIcon/>} label="Link Recommendation" onClick={() => {this.setState({open_recommendations: !this.state.open_recommendations})}} /> : addChip = null;
                     if (!recommendation.to_remove){
                       return (
                         <Tooltip title={recommendation.content} arrow>
