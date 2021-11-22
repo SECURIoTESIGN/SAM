@@ -19,12 +19,12 @@ SAM's graphical user interface or frontend is available on this repository, whil
 
 1) Deploy SAM's Web API, more information can be found [here](https://github.com/SECURIoTESIGN/SAM-API). 
 3) From inside the ```SAM``` directory install ```package.json``` dependencies as follows: 
-```console
+```
 cd SAM
 npm install
 ```
 4) Now you are ready to go! :smile: To start SAM's Web user interface:
-```console
+```
 $ npm start
 ```
 
